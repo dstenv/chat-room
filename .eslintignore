@@ -1,5 +1,3 @@
 /build/
 /config/
 /dist/
-/src/utils/
-/src/router/*.js
