@@ -1,12 +1,25 @@
 import { defineStore } from "pinia";
 
 export const useBaseStore = defineStore("base", () => {
-    const baseUrl = "a1.easemob.com";
+    const RestApi = "a1.easemob.com";
     const orgName = "1125221214163135";
-    const appName = "chat-room";
-    const appKey = "1125221214163135#chat-room";
-    const clientID = "YXA6jTNKOWuMQe6twEQOd5lSTA";
-    const clientSecret = "YXA6qT8Hl2XNh1W4v-iLILPKnrl-R4E";
+    const socket3 = "im-api-v2.easemob.com";
+    const clientID = "YXA62VO4Vj7CT-2ppwCbK0N8xw";
+    const clientSecret = "YXA64_7wQq1yKt0I1bVn33rU0GubJJw";
 
-    return { baseUrl, orgName, appName, appKey, clientID, clientSecret };
+    const appName = "demo";
+    const appKey = "1125221214163135#demo";
+
+    const baseUrl = `${window.location.protocol}//${RestApi}`;
+
+    return {
+        RestApi,
+        socket3,
+        orgName,
+        appName,
+        appKey,
+        clientID,
+        clientSecret,
+        baseUrl,
+    };
 });

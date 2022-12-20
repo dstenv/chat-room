@@ -4,6 +4,7 @@ require("@rushstack/eslint-patch/modern-module-resolution");
 const off = "off";
 const warn = "warn";
 const error = "error";
+const always = "always";
 
 module.exports = {
     root: true,
@@ -18,6 +19,7 @@ module.exports = {
         es2021: true,
         node: true,
         commonjs: true,
+        "vue/setup-compiler-macros": true, // 针对setup语法糖 可不用defined defineEmits 以及 definExpose
     },
     ecmaFeatures: {
         jsx: true, // 启用 JSX
@@ -31,8 +33,7 @@ module.exports = {
     rules: {
         camelcase: off,
         "no-multiple-empty-lines": off,
-        // js语句结尾必须使用分号
-        semi: [warn, "always"], // 语句强制分号结尾
+        semi: [warn, always], // 语句强制分号结尾
         "no-const-assign": error, // 禁止修改const声明的变量
         "no-implicit-coercion": off, // 禁止隐式转换
         "no-plusplus": off, // 禁止使用++，--

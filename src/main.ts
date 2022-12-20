@@ -3,7 +3,6 @@ import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
-import WebIm from "easemob-websdk";
 
 const app = createApp(App);
 
