@@ -1,9 +1,19 @@
-import { useBaseStore } from "@/stores/base";
 import EaseChatSDK from "easemob-websdk";
-import pinia from "./createPinia";
 
-const baseStore = useBaseStore(pinia);
-const { appKey, socket3, RestApi } = baseStore;
+const baseConfig = {
+    RestApi: "a1.easemob.com",
+    orgName: "1125221214163135",
+    socket3: "im-api-v2.easemob.com",
+    clientID: "YXA62VO4Vj7CT-2ppwCbK0N8xw",
+    clientSecret: "YXA64_7wQq1yKt0I1bVn33rU0GubJJw",
+
+    appName: "demo",
+    appKey: "1125221214163135#demo",
+};
+
+const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}`;
+
+const { appKey, socket3, RestApi } = baseConfig;
 
 /*
  * isHttpDNS： isPrivate为true开启私有化配置则走自有配置的url以及apiUrl，
@@ -17,4 +27,4 @@ const EaseChatClient = new EaseChatSDK.connection({
     apiUrl: `//${RestApi}`,
 });
 console.log("EaseIMClient", EaseChatClient);
-export { EaseChatSDK, EaseChatClient };
+export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl };
