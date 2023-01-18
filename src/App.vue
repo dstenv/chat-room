@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
 import { EaseChatClient, EaseChatSDK } from '@/utils/config'
+import Login from '@/views/login/index.vue'
 
 EaseChatSDK.logger.disableAll()
 // connect监听
@@ -69,22 +69,12 @@ EaseChatClient.addEventHandler('messageListen', {
 
 <template>
     <header>
-        <img
-            alt="Vue logo"
-            class="logo"
-            src="@/assets/logo.svg"
-            width="125"
-            height="125"
-        />
-        <div class="wrapper">
-            <nav>
-                <RouterLink to="/">Home</RouterLink>
-                <RouterLink to="/about">About</RouterLink>
-            </nav>
-        </div>
+        <Login />
     </header>
-
-    <RouterView />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+header {
+    background: aqua;
+}
+</style>
