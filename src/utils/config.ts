@@ -1,4 +1,4 @@
-import EaseChatSDK from "easemob-websdk";
+import EaseChatSDK from "easemob-websdk"
 
 const baseConfig = {
     RestApi: "a1.easemob.com",
@@ -11,9 +11,9 @@ const baseConfig = {
     appKey: "1125221214163135#demo",
 };
 
-const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}`;
+const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}`
 
-const { appKey, socket3, RestApi } = baseConfig;
+const { appKey, socket3, RestApi } = baseConfig
 
 /*
  * isHttpDNS： isPrivate为true开启私有化配置则走自有配置的url以及apiUrl，
@@ -27,4 +27,4 @@ const EaseChatClient = new EaseChatSDK.connection({
     apiUrl: `//${RestApi}`,
 });
 console.log("EaseIMClient", EaseChatClient);
-export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl };
+export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl }
