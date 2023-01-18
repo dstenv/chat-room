@@ -1,5 +1,8 @@
 import EaseChatSDK from 'easemob-websdk'
 
+/**
+ * @description 环信基础配置
+ */
 const baseConfig = {
     RestApi: 'a1.easemob.com',
     orgName: '1125221214163135',
@@ -20,6 +23,9 @@ const { appKey, socket3, RestApi } = baseConfig
  * 否则为true就SDK自助获取DNS地址。
  * 【特别注意】如果不需要私有化配置，也就是自己定义url以及apiUrl。isHttpDNS、url、apiUrl，均可不用填写只用填入appKey！SDK内部会进行自动获取！
  **/
+/**
+ * @description 环信实例
+ */
 const EaseChatClient = new EaseChatSDK.connection({
     appKey,
     isHttpDNS: true,
