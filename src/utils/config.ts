@@ -1,15 +1,15 @@
-import EaseChatSDK from "easemob-websdk"
+import EaseChatSDK from 'easemob-websdk'
 
 const baseConfig = {
-    RestApi: "a1.easemob.com",
-    orgName: "1125221214163135",
-    socket3: "im-api-v2.easemob.com",
-    clientID: "YXA62VO4Vj7CT-2ppwCbK0N8xw",
-    clientSecret: "YXA64_7wQq1yKt0I1bVn33rU0GubJJw",
+    RestApi: 'a1.easemob.com',
+    orgName: '1125221214163135',
+    socket3: 'im-api-v2.easemob.com',
+    clientID: 'YXA62VO4Vj7CT-2ppwCbK0N8xw',
+    clientSecret: 'YXA64_7wQq1yKt0I1bVn33rU0GubJJw',
 
-    appName: "demo",
-    appKey: "1125221214163135#demo",
-};
+    appName: 'demo',
+    appKey: '1125221214163135#demo',
+}
 
 const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}`
 
@@ -25,6 +25,6 @@ const EaseChatClient = new EaseChatSDK.connection({
     isHttpDNS: true,
     url: `//${socket3}`,
     apiUrl: `//${RestApi}`,
-});
-console.log("EaseIMClient", EaseChatClient);
+})
+console.log('EaseIMClient', EaseChatClient)
 export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl }

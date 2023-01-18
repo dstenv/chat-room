@@ -1,5 +1,6 @@
 {
     "files": [],
+    "include": ["./env.d.ts"],
     "references": [
         {
             "path": "./tsconfig.config.json"
@@ -10,5 +11,17 @@
         {
             "path": "./tsconfig.vitest.json"
         }
-    ]
+    ],
+    "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "types": [
+            "vite/client"
+        ],
+    }
 }

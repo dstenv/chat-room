@@ -1,105 +1,101 @@
-/* eslint-env node */
-// require("@rushstack/eslint-patch/modern-module-resolution");
-
-const off = "off"
-const warn = "warn"
-const error = "error"
-const always = "always"
+const off = 'off'
+const warn = 'warn'
 
 module.exports = {
-    root: true,
-    extends: [
-        "plugin:vue/vue3-essential",
-        "eslint:recommended",
-        "@vue/eslint-config-typescript",
-        "@vue/eslint-config-prettier",
-        'plugin:prettier/recommended',
-        'plugin:@typescript-eslint/recommended',
-    ],
     env: {
         browser: true,
+        commonjs: true,
         es2021: true,
         node: true,
-        commonjs: true,
     },
-    ecmaFeatures: {
-        jsx: true, // 启用 JSX
-    },
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        // 'plugin:vue/vue3-recommended',
+        'plugin:vue/vue3-essential',
+        'plugin:prettier/recommended',
+    ],
     parserOptions: {
         ecmaFeatures: { jsx: true },
-        ecmaVersion: "latest",
-        parser: "@typescript-eslint/parser",
-        sourceType: "module",
+        ecmaVersion: 'latest',
+        parser: '@typescript-eslint/parser',
+        sourceType: 'module',
     },
-    plugins: ["prettier", "@typescript-eslint", "vue"],
+    plugins: ['prettier', '@typescript-eslint', 'vue'],
+    root: true,
     rules: {
+        /**
+         * Eslint config
+         */
+
+        'camelcase': off,
+        'no-empty': off,
+        'no-undef': off,
+        'consistent-this': warn,
+        // 'line-comment-position': warn,
+        // 'no-inline-comments': warn,
+        'no-useless-constructor': warn,
+        'prefer-rest-params': warn,
+        'prefer-spread': warn,
+
+        /* Automatically fixable */
+        // 'arrow-body-style': warn,
         'eqeqeq': warn,
-        camelcase: off,
-        // 最大空行设置1
-        "no-multiple-empty-lines": [warn, { max: 1 }],
-        // 语句强制分号结尾
-        semi: [error, "never"],
-        // 禁止修改const声明的变量
-        "no-const-assign": error,
-        // 禁止隐式转换
-        "no-implicit-coercion": off,
-        // 禁止使用++，--
-        "no-plusplus": off,
-        // 禁止出现未使用过的变量
-        "no-unused-vars": warn,
-        // 禁止重复声明变量
-        "no-redeclare": warn,
-        // 注释风格要不要有空格什么的
-        "spaced-comment": warn,
-        // 使用严格模式
-        strict: error,
-        // 禁止尾部出现逗号，主要场景在于对象
-        "comma-dangle": [0, off],
-        "object-curly-spacing": [
-            2,
-            "always",
+        'lines-between-class-members': off,
+        'no-lonely-if': warn,
+        'no-useless-computed-key': warn,
+        'no-useless-rename': warn,
+        'no-var': warn,
+        'object-shorthand': warn,
+        'operator-assignment': warn,
+        'prefer-const': warn,
+        'prefer-numeric-literals': warn,
+        'prefer-object-spread': warn,
+        'prefer-template': warn,
+        // 'sort-imports': [warn, { ignoreDeclarationSort: true }],
+        'spaced-comment': warn,
+
+        /**
+         * Typescript-eslint config
+         */
+
+        '@typescript-eslint/ban-types': off,
+        '@typescript-eslint/no-namespace': off,
+        '@typescript-eslint/no-empty-function': off,
+        '@typescript-eslint/no-explicit-any': off,
+        '@typescript-eslint/no-non-null-asserted-optional-chain': off,
+        '@typescript-eslint/no-non-null-assertion': off,
+        '@typescript-eslint/no-var-requires': warn,
+
+        /* Automatically fixable */
+        '@typescript-eslint/array-type': warn,
+
+        /**
+         * Vue config
+         */
+
+        /* Automatically fixable */
+        'vue/html-self-closing': [
+            warn,
             {
-                // 强制在花括号中使用一致的空格
-                objectsInObjects: false,
+                html: {
+                    component: 'always',
+                    normal: 'always',
+                    void: 'always',
+                },
+                math: 'always',
+                svg: 'always',
             },
         ],
-        // 强制属性中的getter有return
-        "allowImplicit": true,
-        // 禁止在函数中重复声明参数
-        "no-dupe-args": error,
-
-        /*
-            代码风格
-        */
-        // 数组长度超出一定值换行
-        "array-bracket-newline": [warn, { minItems: 5 }],
-        // 强制数组括号内的间距一致
-        "array-bracket-spacing": [warn, always, {
-            objectsInArrays: false,
-            arraysInArrays: false
-        }],
-        // 箭头函数参数需要括号
-        "arrow-parens": [warn, always],
-        // 不允许在行尾尾随空格
-        "no-trailing-spaces": warn,
-        // 强制一致使用单引号
-        quotes: [warn, "single"],
-
-        // 关闭组件命名规则
-        "vue/multi-word-component-names": off,
-        "@typescript-eslist/camelcase": 0,
-        //禁止重复导入模块
-        "no-duplicate-imports": error,
-        // 禁止空解构
-        "no-empty-pattern": warn,
-        // 禁止不规则的空格
-        "no-irregular-whitespace": warn,
-        // 禁止混淆多行表达式
-        "no-unexpected-multiline": warn,
+        'vue/max-attributes-per-line': off,
+        'vue/multi-word-component-names': off,
+        'arrow-body-style': off,
+        'prefer-arrow-callback': off,
 
         /**
          * Prettier config
          */
+
         'prettier/prettier': [
             warn,
             {
@@ -115,4 +111,4 @@ module.exports = {
             },
         ],
     },
-};
+}
