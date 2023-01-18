@@ -12,7 +12,7 @@ export default defineConfig({
         vueJsx(),
         AutoImportConfig({
             imports: ['vue', 'vue-router'],
-            dts: './auto-import.d.ts',
+            dts: 'src/auto-import.d.ts',
         }),
     ],
     resolve: {
