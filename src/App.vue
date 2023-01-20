@@ -68,9 +68,7 @@ EaseChatClient.addEventHandler('messageListen', {
 </script>
 
 <template>
-    <header>
-        <Login />
-    </header>
+    <RouterView />
 </template>
 
 <style lang="scss" scoped>

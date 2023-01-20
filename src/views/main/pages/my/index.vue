@@ -1,5 +1,5 @@
 <template>
-    <div>login</div>
+    <div>我的</div>
 </template>
 
 <script setup lang="ts"></script>

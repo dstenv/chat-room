@@ -3,14 +3,14 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-
-import '@unocss/reset/tailwind.css'
-import './style/common.scss'
-import 'uno.css'
+import vantUI from './utils/vantUI'
+// import 'uno.css'
+import 'vant/lib/index.css'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(vantUI)
 
 app.mount('#app')
