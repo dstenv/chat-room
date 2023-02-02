@@ -1,26 +1,35 @@
 <template>
     <div class="main">
-        <RouterView />
-        <VanTabbar v-model="active" route>
-            <VanTabbarItem
+        <div>
+            <RouterView />
+        </div>
+
+        <van-tabbar v-model="activeIndex" active-color="#59e062" fixed>
+            <van-tabbar-item
                 v-for="(item, index) in tabbar"
                 :key="index"
                 :to="item.path"
             >
                 <template #icon="props">
-                    <img
-                        :src="
-                            props.active ? item.activeIcon : item.inActiveIcon
-                        "
-                    />
-                    <span style="font-size: 14rem">{{ item.name }}</span>
+                    <div style="text-align: center">
+                        <img
+                            :src="
+                                props.active
+                                    ? Tool.getUrl(item.activeIcon)
+                                    : Tool.getUrl(item.inActiveIcon)
+                            "
+                        />
+                        <span style="font-size: 14rem">{{ item.name }}</span>
+                    </div>
                 </template>
-            </VanTabbarItem>
-        </VanTabbar>
+            </van-tabbar-item>
+        </van-tabbar>
     </div>
 </template>
 
 <script setup lang="ts">
+import Tool from '@/utils/tools'
+
 type RouterPath = 'chat' | 'mail-list' | 'wechat-moments' | 'my'
 
 interface TabbarItem {
@@ -32,34 +41,34 @@ interface TabbarItem {
     inActiveIcon: string
 }
 
-const active = ref(0)
+const activeIndex = ref(0)
 
-const tabbar: TabbarItem[] = [
+const tabbar = ref<TabbarItem[]>([
     {
-        name: '聊天',
+        name: '消息',
         path: 'chat',
-        activeIcon: '',
-        inActiveIcon: '',
+        activeIcon: 'msg_active.png',
+        inActiveIcon: 'msg_inactive.png',
     },
     {
         name: '通讯录',
         path: 'mail-list',
-        activeIcon: '',
-        inActiveIcon: '',
+        activeIcon: 'mail_list_active.png',
+        inActiveIcon: 'mail_list_inactive.png',
     },
     {
-        name: '朋友圈',
+        name: '发现',
         path: 'wechat-moments',
-        activeIcon: '',
-        inActiveIcon: '',
+        activeIcon: 'discover_active.png',
+        inActiveIcon: 'discover_inactive.png',
     },
     {
         name: '我的',
         path: 'my',
-        activeIcon: '',
-        inActiveIcon: '',
+        activeIcon: 'my_active.png',
+        inActiveIcon: 'my_inactive.png',
     },
-]
+])
 </script>
 
 <style scoped lang="scss">
@@ -68,10 +77,11 @@ const tabbar: TabbarItem[] = [
     height: 100vh;
 }
 .van-tabbar {
-    padding: 10rem 0;
     background-color: #fff;
     img {
-        height: 42rem;
+        display: block;
+        margin: 0 auto;
+        height: 22rem;
     }
 }
 </style>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { EaseChatClient, EaseChatSDK } from '@/utils/config'
-import Login from '@/views/login/index.vue'
+import Tool from '@/utils/tools'
+
+Tool.getAdminToken()
 
 EaseChatSDK.logger.disableAll()
 // connect监听

@@ -1,16 +1,16 @@
 import axios from 'axios'
 import { baseUrl } from '@/utils/config'
 
-type Method = 'GET' | 'POST'
-type Content = 'application/json'
-
-interface RequestBaseType {
-    method: Method
-    headers: {
+export interface RequestBaseType {
+    method?: Method
+    headers?: {
         'Content-Type': Content
     }
-    url: string
+    url?: string
 }
+
+type Method = 'GET' | 'POST'
+type Content = 'application/json'
 
 const requestBaseConfig: RequestBaseType = {
     method: 'GET',
@@ -18,11 +18,13 @@ const requestBaseConfig: RequestBaseType = {
     url: '',
 }
 
-export const request = async <T extends RequestBaseType>(options: T) => {
+export const request = async <T extends RequestBaseType, U>(
+    options: T
+): Promise<U> => {
     options.method = options.method || requestBaseConfig.method
     options.headers = options.headers || requestBaseConfig.headers
-    options.url += baseUrl
+    // options.url += baseUrl
 
-    const result = await axios({ ...options })
-    console.log('apis/base.ts请求结果 --> ', result)
+    const result: U = await axios({ ...options })
+    return result
 }

@@ -6,6 +6,7 @@ import router from './router'
 import vantUI from './utils/vantUI'
 // import 'uno.css'
 import 'vant/lib/index.css'
+import './style/common.scss'
 
 const app = createApp(App)
 
