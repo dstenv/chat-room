@@ -1,16 +1,26 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 
 export const useUserStore = defineStore('user', () => {
-    const adminToken = ref('')
-    const userToken = ref('')
+    let admin = reactive({
+        token: '',
+        application: '',
+        time: 0,
+    })
+    let user = reactive({
+        token: '',
+        uuid: '',
+    })
 
-    const setAdminToken = (token: string) => {
-        adminToken.value = token
+    const setAdmin = (info: {
+        token: string
+        application: string
+        time: number
+    }) => {
+        admin = { ...info }
     }
-    const setUserToken = (token: string) => {
-        userToken.value = token
+    const setUser = (info: { token: string; uuid: string }) => {
+        user = { ...info }
     }
 
-    return { userToken, adminToken, setAdminToken, setUserToken }
+    return { user, admin, setAdmin, setUser }
 })

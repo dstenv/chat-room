@@ -14,7 +14,7 @@ const baseConfig = {
     appKey: '1125221214163135#demo',
 }
 
-const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}`
+const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}/`
 
 const { appKey } = baseConfig
 

@@ -1,8 +1,22 @@
 <script setup lang="ts">
 import { EaseChatClient, EaseChatSDK } from '@/utils/config'
-import Tool from '@/utils/tools'
+import { useUserStore } from '@/stores/user'
+import { getAdminToken } from '@/apis/getAdminToken'
 
-Tool.getAdminToken()
+const initAdmin = async () => {
+    const userStore = useUserStore()
+    const adminToken: string = localStorage.getItem('adminToken') as string
+    if (!adminToken) {
+        const result = await getAdminToken()
+        userStore.setAdmin({
+            application: result.application,
+            time: result.expires_in,
+            token: result.access_token,
+        })
+        localStorage.setItem('adminToken', result.access_token)
+    }
+}
+initAdmin()
 
 EaseChatSDK.logger.disableAll()
 // connect监听

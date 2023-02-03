@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { baseUrl } from '@/utils/config'
+import { baseConfig } from '@/utils/config'
 
 export interface RequestBaseType {
     method?: Method
@@ -7,6 +7,8 @@ export interface RequestBaseType {
         'Content-Type': Content
     }
     url?: string
+    data?: any
+    param?: any
 }
 
 type Method = 'GET' | 'POST'
@@ -23,7 +25,7 @@ export const request = async <T extends RequestBaseType, U>(
 ): Promise<U> => {
     options.method = options.method || requestBaseConfig.method
     options.headers = options.headers || requestBaseConfig.headers
-    // options.url += baseUrl
+    options.url = `/apis/${baseConfig.orgName}/${baseConfig.appName}/${options.url}`
 
     const result: U = await axios({ ...options })
     return result
