@@ -1,7 +1,7 @@
-import { Button, Tabbar, TabbarItem } from 'vant'
+import { Button, Tabbar, TabbarItem, Form, Field, CellGroup } from 'vant'
 import type { App } from 'vue'
 
-const vantUIComponents = [Button, Tabbar, TabbarItem]
+const vantUIComponents = [Button, Tabbar, TabbarItem, Form, Field, CellGroup]
 
 export default {
     install(app: App) {
