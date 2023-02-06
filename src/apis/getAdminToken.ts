@@ -24,7 +24,7 @@ export class GetAdminTokenRet {
 export const getAdminToken = async () => {
     const result = await request<GetAdminTokenBody, GetAdminTokenRet>({
         method: 'POST',
-        url: `token`,
+        url: 'token',
         data: {
             grant_type: 'client_credentials',
             client_id: baseConfig.clientID,

@@ -1,20 +1,36 @@
 <script setup lang="ts">
 import { EaseChatClient, EaseChatSDK } from '@/utils/config'
-import { useUserStore } from '@/stores/user'
+import { useAdminStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 
+interface AdminStorage {
+    application: string
+    time: number
+    token: string
+}
+
 const initAdmin = async () => {
-    const userStore = useUserStore()
-    const adminToken: string = localStorage.getItem('adminToken') as string
+    const adminStore = useAdminStore()
+    const adminToken = localStorage.getItem('adminToken')
     if (!adminToken) {
         const result = await getAdminToken()
-        userStore.setAdmin({
-            application: result.application,
-            time: result.expires_in,
-            token: result.access_token,
-        })
-        localStorage.setItem('adminToken', result.access_token)
+        adminStore.setToken(result.access_token)
+        adminStore.setApplication(result.application)
+        adminStore.setTime(result.expires_in)
+        localStorage.setItem(
+            'adminToken',
+            JSON.stringify({
+                application: result.application,
+                time: result.expires_in,
+                token: result.access_token,
+            })
+        )
+        return
     }
+    const adminInfo: AdminStorage = JSON.parse(adminToken)
+    adminStore.setToken(adminInfo.token)
+    adminStore.setApplication(adminInfo.application)
+    adminStore.setTime(adminInfo.time)
 }
 initAdmin()
 

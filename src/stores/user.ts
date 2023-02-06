@@ -1,26 +1,33 @@
 import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', () => {
-    let admin = reactive({
-        token: '',
-        application: '',
-        time: 0,
-    })
-    let user = reactive({
-        token: '',
-        uuid: '',
-    })
+    const token = ref('')
+    const uuid = ref('')
 
-    const setAdmin = (info: {
-        token: string
-        application: string
-        time: number
-    }) => {
-        admin = { ...info }
+    const setToken = (value: string) => {
+        token.value = value
     }
-    const setUser = (info: { token: string; uuid: string }) => {
-        user = { ...info }
+    const setUUid = (value: string) => {
+        uuid.value = value
     }
 
-    return { user, admin, setAdmin, setUser }
+    return { token, uuid, setToken, setUUid }
+})
+
+export const useAdminStore = defineStore('admin', () => {
+    const token = ref('')
+    const application = ref('')
+    const time = ref(0)
+
+    const setToken = (value: string) => {
+        token.value = value
+    }
+    const setApplication = (value: string) => {
+        application.value = value
+    }
+    const setTime = (value: number) => {
+        time.value = value
+    }
+
+    return { token, application, time, setToken, setApplication, setTime }
 })

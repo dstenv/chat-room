@@ -7,14 +7,15 @@ type Content = 'application/json'
 export interface RequestBaseType {
     method?: Method
     headers?: {
-        'Content-Type': Content
-        'Accept': Content
+        'Content-Type'?: Content
+        'Accept'?: Content
         'Authorization': string
     }
     url?: string
     data?: any
     param?: any
     timeout?: number
+    httpType?: 'api' | 'apis'
 }
 
 const requestBaseConfig: RequestBaseType = {
@@ -39,8 +40,10 @@ export const request = async <T extends RequestBaseType, U>(
         }
     }
     options.timeout = options.timeout || requestBaseConfig.timeout
-    options.url = `/apis/${baseConfig.orgName}/${baseConfig.appName}/${options.url}`
-
+    options.url = `/${options.httpType || 'api'}/${baseConfig.orgName}/${
+        baseConfig.appName
+    }/${options.url}`
+    console.log(options)
     const result: U = await axios({ ...options })
     return result
 }

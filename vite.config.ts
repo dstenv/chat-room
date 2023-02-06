@@ -23,9 +23,14 @@ export default defineConfig({
 
     server: {
         proxy: {
-            '/apis': {
+            '/api': {
                 changeOrigin: true,
                 target: 'http://a1.easemob.com',
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            },
+            '/apis': {
+                changeOrigin: true,
+                target: 'https://a1.easemob.com',
                 rewrite: (path) => path.replace(/^\/apis/, ''),
             },
         },
