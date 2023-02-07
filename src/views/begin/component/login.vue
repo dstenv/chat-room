@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <van-form @submit="register" ref="formRef">
+    <div style="width: 100vw; height: 100vh">
+        <van-form @submit="login" ref="formRef">
             <van-cell-group inset>
                 <van-field
                     v-for="item in formList"
@@ -22,8 +22,9 @@
                     native-type="submit"
                     color="#59ce61"
                 >
-                    注册
+                    登录
                 </van-button>
+                <slot />
             </div>
         </van-form>
     </div>
@@ -31,7 +32,6 @@
 
 <script setup lang="ts">
 import type { FieldRule, FormInstance } from 'vant'
-import { registerUser } from '@/apis/registerUser'
 
 type UserInfoKey = 'userID' | 'password' | 'nickName'
 
@@ -59,12 +59,6 @@ const formList: FormItem[] = [
         placeholder: '请输入用户ID',
     },
     {
-        key: 'nickName',
-        label: '昵称',
-        name: '昵称',
-        placeholder: '请输入用户昵称',
-    },
-    {
         key: 'password',
         label: '密码',
         name: '密码',
@@ -89,15 +83,10 @@ const rules: Partial<Record<UserInfoKey, FieldRule>> = {
     },
 }
 
-const register = async () => {
+const login = async () => {
     try {
         await formRef.value?.validate()
-        // 注册
-        registerUser({
-            nickname: userInfo.nickName,
-            username: userInfo.userID,
-            password: userInfo.password,
-        })
+        // 登录
     } catch (error) {}
 }
 </script>
