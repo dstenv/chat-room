@@ -17,7 +17,7 @@
 - pref: 优化（性能优化，样式优化使用style）
 - del: 删除某一文件
 - finish: 完成某一模块或功能
-- reflator: 重构
+- refactor: 重构
 - fix: 修复Bug
 - feat: 新增模块或功能
 - struct: 修改项目结构
