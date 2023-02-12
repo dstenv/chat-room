@@ -2,10 +2,10 @@ import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { request, type RequestBaseType } from '@/apis/base'
 
-export interface UserInfo {
-    username: string
-    password: string
-    nickname: string
+export class UserInfo {
+    username!: string
+    password!: string
+    nickname!: string
 }
 
 export interface RegisterBody extends RequestBaseType {

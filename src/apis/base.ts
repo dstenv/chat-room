@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { baseConfig } from '@/utils/config'
 
-type Method = 'GET' | 'POST'
+type Method = 'GET' | 'POST' | 'DELETE'
 type Content = 'application/json'
 
 export interface RequestBaseType {
@@ -43,7 +43,8 @@ export const request = async <T extends RequestBaseType, U>(
     options.url = `/${options.httpType || 'api'}/${baseConfig.orgName}/${
         baseConfig.appName
     }/${options.url}`
-    console.log(options)
+    // console.log(options)
+
     const result: U = await axios({ ...options })
     return result
 }

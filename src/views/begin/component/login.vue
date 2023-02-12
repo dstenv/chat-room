@@ -32,8 +32,13 @@
 
 <script setup lang="ts">
 import type { FieldRule, FormInstance } from 'vant'
+import { loginUser } from '@/apis/loginUser'
+import { useUserStore } from '@/stores/user'
+import { EaseChatClient } from '@/utils/config'
 
-type UserInfoKey = 'userID' | 'password' | 'nickName'
+const router = useRouter()
+
+type UserInfoKey = 'userID' | 'password'
 
 interface FormItem {
     name: string
@@ -48,7 +53,6 @@ const formRef = ref<FormInstance>({} as FormInstance)
 const userInfo = reactive({
     userID: '',
     password: '',
-    nickName: '',
 })
 
 const formList: FormItem[] = [
@@ -86,7 +90,23 @@ const rules: Partial<Record<UserInfoKey, FieldRule>> = {
 const login = async () => {
     try {
         await formRef.value?.validate()
-        // 登录
+        // 登录 获取token
+        const result = await loginUser({
+            username: userInfo.userID,
+            password: userInfo.password,
+        })
+        const userStore = useUserStore()
+        userStore.setToken(result?.access_token as string)
+        userStore.setUserID(result?.user.username as string)
+        localStorage.setItem('userToken', result?.access_token as string)
+        localStorage.setItem('userId', result?.user.username as string)
+        await EaseChatClient.open({
+            user: userInfo.userID,
+            accessToken: result?.access_token,
+        })
+        router.replace({
+            path: '/main/pages/chat',
+        })
     } catch (error) {}
 }
 </script>
