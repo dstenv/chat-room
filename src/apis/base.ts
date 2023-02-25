@@ -5,7 +5,7 @@ type Method = 'GET' | 'POST' | 'DELETE'
 type Content = 'application/json'
 
 export interface RequestBaseType {
-    method?: Method
+    method: Method
     headers?: {
         'Content-Type'?: Content
         'Accept'?: Content
@@ -29,6 +29,12 @@ const requestBaseConfig: RequestBaseType = {
     timeout: 5000,
 }
 
+const bodyObj: Record<Method, 'data' | 'param'> = {
+    GET: 'param',
+    POST: 'data',
+    DELETE: 'data',
+}
+
 export const request = async <T extends RequestBaseType, U>(
     options: T
 ): Promise<U> => {
@@ -47,4 +53,25 @@ export const request = async <T extends RequestBaseType, U>(
 
     const result: U = await axios({ ...options })
     return result
+}
+
+export const request2 = <T extends RequestBaseType, U>(options: T) => {
+    return async function (body: T): Promise<U> {
+        options.method = options.method || requestBaseConfig.method
+        if (options.headers) {
+            options.headers = {
+                ...requestBaseConfig.headers,
+                ...options.headers,
+            }
+        }
+        options.timeout = options.timeout || requestBaseConfig.timeout
+        options.url = `/${options.httpType || 'api'}/${baseConfig.orgName}/${
+            baseConfig.appName
+        }/${options.url}`
+        // console.log(options
+        options[bodyObj[options.method]] = body
+
+        const result: U = await axios({ ...options })
+        return result
+    }
 }

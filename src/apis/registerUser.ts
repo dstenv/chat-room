@@ -1,6 +1,6 @@
 import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { request, type RequestBaseType } from '@/apis/base'
+import { request, request2, type RequestBaseType } from '@/apis/base'
 
 export class UserInfo {
     username!: string
