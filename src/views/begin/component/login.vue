@@ -32,13 +32,13 @@
 
 <script setup lang="ts">
 import type { FieldRule, FormInstance } from 'vant'
-import { loginUser } from '@/apis/loginUser'
+import { loginUser, LoginBody } from '@/apis/loginUser'
 import { useUserStore } from '@/stores/user'
 import { EaseChatClient } from '@/utils/config'
 
 const router = useRouter()
 
-type UserInfoKey = 'userID' | 'password'
+type UserInfoKey = 'username' | 'password'
 
 interface FormItem {
     name: string
@@ -51,13 +51,13 @@ interface FormItem {
 const formRef = ref<FormInstance>({} as FormInstance)
 
 const userInfo = reactive({
-    userID: '',
+    username: '',
     password: '',
 })
 
 const formList: FormItem[] = [
     {
-        key: 'userID',
+        key: 'username',
         label: '用户ID',
         name: '用户ID',
         placeholder: '请输入用户ID',
@@ -71,7 +71,7 @@ const formList: FormItem[] = [
 ]
 
 const rules: Partial<Record<UserInfoKey, FieldRule>> = {
-    userID: {
+    username: {
         trigger: 'onBlur',
         message: '请输入用户ID',
         validator(value) {
@@ -91,17 +91,23 @@ const login = async () => {
     try {
         await formRef.value?.validate()
         // 登录 获取token
-        const result = await loginUser({
-            username: userInfo.userID,
-            password: userInfo.password,
-        })
+        const login = new LoginBody()
+        for (const key in login) {
+            if (userInfo[key as UserInfoKey]) {
+                login[key as UserInfoKey] = userInfo[key as UserInfoKey]
+            }
+        }
+        const result = await loginUser(login)
+
         const userStore = useUserStore()
         userStore.setToken(result?.access_token as string)
         userStore.setUserID(result?.user.username as string)
         localStorage.setItem('userToken', result?.access_token as string)
         localStorage.setItem('userId', result?.user.username as string)
+
+        // 连接环信IM
         await EaseChatClient.open({
-            user: userInfo.userID,
+            user: userInfo.username,
             accessToken: result?.access_token,
         })
         router.replace({

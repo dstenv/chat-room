@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EaseChatClient, EaseChatSDK } from '@/utils/config'
+import { EaseChatClient, EaseChatSDK, baseConfig } from '@/utils/config'
 import { useAdminStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 
@@ -13,7 +13,13 @@ const initAdmin = async () => {
     const adminStore = useAdminStore()
     const adminToken = localStorage.getItem('adminToken')
     if (!adminToken) {
-        const result = await getAdminToken()
+        const result = await getAdminToken({
+            grant_type: 'client_credentials',
+            client_id: baseConfig.clientID,
+            client_secret: baseConfig.clientSecret,
+            ttl: 0,
+        })
+        console.log(result, 'result')
         adminStore.setToken(result.access_token)
         adminStore.setApplication(result.application)
         adminStore.setTime(result.expires_in)

@@ -94,7 +94,7 @@ const register = async () => {
     try {
         await formRef.value?.validate()
         // 注册
-        registerUser({
+        await registerUser({
             nickname: userInfo.nickName,
             username: userInfo.userID,
             password: userInfo.password,
