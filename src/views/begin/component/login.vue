@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 100vw; height: 100vh">
+    <div class="login">
         <van-form @submit="login" ref="formRef">
             <van-cell-group inset>
                 <van-field
@@ -117,4 +117,12 @@ const login = async () => {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.login {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>

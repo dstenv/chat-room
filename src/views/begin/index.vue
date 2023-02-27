@@ -4,10 +4,15 @@
             <div v-for="(item, index) in componentList" :key="index">
                 <component :is="item.component">
                     <div
-                        style="margin-top: 15rem; text-align: center"
+                        style="
+                            margin-top: 15rem;
+                            text-align: center;
+                            font-size: 14rem;
+                        "
                         @click="moveX = item.key === 'login' ? -100 : 0"
                     >
-                        {{ item.msg }}<span>{{ item.btnText }}</span>
+                        {{ item.msg }}
+                        <span class="tip-color">{{ item.btnText }}</span>
                     </div>
                 </component>
             </div>
@@ -53,7 +58,7 @@ const componentList: ComponentItem[] = [
     .box {
         display: flex;
         width: 200vw;
-        transition: all 0.5s cubic-bezier(0.92, 0.12, 0.3, 1.07);
+        transition: all 0.5s cubic-bezier(0.57, -0.07, 0, 1.39);
         .login,
         .register {
             width: 100vw;

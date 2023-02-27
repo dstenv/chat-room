@@ -78,6 +78,7 @@ const tabbar = ref<TabbarItem[]>([
 }
 .van-tabbar {
     background-color: #fff;
+    padding-bottom: 10rem;
     img {
         display: block;
         margin: 0 auto;
