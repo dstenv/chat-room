@@ -1,40 +1,41 @@
 <template>
-    <div class="login">
-        <van-form @submit="login" ref="formRef">
-            <van-cell-group inset>
-                <van-field
-                    v-for="item in formList"
-                    :key="item.key"
+    <div
+        class="login"
+        :style="{
+            backgroundImage: `url(${bg})`,
+        }"
+    >
+        <div class="form">
+            <div v-for="item in formList" :key="item.key" class="form-item">
+                <span>{{ item.label }}</span>
+                <input
                     v-model="userInfo[item.key]"
-                    :name="item.name"
-                    :label="item.label"
                     :placeholder="item.placeholder"
-                    autocomplete="“off”"
-                    :rules="[rules[item.key] ?? {}]"
-                    :maxlength="item.maxlength ?? 20"
+                    :maxlength="item.maxlength || 20"
+                    :type="item.type || 'text'"
                 />
-            </van-cell-group>
-            <div style="padding: 24rem">
-                <van-button
-                    round
-                    block
-                    type="primary"
-                    native-type="submit"
-                    color="#59ce61"
-                >
-                    登录
-                </van-button>
+            </div>
+            <div style="padding: 24rem 24rem 10rem; width: 100%">
+                <div class="btn" @click="login">登录</div>
                 <slot />
             </div>
-        </van-form>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import type { FieldRule, FormInstance } from 'vant'
 import { loginUser, LoginBody } from '@/apis/loginUser'
 import { useUserStore } from '@/stores/user'
 import { EaseChatClient } from '@/utils/config'
+import Tool from '@/utils/tools'
+import { isUserId } from '@/utils/validate'
+import { showToast } from 'vant'
+import { errorData } from '@/apis/base'
+
+export interface RuleItem {
+    message: string
+    validator: (value: string | number) => boolean
+}
 
 const router = useRouter()
 
@@ -45,10 +46,11 @@ interface FormItem {
     label: string
     placeholder: string
     key: UserInfoKey
+    type: 'password' | 'number'
     maxlength?: number
 }
 
-const formRef = ref<FormInstance>({} as FormInstance)
+const bg = Tool.getUrl('login-bg.png', 'imgs')
 
 const userInfo = reactive({
     username: '',
@@ -60,36 +62,51 @@ const formList: FormItem[] = [
         key: 'username',
         label: '用户ID',
         name: '用户ID',
-        placeholder: '请输入用户ID',
+        placeholder: '请输入6-10位用户ID',
+        maxlength: 11,
+        type: 'number',
     },
     {
         key: 'password',
         label: '密码',
         name: '密码',
         placeholder: '请输入用户密码',
+        type: 'password',
     },
 ]
 
-const rules: Partial<Record<UserInfoKey, FieldRule>> = {
+const rules: Partial<Record<UserInfoKey, RuleItem>> = {
     username: {
-        trigger: 'onBlur',
-        message: '请输入用户ID',
+        message: '请输入有效的用户ID',
         validator(value) {
-            return !!value.trim()
+            return isUserId.test(value as string)
         },
     },
     password: {
-        trigger: 'onBlur',
-        message: '请输入用户密码',
+        message: '请输入有效的密码',
         validator(value) {
-            return !!value.trim()
+            return !!(value as string).trim()
         },
     },
 }
 
+const validate = () => {
+    for (const key in userInfo) {
+        if (
+            !rules[key as UserInfoKey]?.validator(userInfo[key as UserInfoKey])
+        ) {
+            showToast(rules[key as UserInfoKey]?.message)
+            return false
+        }
+    }
+    return true
+}
+
 const login = async () => {
     try {
-        await formRef.value?.validate()
+        if (!validate()) {
+            return
+        }
         // 登录 获取token
         const login = new LoginBody()
         for (const key in login) {
@@ -97,32 +114,87 @@ const login = async () => {
                 login[key as UserInfoKey] = userInfo[key as UserInfoKey]
             }
         }
-        const result = await loginUser(login)
+        try {
+            const result = await loginUser(login)
 
-        const userStore = useUserStore()
-        userStore.setToken(result?.access_token as string)
-        userStore.setUserID(result?.user.username as string)
-        localStorage.setItem('userToken', result?.access_token as string)
-        localStorage.setItem('userId', result?.user.username as string)
+            const userStore = useUserStore()
+            userStore.setToken(result?.access_token as string)
+            userStore.setUserID(result?.user.username as string)
+            localStorage.setItem('userToken', result?.access_token as string)
+            localStorage.setItem('userId', result?.user.username as string)
 
-        // 连接环信IM
-        await EaseChatClient.open({
-            user: userInfo.username,
-            accessToken: result?.access_token,
-        })
-        router.replace({
-            path: '/main/pages/chat',
-        })
+            // 连接环信IM
+            await EaseChatClient.open({
+                user: userInfo.username,
+                accessToken: result?.access_token,
+            })
+            router.replace({
+                path: '/main/pages/chat',
+            })
+        } catch (error) {
+            console.log(error, 'error')
+            const key =
+                (error as any).response.data.error_description ||
+                'network error'
+            showToast(errorData[key as keyof typeof errorData])
+        }
     } catch (error) {}
 }
 </script>
 
 <style scoped lang="scss">
+@keyframes inpActive {
+    0% {
+        border-bottom: 2rem solid #a5a5a5;
+    }
+    100% {
+        border-bottom: 2rem solid #59ce61;
+    }
+}
+
 .login {
     width: 100vw;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    .van-form {
+        padding: 40rem 10rem 10rem 10rem;
+        border-radius: 10rem;
+    }
+    .form {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 20rem;
+        padding: 30rem 20rem;
+        .form-item {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5rem 10rem;
+            input {
+                box-sizing: border-box;
+                padding: 10rem 0;
+                padding-left: 5rem;
+                width: 80%;
+                border: none;
+                outline: none;
+                background-color: transparent;
+                border-bottom: 2rem solid #a5a5a5;
+                position: relative;
+                &:focus {
+                    animation: inpActive 0.5s linear 1;
+                    border-bottom: 2rem solid #59ce61;
+                }
+            }
+        }
+    }
 }
 </style>

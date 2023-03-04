@@ -4,7 +4,7 @@
             <RouterView />
         </div>
 
-        <van-tabbar v-model="activeIndex" active-color="#59e062" fixed>
+        <van-tabbar v-model="activeIndex" active-color="#59e062">
             <van-tabbar-item
                 v-for="(item, index) in tabbar"
                 :key="index"
@@ -75,14 +75,20 @@ const tabbar = ref<TabbarItem[]>([
 .main {
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+    // 禁用拖动
+    touch-action: none;
 }
 .van-tabbar {
     background-color: #fff;
-    padding-bottom: 10rem;
+    padding-top: 10rem;
     img {
         display: block;
         margin: 0 auto;
         height: 22rem;
     }
+}
+.van-tabbar--fixed {
+    // bottom: 18rem;
 }
 </style>

@@ -25,6 +25,12 @@ const router = createRouter({
                     name: 'CHAT',
                     component: () =>
                         import('@/views/main/pages/chat/index.vue'),
+                    beforeEnter() {
+                        const token = localStorage.getItem('userToken')
+                        if (!token) {
+                            return { name: 'BEGIN' }
+                        }
+                    },
                 },
                 {
                     path: 'mail-list',

@@ -27,4 +27,5 @@ const EaseChatClient = new EaseChatSDK.connection({
     appKey,
 })
 console.log('EaseIMClient', EaseChatClient)
+
 export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl }

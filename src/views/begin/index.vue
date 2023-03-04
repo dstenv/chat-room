@@ -32,6 +32,12 @@ interface ComponentItem {
     key: 'register' | 'login'
 }
 
+const route = useRoute()
+
+let { key } = route.query as {
+    key: string
+}
+
 const moveX = ref(0)
 
 const componentList: ComponentItem[] = [
@@ -48,6 +54,16 @@ const componentList: ComponentItem[] = [
         key: 'register',
     },
 ]
+
+const init = () => {
+    key = key || 'login'
+    if (key === 'login') {
+        moveX.value = 0
+        return
+    }
+    moveX.value = -100
+}
+init()
 </script>
 
 <style scoped lang="scss">
@@ -59,10 +75,6 @@ const componentList: ComponentItem[] = [
         display: flex;
         width: 200vw;
         transition: all 0.5s cubic-bezier(0.57, -0.07, 0, 1.39);
-        .login,
-        .register {
-            width: 100vw;
-        }
     }
 }
 </style>

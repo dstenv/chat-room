@@ -19,7 +19,7 @@ const initAdmin = async () => {
             client_secret: baseConfig.clientSecret,
             ttl: 0,
         })
-        console.log(result, 'result')
+
         adminStore.setToken(result.access_token)
         adminStore.setApplication(result.application)
         adminStore.setTime(result.expires_in)
@@ -71,7 +71,7 @@ EaseChatClient.addEventHandler('messageListen', {
     // onEmojiMessage: () => {},
 
     // 收到图片消息。
-    onImageMessage: () => {
+    onImageMessage: (message) => {
         console.log('收到图片消息。')
     },
     // 收到命令消息。
@@ -114,9 +114,6 @@ EaseChatClient.addEventHandler('messageListen', {
 </template>
 
 <style lang="scss" scoped>
-header {
-    background: aqua;
-}
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;

@@ -84,25 +84,33 @@ export const request = <T, U>(
     options: RequestBaseType
 ): ((body: T) => Promise<U>) =>
     async function (body: T): Promise<U> {
-        options.method = options.method || requestBaseConfig.method
-        if (options.headers) {
-            options.headers = {
+        const requestOptions = { ...options }
+        requestOptions.method =
+            requestOptions.method || requestBaseConfig.method
+        if (requestOptions.headers) {
+            requestOptions.headers = {
                 ...requestBaseConfig.headers,
-                ...options.headers,
+                ...requestOptions.headers,
             }
             for (const key of customHeaderKey) {
-                if (options.headers[key]) {
-                    ;(customHeaderKeyFn[key] as keyFn)(options.headers)
+                if (requestOptions.headers[key]) {
+                    ;(customHeaderKeyFn[key] as keyFn)(requestOptions.headers)
                 }
             }
         }
-        options.timeout = options.timeout || requestBaseConfig.timeout
-        options.url = `/${options.httpType || 'api'}/${baseConfig.orgName}/${
-            baseConfig.appName
-        }/${options.url}`
-        // console.log(options)
-        options[bodyObj[options.method as Method]] = body
+        requestOptions.timeout =
+            requestOptions.timeout || requestBaseConfig.timeout
+        requestOptions.url = `/${requestOptions.httpType || 'api'}/${
+            baseConfig.orgName
+        }/${baseConfig.appName}/${requestOptions.url}`
+        requestOptions[bodyObj[requestOptions.method as Method]] = body
 
-        const result: ResponseBaseType<U> = await axios({ ...options })
+        const result: ResponseBaseType<U> = await axios({ ...requestOptions })
         return result.data as U
     }
+
+export const errorData = {
+    'user not found': '没有找到该用户',
+    'network error': '网络错误',
+    'invalid password': '密码错误',
+}
