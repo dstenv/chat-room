@@ -1,7 +1,20 @@
 <template>
     <div class="main">
         <div>
-            <RouterView />
+            <RouterView v-slot="{ Component }">
+                <KeepAlive>
+                    <component
+                        :is="Component"
+                        :key="route.name"
+                        v-if="route.meta.keep"
+                    />
+                </KeepAlive>
+                <component
+                    :is="Component"
+                    :key="route.name"
+                    v-if="!route.meta.keep"
+                />
+            </RouterView>
         </div>
 
         <van-tabbar v-model="activeIndex" active-color="#59e062">
@@ -40,6 +53,8 @@ interface TabbarItem {
     // 未激活icon
     inActiveIcon: string
 }
+
+const route = useRoute()
 
 const activeIndex = ref(0)
 

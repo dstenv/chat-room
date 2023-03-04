@@ -46,7 +46,13 @@ EaseChatClient.addEventHandler('connection', {
     onConnected: () => {
         console.log('>>>>>环信连接成功')
     },
-    onDisconnected: () => {},
+    onDisconnected: () => {
+        console.log('------>webscoket断开连接')
+        // showToast('网络错误，请重新登录')
+        // localStorage.removeItem('userToken')
+        // localStorage.removeItem('userId')
+        // router.push('/begin')
+    },
     // 本机网络连接成功。
     onOnline: () => {
         console.log('本机网络连接成功。')

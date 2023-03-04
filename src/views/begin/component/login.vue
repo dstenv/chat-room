@@ -79,6 +79,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
     username: {
         message: '请输入有效的用户ID',
         validator(value) {
+            isUserId.lastIndex = 0
             return isUserId.test(value as string)
         },
     },
@@ -93,6 +94,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
 const validate = () => {
     for (const key in userInfo) {
         if (
+            rules[key as UserInfoKey] &&
             !rules[key as UserInfoKey]?.validator(userInfo[key as UserInfoKey])
         ) {
             showToast(rules[key as UserInfoKey]?.message)
@@ -118,15 +120,15 @@ const login = async () => {
             const result = await loginUser(login)
 
             const userStore = useUserStore()
-            userStore.setToken(result?.access_token as string)
-            userStore.setUserID(result?.user.username as string)
-            localStorage.setItem('userToken', result?.access_token as string)
-            localStorage.setItem('userId', result?.user.username as string)
+            userStore.setToken(result.access_token as string)
+            userStore.setUserID(result.user.username as string)
+            localStorage.setItem('userToken', result.access_token as string)
+            localStorage.setItem('userId', result.user.username as string)
 
             // 连接环信IM
             await EaseChatClient.open({
                 user: userInfo.username,
-                accessToken: result?.access_token,
+                accessToken: result.access_token,
             })
             router.replace({
                 path: '/main/pages/chat',

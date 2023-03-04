@@ -29,7 +29,6 @@ import Tool from '@/utils/tools'
 import type { RuleItem } from './login.vue'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
-import router from '@/router'
 
 type UserInfoKey = 'userID' | 'password' | 'nickName'
 
@@ -41,6 +40,8 @@ interface FormItem {
     maxlength?: number
     type: 'password' | 'number' | 'text'
 }
+
+const emits = defineEmits(['goLogin'])
 
 const bg = Tool.getUrl('register-bg.png', 'imgs')
 
@@ -79,6 +80,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
     userID: {
         message: '请输入有效的用户ID',
         validator(value) {
+            isUserId.lastIndex = 0
             return isUserId.test(value as string)
         },
     },
@@ -93,6 +95,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
 const validate = () => {
     for (const key in userInfo) {
         if (
+            rules[key as UserInfoKey] &&
             !rules[key as UserInfoKey]?.validator(userInfo[key as UserInfoKey])
         ) {
             showToast(rules[key as UserInfoKey]?.message)
@@ -107,18 +110,24 @@ const register = async () => {
         if (!validate()) {
             return
         }
+        // console.log('注册')
         // 注册
         await registerUser({
             nickname: userInfo.nickName,
             username: userInfo.userID,
             password: userInfo.password,
         })
-        router.replace({
-            query: {
-                key: 'register',
-            },
-        })
-    } catch (error) {}
+        showToast('注册成功')
+
+        emits('goLogin')
+        // await EaseChatClient.registerUser({
+        //     nickname: userInfo.nickName,
+        //     username: userInfo.userID,
+        //     password: userInfo.password,
+        // })
+    } catch (error) {
+        showToast('注册失败')
+    }
 }
 </script>
 

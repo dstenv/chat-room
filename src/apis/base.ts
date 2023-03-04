@@ -76,9 +76,9 @@ const customHeaderKeyFn: HeaderKeyFn = {
 
 /**
  * @description 初步完成 未测试
- * @param {*} T
- * @param {*} U
- * @return {*} Promise U
+ * @param {*} T 入参类型
+ * @param {*} U 回参类型
+ * @return {*} Promise U 回参
  */
 export const request = <T, U>(
     options: RequestBaseType
@@ -87,6 +87,7 @@ export const request = <T, U>(
         const requestOptions = { ...options }
         requestOptions.method =
             requestOptions.method || requestBaseConfig.method
+        // 自定义请求头
         if (requestOptions.headers) {
             requestOptions.headers = {
                 ...requestBaseConfig.headers,

@@ -31,6 +31,9 @@ const router = createRouter({
                             return { name: 'BEGIN' }
                         }
                     },
+                    meta: {
+                        keep: true,
+                    },
                 },
                 {
                     path: 'mail-list',

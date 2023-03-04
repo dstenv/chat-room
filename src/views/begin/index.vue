@@ -2,7 +2,14 @@
     <div class="begin">
         <div class="box" :style="{ transform: `translateX(${moveX}vw)` }">
             <div v-for="(item, index) in componentList" :key="index">
-                <component :is="item.component">
+                <component
+                    :is="item.component"
+                    @goLogin="
+                        () => {
+                            moveX = 0
+                        }
+                    "
+                >
                     <div
                         style="
                             margin-top: 15rem;
