@@ -37,8 +37,6 @@ export interface RuleItem {
     validator: (value: string | number) => boolean
 }
 
-const router = useRouter()
-
 type UserInfoKey = 'username' | 'password'
 
 interface FormItem {
@@ -49,6 +47,9 @@ interface FormItem {
     type: 'password' | 'number'
     maxlength?: number
 }
+
+const router = useRouter()
+const userStore = useUserStore()
 
 const bg = Tool.getUrl('login-bg.png', 'imgs')
 
@@ -119,9 +120,9 @@ const login = async () => {
         try {
             const result = await loginUser(login)
 
-            const userStore = useUserStore()
             userStore.setToken(result.access_token as string)
             userStore.setUserID(result.user.username as string)
+            // console.log(userStore, 'desc')
             localStorage.setItem('userToken', result.access_token as string)
             localStorage.setItem('userId', result.user.username as string)
 

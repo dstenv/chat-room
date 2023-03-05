@@ -1,7 +1,7 @@
 import EaseChatSDK from 'easemob-websdk'
 
 /**
- * @description 环信基础配置
+ * @description 环信基础配置 demo应用
  */
 const baseConfig = {
     RestApi: 'a1.easemob.com',
@@ -14,9 +14,24 @@ const baseConfig = {
     appKey: '1125221214163135#demo',
 }
 
+/**
+ * chat-room应用
+ */
+const chatRoomBaseConfig = {
+    RestApi: 'a1.easemob.com',
+    orgName: '1125221214163135',
+    socket3: 'im-api-v2.easemob.com',
+    clientID: 'YXA6jTNKOWuMQe6twEQOd5lSTA',
+    clientSecret: 'YXA6qT8Hl2XNh1W4v-iLILPKnrl-R4E',
+
+    appName: 'chat-room',
+    appKey: '1125221214163135#chat-room',
+}
+
 const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}/`
 
-const { appKey } = baseConfig
+// const { appKey } = baseConfig
+const { appKey } = chatRoomBaseConfig
 
 /*
  * isHttpDNS： isPrivate为true开启私有化配置则走自有配置的url以及apiUrl，
@@ -28,4 +43,4 @@ const EaseChatClient = new EaseChatSDK.connection({
 })
 console.log('EaseIMClient', EaseChatClient)
 
-export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl }
+export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl, chatRoomBaseConfig }

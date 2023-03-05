@@ -32,7 +32,7 @@
                                     : Tool.getUrl(item.inActiveIcon)
                             "
                         />
-                        <span style="font-size: 14rem">{{ item.name }}</span>
+                        <span style="font-size: 14rem">{{ item.text }}</span>
                     </div>
                 </template>
             </van-tabbar-item>
@@ -43,11 +43,17 @@
 <script setup lang="ts">
 import Tool from '@/utils/tools'
 
-type RouterPath = 'chat' | 'mail-list' | 'wechat-moments' | 'my'
+const RouteItem = {
+    'chat': 'CHAT',
+    'mail-list': 'MAIL-LIST',
+    'wechat-moments': 'WECHAT-MOMENTS',
+    'my': 'MY',
+}
 
-interface TabbarItem {
-    name: string
-    path: RouterPath
+interface TabbarItem<T> {
+    name: T[keyof T]
+    text: string
+    path: keyof T
     // 激活icon
     activeIcon: string
     // 未激活icon
@@ -58,32 +64,46 @@ const route = useRoute()
 
 const activeIndex = ref(0)
 
-const tabbar = ref<TabbarItem[]>([
+const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
     {
-        name: '消息',
+        text: '消息',
+        name: 'CHAT',
         path: 'chat',
         activeIcon: 'msg_active.png',
         inActiveIcon: 'msg_inactive.png',
     },
     {
-        name: '通讯录',
+        text: '通讯录',
+        name: 'MAIL-LIST',
         path: 'mail-list',
         activeIcon: 'mail_list_active.png',
         inActiveIcon: 'mail_list_inactive.png',
     },
     {
-        name: '发现',
+        text: '发现',
+        name: 'WECHAT-MOMENTS',
         path: 'wechat-moments',
         activeIcon: 'discover_active.png',
         inActiveIcon: 'discover_inactive.png',
     },
     {
-        name: '我的',
+        text: '我的',
+        name: 'MY',
         path: 'my',
         activeIcon: 'my_active.png',
         inActiveIcon: 'my_inactive.png',
     },
 ])
+
+const init = () => {
+    for (let i = 0; i < tabbar.value.length; i++) {
+        if (tabbar.value[i].name === route?.name) {
+            activeIndex.value = i
+            return
+        }
+    }
+}
+init()
 </script>
 
 <style scoped lang="scss">

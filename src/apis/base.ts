@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { baseConfig } from '@/utils/config'
+import { baseConfig, chatRoomBaseConfig } from '@/utils/config'
 import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 
@@ -82,8 +82,8 @@ const customHeaderKeyFn: HeaderKeyFn = {
  */
 export const request = <T, U>(
     options: RequestBaseType
-): ((body: T) => Promise<U>) =>
-    async function (body: T): Promise<U> {
+): ((body?: T) => Promise<U>) =>
+    async function (body?: T): Promise<U> {
         const requestOptions = { ...options }
         requestOptions.method =
             requestOptions.method || requestBaseConfig.method
@@ -102,8 +102,8 @@ export const request = <T, U>(
         requestOptions.timeout =
             requestOptions.timeout || requestBaseConfig.timeout
         requestOptions.url = `/${requestOptions.httpType || 'api'}/${
-            baseConfig.orgName
-        }/${baseConfig.appName}/${requestOptions.url}`
+            chatRoomBaseConfig.orgName
+        }/${chatRoomBaseConfig.appName}/${requestOptions.url}`
         requestOptions[bodyObj[requestOptions.method as Method]] = body
 
         const result: ResponseBaseType<U> = await axios({ ...requestOptions })

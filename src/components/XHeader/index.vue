@@ -7,7 +7,7 @@
             {{ props.title }}
         </div>
         <div class="right">
-            <img v-if="props.rightIcon" :src="props.rightIcon" alt="" />
+            <slot name="right" />
         </div>
     </div>
 </template>
@@ -15,7 +15,6 @@
 <script setup lang="ts">
 const props = defineProps<{
     title: string
-    rightIcon?: string
     centerIcon?: string
     leftIcon?: string
 }>()
@@ -27,6 +26,7 @@ const props = defineProps<{
     align-items: center;
     padding: 10rem 20rem;
     justify-content: space-between;
+    position: relative;
     .left,
     .right {
         width: 22rem;

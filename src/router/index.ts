@@ -19,18 +19,18 @@ const router = createRouter({
             name: 'MAIN',
             component: Main,
             redirect: '/main/pages/chat',
+            beforeEnter() {
+                const token = localStorage.getItem('userToken')
+                if (!token) {
+                    return { name: 'BEGIN' }
+                }
+            },
             children: [
                 {
                     path: 'chat',
                     name: 'CHAT',
                     component: () =>
                         import('@/views/main/pages/chat/index.vue'),
-                    beforeEnter() {
-                        const token = localStorage.getItem('userToken')
-                        if (!token) {
-                            return { name: 'BEGIN' }
-                        }
-                    },
                     meta: {
                         keep: true,
                     },

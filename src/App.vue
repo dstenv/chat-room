@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { EaseChatClient, EaseChatSDK, baseConfig } from '@/utils/config'
-import { useAdminStore } from '@/stores/user'
+import {
+    EaseChatClient,
+    EaseChatSDK,
+    baseConfig,
+    chatRoomBaseConfig,
+} from '@/utils/config'
+import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 
 interface AdminStorage {
@@ -9,14 +14,16 @@ interface AdminStorage {
     token: string
 }
 
+const router = useRouter()
+
 const initAdmin = async () => {
     const adminStore = useAdminStore()
     const adminToken = localStorage.getItem('adminToken')
     if (!adminToken) {
         const result = await getAdminToken({
             grant_type: 'client_credentials',
-            client_id: baseConfig.clientID,
-            client_secret: baseConfig.clientSecret,
+            client_id: chatRoomBaseConfig.clientID,
+            client_secret: chatRoomBaseConfig.clientSecret,
             ttl: 0,
         })
 
@@ -38,7 +45,20 @@ const initAdmin = async () => {
     adminStore.setApplication(adminInfo.application)
     adminStore.setTime(adminInfo.time)
 }
+
+const initUser = () => {
+    const userStore = useUserStore()
+    const userToken = localStorage.getItem('userToken')
+    if (!userToken) {
+        router.replace('/begin')
+        return
+    }
+    const userId = localStorage.getItem('userId')
+    userStore.setToken(userToken)
+    userStore.setUserID(userId || '')
+}
 initAdmin()
+initUser()
 
 EaseChatSDK.logger.disableAll()
 // connect监听
