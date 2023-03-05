@@ -140,18 +140,27 @@ EaseChatClient.addEventHandler('messageListen', {
 </template>
 
 <style lang="scss" scoped>
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
+.fade-enter-from {
+    transform: translate(100vw);
 }
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s linear;
+.fade-enter-active {
+    transition: all 0.3s linear;
 }
 
-.fade-enter-to,
+.fade-enter-to {
+    transform: translate(0);
+}
+
 .fade-leave-from {
     opacity: 1;
+}
+
+.fade-leave-active {
+    transition: all 0.2s linear;
+}
+
+.fade-leave-to {
+    opacity: 0.1;
 }
 </style>

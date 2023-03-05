@@ -1,14 +1,17 @@
 <template>
-    <div class="xheader c-bg">
-        <div class="left">
-            <img v-if="props.leftIcon" :src="props.leftIcon" alt="" />
+    <div class="xheader">
+        <div class="header-box c-bg">
+            <div class="left">
+                <img v-if="props.leftIcon" :src="props.leftIcon" alt="" />
+            </div>
+            <div class="mid">
+                {{ props.title }}
+            </div>
+            <div class="right">
+                <slot name="right" />
+            </div>
         </div>
-        <div class="mid">
-            {{ props.title }}
-        </div>
-        <div class="right">
-            <slot name="right" />
-        </div>
+        <slot name="custom" />
     </div>
 </template>
 
@@ -22,6 +25,8 @@ const props = defineProps<{
 
 <style scoped lang="scss">
 .xheader {
+}
+.header-box {
     display: flex;
     align-items: center;
     padding: 10rem 20rem;
@@ -32,6 +37,9 @@ const props = defineProps<{
         width: 22rem;
         height: 22rem;
         img {
+            width: 100%;
+        }
+        :slotted(img) {
             width: 100%;
         }
     }

@@ -40,6 +40,9 @@ const router = createRouter({
                     name: 'MAIL-LIST',
                     component: () =>
                         import('@/views/main/pages/mail-list/index.vue'),
+                    meta: {
+                        keep: true,
+                    },
                 },
                 {
                     path: 'wechat-moments',

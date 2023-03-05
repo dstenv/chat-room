@@ -44,7 +44,7 @@ interface FormItem {
     label: string
     placeholder: string
     key: UserInfoKey
-    type: 'password' | 'number'
+    type: 'password' | 'number' | 'text'
     maxlength?: number
 }
 
@@ -65,7 +65,7 @@ const formList: FormItem[] = [
         name: '用户ID',
         placeholder: '请输入6-10位用户ID',
         maxlength: 11,
-        type: 'number',
+        type: 'text',
     },
     {
         key: 'password',
@@ -81,7 +81,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
         message: '请输入有效的用户ID',
         validator(value) {
             isUserId.lastIndex = 0
-            return isUserId.test(value as string)
+            return !isUserId.test(value as string)
         },
     },
     password: {
@@ -125,10 +125,9 @@ const login = async () => {
             // console.log(userStore, 'desc')
             localStorage.setItem('userToken', result.access_token as string)
             localStorage.setItem('userId', result.user.username as string)
-
-            // 连接环信IM
+            // sdk登录环信IM
             await EaseChatClient.open({
-                user: userInfo.username,
+                user: userInfo.username.toLowerCase(),
                 accessToken: result.access_token,
             })
             router.replace({
