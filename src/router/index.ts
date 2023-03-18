@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Main from '@/views/main/index.vue'
 import Begin from '@/views/begin/index.vue'
 
 const router = createRouter({
@@ -7,7 +6,7 @@ const router = createRouter({
     routes: [
         {
             path: '',
-            redirect: '/main/pages',
+            redirect: '/chat',
         },
         {
             path: '/begin',
@@ -15,47 +14,44 @@ const router = createRouter({
             component: Begin,
         },
         {
-            path: '/main/pages',
-            name: 'MAIN',
-            component: Main,
-            redirect: '/main/pages/chat',
+            path: '/chat',
+            name: 'CHAT',
+            component: () => import('@/views/chat/index.vue'),
+            meta: {
+                keep: true,
+                noAnimate: true,
+            },
             beforeEnter() {
                 const token = localStorage.getItem('userToken')
                 if (!token) {
                     return { name: 'BEGIN' }
                 }
             },
-            children: [
-                {
-                    path: 'chat',
-                    name: 'CHAT',
-                    component: () =>
-                        import('@/views/main/pages/chat/index.vue'),
-                    meta: {
-                        keep: true,
-                    },
-                },
-                {
-                    path: 'mail-list',
-                    name: 'MAIL-LIST',
-                    component: () =>
-                        import('@/views/main/pages/mail-list/index.vue'),
-                    meta: {
-                        keep: true,
-                    },
-                },
-                {
-                    path: 'wechat-moments',
-                    name: 'WECHAT-MOMENTS',
-                    component: () =>
-                        import('@/views/main/pages/wechat-moments/index.vue'),
-                },
-                {
-                    path: 'my',
-                    name: 'MY',
-                    component: () => import('@/views/main/pages/my/index.vue'),
-                },
-            ],
+        },
+        {
+            path: '/mail-list',
+            name: 'MAIL-LIST',
+            component: () => import('@/views/mail-list/index.vue'),
+            meta: {
+                keep: true,
+                noAnimate: true,
+            },
+        },
+        {
+            path: '/wechat-moments',
+            name: 'WECHAT-MOMENTS',
+            component: () => import('@/views/wechat-moments/index.vue'),
+            meta: {
+                noAnimate: true,
+            },
+        },
+        {
+            path: '/my',
+            name: 'MY',
+            component: () => import('@/views/my/index.vue'),
+            meta: {
+                noAnimate: true,
+            },
         },
         {
             path: '/my-chat',

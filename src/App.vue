@@ -7,6 +7,8 @@ import {
 } from '@/utils/config'
 import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
+import Tool from '@/utils/tools'
+import { useChatStore } from '@/stores/chat'
 
 interface AdminStorage {
     application: string
@@ -14,13 +16,66 @@ interface AdminStorage {
     token: string
 }
 
+interface TabbarItem<T> {
+    name: T[keyof T]
+    text: string
+    path: keyof T
+    // 激活icon
+    activeIcon: string
+    // 未激活icon
+    inActiveIcon: string
+}
+
+const RouteItem = {
+    'chat': 'CHAT',
+    'mail-list': 'MAIL-LIST',
+    'wechat-moments': 'WECHAT-MOMENTS',
+    'my': 'MY',
+}
+
+const route = useRoute()
+const chatStore = useChatStore()
 const router = useRouter()
 
+const activeIndex = ref(0)
 const transitionName = ref('fade-in')
 
-const toList: string[] = ['/main/pages/chat']
-
+const toList: string[] = ['/chat']
 const fromList: string[] = []
+/**
+ * TODO 显示tabbar的路由
+ */
+const showTabbarList = ['/chat', '/mail-list', '/wechat-moments', '/my']
+const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
+    {
+        text: '消息',
+        name: 'CHAT',
+        path: 'chat',
+        activeIcon: 'msg_active.png',
+        inActiveIcon: 'msg_inactive.png',
+    },
+    {
+        text: '通讯录',
+        name: 'MAIL-LIST',
+        path: 'mail-list',
+        activeIcon: 'mail_list_active.png',
+        inActiveIcon: 'mail_list_inactive.png',
+    },
+    {
+        text: '发现',
+        name: 'WECHAT-MOMENTS',
+        path: 'wechat-moments',
+        activeIcon: 'discover_active.png',
+        inActiveIcon: 'discover_inactive.png',
+    },
+    {
+        text: '我的',
+        name: 'MY',
+        path: 'my',
+        activeIcon: 'my_active.png',
+        inActiveIcon: 'my_inactive.png',
+    },
+])
 
 const initAdmin = async () => {
     const adminStore = useAdminStore()
@@ -64,8 +119,17 @@ const initUser = () => {
     userStore.setUserID(userId || '')
 }
 
-initAdmin()
-initUser()
+const init = async () => {
+    for (let i = 0; i < tabbar.value.length; i++) {
+        if (tabbar.value[i].name === route?.name) {
+            activeIndex.value = i
+            break
+        }
+    }
+    await initAdmin()
+    initUser()
+    await chatStore.connect()
+}
 
 EaseChatSDK.logger.disableAll()
 // connect监听
@@ -139,30 +203,80 @@ EaseChatClient.addEventHandler('messageListen', {
 
 router.beforeEach((to, from) => {
     if (
-        from.path === '/my-chat' &&
-        [
-            '/main/pages/chat',
-            '/main/pages/mail-list',
-            '/main/pages/wechat-moments',
-            '/main/pages/my',
-        ].includes(to.path)
+        showTabbarList.includes(from.path) &&
+        showTabbarList.includes(to.path)
     ) {
+        transitionName.value = ''
+    } else if (from.path === '/my-chat' && showTabbarList.includes(to.path)) {
         transitionName.value = 'fade-out'
-        return
+    } else {
+        transitionName.value = 'fade-in'
     }
-    transitionName.value = 'fade-in'
 })
+
+init()
 </script>
 
 <template>
     <router-view v-slot="{ Component }">
         <transition :name="transitionName">
-            <component :is="Component" />
+            <KeepAlive>
+                <component
+                    :is="Component"
+                    :key="route.name"
+                    v-if="route.meta.keep"
+                />
+            </KeepAlive>
+        </transition>
+        <transition :name="transitionName">
+            <component
+                :is="Component"
+                :key="route.name"
+                v-if="!route.meta.keep"
+            />
         </transition>
     </router-view>
+
+    <van-tabbar
+        v-model="activeIndex"
+        active-color="#59e062"
+        v-if="showTabbarList.includes(route.path)"
+    >
+        <van-tabbar-item
+            v-for="(item, index) in tabbar"
+            :key="index"
+            :to="item.path"
+        >
+            <template #icon="props">
+                <div style="text-align: center">
+                    <img
+                        :src="
+                            props.active
+                                ? Tool.getUrl(item.activeIcon)
+                                : Tool.getUrl(item.inActiveIcon)
+                        "
+                    />
+                    <span style="font-size: 14rem">{{ item.text }}</span>
+                </div>
+            </template>
+        </van-tabbar-item>
+    </van-tabbar>
 </template>
 
 <style lang="scss" scoped>
+.van-tabbar {
+    background-color: #fff;
+    padding-top: 10rem;
+    img {
+        display: block;
+        margin: 0 auto;
+        height: 22rem;
+    }
+}
+.van-tabbar--fixed {
+    // bottom: 18rem;
+}
+
 .fade-in-enter-from {
     transform: translate(100vw);
 }

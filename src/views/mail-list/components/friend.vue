@@ -7,7 +7,7 @@
                     path: '/my-chat',
                     query: {
                         id: props.info.userid,
-                        name: props.info.nickname,
+                        nickname: props.info.nickname,
                     },
                 })
             }

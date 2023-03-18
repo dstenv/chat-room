@@ -1,21 +1,19 @@
 <template>
     <div class="main">
-        <div>
-            <RouterView v-slot="{ Component }">
-                <KeepAlive>
-                    <component
-                        :is="Component"
-                        :key="route.name"
-                        v-if="route.meta.keep"
-                    />
-                </KeepAlive>
+        <RouterView v-slot="{ Component }">
+            <KeepAlive>
                 <component
                     :is="Component"
                     :key="route.name"
-                    v-if="!route.meta.keep"
+                    v-if="route.meta.keep"
                 />
-            </RouterView>
-        </div>
+            </KeepAlive>
+            <component
+                :is="Component"
+                :key="route.name"
+                v-if="!route.meta.keep"
+            />
+        </RouterView>
 
         <van-tabbar v-model="activeIndex" active-color="#59e062">
             <van-tabbar-item
