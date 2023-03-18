@@ -9,11 +9,14 @@
             <span>{{ nickname || '未知' }}</span>
             <img :src="tools.getUrl('many.png')" alt="" />
         </div>
+
+        <Footer />
     </div>
 </template>
 
 <script setup lang="ts">
 import tools from '@/utils/tools'
+import Footer from './components/footer.vue'
 
 const route = useRoute()
 const router = useRouter()

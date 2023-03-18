@@ -7,8 +7,3 @@ export class UserProPertyType {
     userid?: string
     avatar?: string
 }
-
-/** 消息类型 */
-export interface MessageData {
-    data: any
-}

@@ -3,12 +3,10 @@ import { Defer } from '@/utils/defer'
 import { defineStore } from 'pinia'
 import { showToast } from 'vant'
 import { useUserStore } from './user'
-import type { MessageData } from '@/types'
+import type { AllMsgType, MessageData, SendMsgType } from '@/types/message'
 import { Hook } from '@/utils/hooks'
 
 export const useChatStore = defineStore('chat', () => {
-    const socketData = {}
-
     const socketDefer = {
         connected: null as Defer<void> | null,
         reconnected: null as Defer<void> | null,
@@ -76,6 +74,11 @@ export const useChatStore = defineStore('chat', () => {
             socketDefer.reconnected = null
         }
     }
+
+    const sendMessage = async <T extends SendMsgType>(
+        type: T,
+        data: AllMsgType[T]
+    ) => {}
 
     return {
         socketDefer,
