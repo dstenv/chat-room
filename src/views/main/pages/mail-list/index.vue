@@ -30,6 +30,15 @@
                     <div class="top-text">{{ item.text }}</div>
                 </div>
             </div>
+
+            <div class="friend-list">
+                <FriendItem
+                    v-for="item in pageData.friends"
+                    :key="item.userid"
+                    :info="item"
+                />
+                aaa
+            </div>
         </main>
     </div>
 </template>
@@ -39,6 +48,9 @@ import { getFriendList } from '@/apis/friend/getFriendList'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import Tool from '@/utils/tools'
+import { getUserInfo } from '@/apis/user/getUserInfo'
+import type { UserProPertyType } from '@/types'
+import FriendItem from './components/friend.vue'
 
 interface MailTopItem {
     text: string
@@ -61,7 +73,8 @@ const mailTopList: MailTopItem[] = [
 ]
 
 const pageData = reactive({
-    users: [] as string[],
+    /** 用户好友列表 */
+    friends: [] as UserProPertyType[],
 })
 
 const init = async () => {
@@ -69,7 +82,18 @@ const init = async () => {
         const result = await getFriendList(
             `users/${userId.value}/contacts/users`
         )()
-        pageData.users = result.data
+
+        for (let i = 0; i < result.data.length; i++) {
+            const property = await getUserInfo(result.data[i])()
+            pageData.friends.push({
+                userid: result.data[i],
+                nickname: property.data.nickname,
+                sex: property.data.sex,
+                avatar:
+                    property.data.avatar ||
+                    Tool.getUrl('avatar-default-man.png'),
+            })
+        }
     } catch (error) {}
 }
 init()
@@ -77,6 +101,8 @@ init()
 
 <style scoped lang="scss">
 .mail {
+    height: calc(100vh - 60rem);
+    background-color: #ededed;
     .search {
         position: relative;
         padding: 10rem;
@@ -98,7 +124,10 @@ init()
     }
 }
 main {
+    height: calc(100vh - 60rem - 92rem);
+    overflow-y: scroll;
     .top-list {
+        background-color: #fff;
         .top-item {
             padding: 10rem 0;
             display: flex;
@@ -124,6 +153,9 @@ main {
                 font-weight: 500;
             }
         }
+    }
+    .friend-list {
+        background-color: #fff;
     }
 }
 </style>

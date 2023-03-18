@@ -42,6 +42,7 @@
 
 <script setup lang="ts">
 import Tool from '@/utils/tools'
+import { useChatStore } from '@/stores/chat'
 
 const RouteItem = {
     'chat': 'CHAT',
@@ -61,6 +62,7 @@ interface TabbarItem<T> {
 }
 
 const route = useRoute()
+const chatStore = useChatStore()
 
 const activeIndex = ref(0)
 
@@ -95,13 +97,14 @@ const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
     },
 ])
 
-const init = () => {
+const init = async () => {
     for (let i = 0; i < tabbar.value.length; i++) {
         if (tabbar.value[i].name === route?.name) {
             activeIndex.value = i
-            return
+            break
         }
     }
+    await chatStore.connect()
 }
 init()
 </script>

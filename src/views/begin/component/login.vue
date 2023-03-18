@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import { loginUser, LoginBody } from '@/apis/loginUser'
 import { useUserStore } from '@/stores/user'
-import { EaseChatClient } from '@/utils/config'
 import Tool from '@/utils/tools'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
@@ -125,11 +124,7 @@ const login = async () => {
             // console.log(userStore, 'desc')
             localStorage.setItem('userToken', result.access_token as string)
             localStorage.setItem('userId', result.user.username as string)
-            // sdk登录环信IM
-            await EaseChatClient.open({
-                user: userInfo.username.toLowerCase(),
-                accessToken: result.access_token,
-            })
+
             router.replace({
                 path: '/main/pages/chat',
             })

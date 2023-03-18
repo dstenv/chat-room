@@ -2,8 +2,10 @@ import axios from 'axios'
 import { baseConfig, chatRoomBaseConfig } from '@/utils/config'
 import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
+import { showLoadingToast } from 'vant'
+import type { ToastWrapperInstance } from 'vant/lib/toast/types'
 
-type Method = 'GET' | 'POST' | 'DELETE'
+type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
 type HeaderKey = 'Content-Type' | 'Accept' | 'Authorization'
 type keyFn = (payload: Partial<Record<HeaderKey, string | boolean>>) => void
@@ -17,8 +19,9 @@ export interface RequestBaseType {
     param?: any
     timeout?: number
     httpType?: 'api' | 'apis'
+    loading?: boolean
 }
-export interface ResponseBaseType<T> {
+export class ResponseBaseType<T> {
     data?: T
 }
 
@@ -31,9 +34,11 @@ const requestBaseConfig: RequestBaseType = {
     },
     url: '',
     timeout: 5000,
+    loading: true,
 }
+let loadingToastInst: ToastWrapperInstance | null = null
 
-const bodyObj: Record<Method, 'data' | 'param'> = {
+const bodyObj: Partial<Record<Method, 'data' | 'param'>> = {
     GET: 'param',
     POST: 'data',
     DELETE: 'data',
@@ -94,7 +99,10 @@ export const request = <T, U>(
                 ...requestOptions.headers,
             }
             for (const key of customHeaderKey) {
-                if (requestOptions.headers[key]) {
+                if (
+                    requestOptions.headers[key] === true &&
+                    requestOptions.headers[key]
+                ) {
                     ;(customHeaderKeyFn[key] as keyFn)(requestOptions.headers)
                 }
             }
@@ -104,9 +112,32 @@ export const request = <T, U>(
         requestOptions.url = `/${requestOptions.httpType || 'api'}/${
             chatRoomBaseConfig.orgName
         }/${chatRoomBaseConfig.appName}/${requestOptions.url}`
-        requestOptions[bodyObj[requestOptions.method as Method]] = body
 
-        const result: ResponseBaseType<U> = await axios({ ...requestOptions })
+        const bodyKey = bodyObj[requestOptions.method as Method]
+        if (bodyKey) {
+            requestOptions[bodyKey] = body
+        }
+
+        if (requestOptions.loading ?? requestBaseConfig.loading) {
+            loadingToastInst = showLoadingToast({
+                message: '加载中',
+                forbidClick: true,
+                duration: 0,
+            })
+        }
+        let result: ResponseBaseType<U>
+
+        try {
+            result = await axios({
+                ...requestOptions,
+            })
+        } catch (error) {
+            result = new ResponseBaseType<U>()
+        } finally {
+            if (loadingToastInst) {
+                loadingToastInst.close()
+            }
+        }
         return result.data as U
     }
 

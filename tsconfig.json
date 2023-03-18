@@ -1,6 +1,6 @@
 {
     "files": [],
-    "include": ["./env.d.ts"],
+    "include": ["./env.d.ts","src/types/index.d.ts"],
     "references": [
         {
             "path": "./tsconfig.config.json"

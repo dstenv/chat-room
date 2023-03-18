@@ -29,6 +29,7 @@ import Tool from '@/utils/tools'
 import type { RuleItem } from './login.vue'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
+import { setUsetInfo } from '@/apis/user/setUsetInfo'
 
 type UserInfoKey = 'userID' | 'password' | 'nickName'
 
@@ -81,7 +82,7 @@ const rules: Partial<Record<UserInfoKey, RuleItem>> = {
         message: '请输入有效的用户ID',
         validator(value) {
             isUserId.lastIndex = 0
-            return isUserId.test(value as string)
+            return !isUserId.test(value as string)
         },
     },
     password: {
@@ -117,14 +118,14 @@ const register = async () => {
             username: userInfo.userID,
             password: userInfo.password,
         })
+        await setUsetInfo(userInfo.userID)({
+            nickname: userInfo.nickName,
+            sex: '1',
+        })
+
         showToast('注册成功')
 
         emits('goLogin')
-        // await EaseChatClient.registerUser({
-        //     nickname: userInfo.nickName,
-        //     username: userInfo.userID,
-        //     password: userInfo.password,
-        // })
     } catch (error) {
         showToast('注册失败')
     }

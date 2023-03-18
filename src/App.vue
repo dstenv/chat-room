@@ -16,6 +16,12 @@ interface AdminStorage {
 
 const router = useRouter()
 
+const transitionName = ref('fade-in')
+
+const toList: string[] = ['/main/pages/chat']
+
+const fromList: string[] = []
+
 const initAdmin = async () => {
     const adminStore = useAdminStore()
     const adminToken = localStorage.getItem('adminToken')
@@ -57,6 +63,7 @@ const initUser = () => {
     userStore.setToken(userToken)
     userStore.setUserID(userId || '')
 }
+
 initAdmin()
 initUser()
 
@@ -90,7 +97,7 @@ EaseChatClient.addEventHandler('connection', {
 EaseChatClient.addEventHandler('messageListen', {
     // 收到文本消息。
     onTextMessage: (message) => {
-        console.log('>>>>>>>App mesage', message)
+        console.log('>>>>>>>App mesage', message, message.type)
     },
 
     // 收到表情消息。报错（暂时不知原因）
@@ -98,7 +105,7 @@ EaseChatClient.addEventHandler('messageListen', {
 
     // 收到图片消息。
     onImageMessage: (message) => {
-        console.log('收到图片消息。')
+        console.log('收到图片消息。', message)
     },
     // 收到命令消息。
     onCmdMessage: (message) => {
@@ -129,38 +136,80 @@ EaseChatClient.addEventHandler('messageListen', {
         console.log('收到消息撤回回执。')
     },
 })
+
+router.beforeEach((to, from) => {
+    if (
+        from.path === '/my-chat' &&
+        [
+            '/main/pages/chat',
+            '/main/pages/mail-list',
+            '/main/pages/wechat-moments',
+            '/main/pages/my',
+        ].includes(to.path)
+    ) {
+        transitionName.value = 'fade-out'
+        return
+    }
+    transitionName.value = 'fade-in'
+})
 </script>
 
 <template>
     <router-view v-slot="{ Component }">
-        <transition name="fade">
+        <transition :name="transitionName">
             <component :is="Component" />
         </transition>
     </router-view>
 </template>
 
 <style lang="scss" scoped>
-.fade-enter-from {
+.fade-in-enter-from {
     transform: translate(100vw);
 }
 
-.fade-enter-active {
+.fade-in-enter-active {
     transition: all 0.3s linear;
 }
 
-.fade-enter-to {
+.fade-in-enter-to {
     transform: translate(0);
 }
 
-.fade-leave-from {
+.fade-in-leave-from {
     opacity: 1;
 }
 
-.fade-leave-active {
+.fade-in-leave-active {
     transition: all 0.2s linear;
 }
 
-.fade-leave-to {
+.fade-in-leave-to {
     opacity: 0.1;
+}
+
+.fade-out-enter-from {
+    opacity: 0.1;
+}
+
+.fade-out-enter-active {
+    transition: all 0.3s linear;
+}
+
+.fade-out-enter-to {
+    opacity: 1;
+}
+
+.fade-out-leave-from {
+    transform: translate(0);
+    opacity: 1;
+}
+
+.fade-out-leave-active {
+    transition: all 0.3s linear;
+}
+
+.fade-out-leave-to {
+    transform: translate(100vw);
+    opacity: 0;
 }
 </style>
