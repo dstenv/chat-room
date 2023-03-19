@@ -1,10 +1,16 @@
-import { EaseChatClient } from '@/utils/config'
+import { EaseChatClient, EaseChatSDK } from '@/utils/config'
 import { Defer } from '@/utils/defer'
 import { defineStore } from 'pinia'
 import { showToast } from 'vant'
 import { useUserStore } from './user'
-import type { AllMsgType, MessageData, SendMsgType } from '@/types/message'
+import type {
+    AllMsgType,
+    AllRecieveMsg,
+    MessageData,
+    SendMsgType,
+} from '@/types/message'
 import { Hook } from '@/utils/hooks'
+import { db } from '@/utils/indexDB'
 
 export const useChatStore = defineStore('chat', () => {
     const socketDefer = {
@@ -13,9 +19,11 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const socketHook = {
-        message: new Hook<(item: number) => string>(),
+        message: new Hook<() => void>(),
         reconnect: new Hook(),
     }
+
+    const userStore = useUserStore()
 
     const messageList = reactive<MessageData[]>([])
 
@@ -24,6 +32,7 @@ export const useChatStore = defineStore('chat', () => {
             socketDefer.connected = new Defer()
         } else if (socketDefer.connected) {
             await socketDefer.connected.promise
+            return socketDefer.connected.promise
         }
 
         const userStore = useUserStore()
@@ -37,10 +46,10 @@ export const useChatStore = defineStore('chat', () => {
 
             socketDefer.connected.resolve()
         } catch (error) {
-            showToast('正在重新连接')
             // 重新连接
             socketDefer.connected.reject()
         }
+        return socketDefer.connected.promise
     }
 
     const reconnect = async (max = 5) => {
@@ -75,13 +84,67 @@ export const useChatStore = defineStore('chat', () => {
         }
     }
 
+    /**
+     * @description 展示消息和发送消息分离
+     * @return {*}
+     */
     const sendMessage = async <T extends SendMsgType>(
         type: T,
-        data: AllMsgType[T]
-    ) => {}
+        data: AllMsgType[T] & { type?: SendMsgType },
+        /** 视图层展示的消息 */
+        tempData: AllRecieveMsg[T]
+    ) => {
+        data = {
+            ...data,
+            type,
+        }
+
+        const message: MessageData = {
+            ...tempData,
+            keyId: +new Date(),
+            loading: true,
+            error: false,
+            from: userStore.userId,
+        }
+
+        addMessage(message)
+        // db.addSource('message', message)
+
+        /** 使用IM生成消息 */
+        const msg = EaseChatSDK.message.create(data)
+        try {
+            const result = await EaseChatClient.send(msg)
+
+            for (let i = messageList.length - 1; i >= 0; i--) {
+                if (message.keyId === messageList[i].keyId) {
+                    messageList[i].loading = false
+                    db.addSource('message', { ...messageList[i] })
+                    break
+                }
+            }
+            return result
+        } catch (error) {
+            for (let i = messageList.length - 1; i >= 0; i--) {
+                if (message.keyId === messageList[i].keyId) {
+                    messageList[i].loading = false
+                    messageList[i].error = true
+                    db.addSource('message', messageList[i])
+                    break
+                }
+            }
+            return null
+        }
+    }
+
+    const addMessage = (msg: MessageData) => {
+        messageList.push(msg)
+    }
 
     return {
         socketDefer,
+        messageList,
         connect,
+        sendMessage,
+        addMessage,
     }
 })

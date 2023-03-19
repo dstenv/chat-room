@@ -16,19 +16,54 @@
                 <img :src="tools.getUrl('expression-black.png')" alt="" />
                 <img :src="tools.getUrl('add-black.png')" alt="" />
             </div>
-            <div class="send" v-show="pageData.text">发送</div>
+            <div class="send" v-show="pageData.text" @click="send">发送</div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from '@/stores/chat'
 import tools from '@/utils/tools'
+import { showToast } from 'vant'
+
+const chatStore = useChatStore()
+
+const props = defineProps<{
+    /** 对方的用户id */
+    oppositeId: string
+}>()
+const emits = defineEmits([])
 
 const pageData = reactive({
     text: '',
     /** 是否是文本输入 */
     isKeyBoard: true,
 })
+
+const send = async () => {
+    try {
+        await chatStore.sendMessage(
+            'txt',
+            {
+                chatType: 'singleChat',
+                msg: pageData.text,
+                to: props.oppositeId,
+                ext: 'test',
+            },
+            {
+                chatType: 'singleChat',
+                id: '',
+                msg: pageData.text,
+                time: +new Date(),
+                type: 'txt',
+                to: props.oppositeId,
+            }
+        )
+        pageData.text = ''
+    } catch (error) {
+        showToast('发送失败')
+    }
+}
 </script>
 
 <style scoped lang="scss">

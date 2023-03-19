@@ -9,6 +9,7 @@ import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 import Tool from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
+import { db } from './utils/indexDB'
 
 interface AdminStorage {
     application: string
@@ -131,6 +132,8 @@ const init = async () => {
     await chatStore.connect()
 }
 
+const initDataBase = () => {}
+
 EaseChatSDK.logger.disableAll()
 // connect监听
 EaseChatClient.addEventHandler('connection', {
@@ -157,51 +160,55 @@ EaseChatClient.addEventHandler('connection', {
     },
 })
 
-// message 相关监听
-EaseChatClient.addEventHandler('messageListen', {
-    // 收到文本消息。
-    onTextMessage: (message) => {
-        console.log('>>>>>>>App mesage', message, message.type)
-    },
+// // message 相关监听
+// EaseChatClient.addEventHandler('messageListen', {
+//     // 收到文本消息。
+//     onTextMessage: (message) => {
+//         console.log('>>>>>>>App mesage', message, message.type)
+//     },
 
-    // 收到表情消息。报错（暂时不知原因）
-    // onEmojiMessage: () => {},
+//     // 收到表情消息。报错（暂时不知原因）
+//     // onEmojiMessage: () => {},
 
-    // 收到图片消息。
-    onImageMessage: (message) => {
-        console.log('收到图片消息。', message)
-    },
-    // 收到命令消息。
-    onCmdMessage: (message) => {
-        console.log('>>>>>收到命令消息', message)
-    },
-    // 收到音频消息。
-    onAudioMessage: () => {
-        console.log('收到音频消息。')
-    },
-    // 收到位置消息。
-    onLocationMessage: () => {
-        console.log('收到位置消息。')
-    },
-    // 收到文件消息。
-    onFileMessage: () => {
-        console.log('收到文件消息。')
-    },
-    // 收到自定义消息。
-    onCustomMessage: () => {
-        console.log('收到自定义消息。')
-    },
-    // 收到视频消息。
-    onVideoMessage: () => {
-        console.log('收到视频消息。')
-    },
-    // 收到消息撤回回执。
-    onRecallMessage: () => {
-        console.log('收到消息撤回回执。')
-    },
-})
+//     // 收到图片消息。
+//     onImageMessage: (message) => {
+//         console.log('收到图片消息。', message)
+//     },
+//     // 收到命令消息。
+//     onCmdMessage: (message) => {
+//         console.log('>>>>>收到命令消息', message)
+//     },
+//     // 收到音频消息。
+//     onAudioMessage: () => {
+//         console.log('收到音频消息。')
+//     },
+//     // 收到位置消息。
+//     onLocationMessage: () => {
+//         console.log('收到位置消息。')
+//     },
+//     // 收到文件消息。
+//     onFileMessage: () => {
+//         console.log('收到文件消息。')
+//     },
+//     // 收到自定义消息。
+//     onCustomMessage: () => {
+//         console.log('收到自定义消息。')
+//     },
+//     // 收到视频消息。
+//     onVideoMessage: () => {
+//         console.log('收到视频消息。')
+//     },
+//     // 收到消息撤回回执。
+//     onRecallMessage: () => {
+//         console.log('收到消息撤回回执。')
+//     },
+// })
 
 router.beforeEach((to, from) => {
+    if (from.path === '/') {
+        db.open()
+    }
+
     if (
         showTabbarList.includes(from.path) &&
         showTabbarList.includes(to.path)

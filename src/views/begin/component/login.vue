@@ -126,7 +126,7 @@ const login = async () => {
             localStorage.setItem('userId', result.user.username as string)
 
             router.replace({
-                path: '/main/pages/chat',
+                path: '/chat',
             })
         } catch (error) {
             console.log(error, 'error')

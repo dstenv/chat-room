@@ -87,11 +87,15 @@ const init = async () => {
             const property = await getUserInfo(result.data[i])()
             pageData.friends.push({
                 userid: result.data[i],
-                nickname: property.data.nickname,
+                nickname: property.data.nickname || result.data[i],
                 sex: property.data.sex,
                 avatar:
                     property.data.avatar ||
-                    Tool.getUrl('avatar-default-man.png'),
+                    Tool.getUrl(
+                        property.data.sex === '2'
+                            ? 'avatar-default-woman.png'
+                            : 'avatar-default-man.png'
+                    ),
             })
         }
     } catch (error) {}
@@ -100,6 +104,9 @@ init()
 </script>
 
 <style scoped lang="scss">
+::-webkit-scrollbar {
+    display: none;
+}
 .mail {
     height: calc(100vh - 60rem);
     background-color: #ededed;
