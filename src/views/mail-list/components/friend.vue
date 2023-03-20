@@ -3,12 +3,11 @@
         class="friend-item"
         @click="
             () => {
+                chatStore.setTargetId(props.info.userid as string)
+                friendStore.setFriend(props.info)
+
                 router.push({
                     path: '/my-chat',
-                    query: {
-                        id: props.info.userid,
-                        nickname: props.info.nickname,
-                    },
                 })
             }
         "
@@ -21,13 +20,21 @@
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from '@/stores/chat'
+import { useFriendStore } from '@/stores/friend'
 import type { UserProPertyType } from '@/types'
 
 const router = useRouter()
+const chatStore = useChatStore()
+const friendStore = useFriendStore()
 
 const props = defineProps<{
     info: UserProPertyType
 }>()
+
+onBeforeUnmount(() => {
+    chatStore.setTargetId('')
+})
 </script>
 
 <style scoped lang="scss">

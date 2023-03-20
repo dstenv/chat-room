@@ -30,8 +30,8 @@ const chatRoomBaseConfig = {
 
 const baseUrl = `${window.location.protocol}//${baseConfig.RestApi}/`
 
-// const { appKey } = baseConfig
-const { appKey } = chatRoomBaseConfig
+const { appKey } = baseConfig
+// const { appKey } = chatRoomBaseConfig
 
 /*
  * isHttpDNS： isPrivate为true开启私有化配置则走自有配置的url以及apiUrl，

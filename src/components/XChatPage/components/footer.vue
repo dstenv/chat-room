@@ -48,7 +48,6 @@ const send = async () => {
                 chatType: 'singleChat',
                 msg: pageData.text,
                 to: props.oppositeId,
-                ext: 'test',
             },
             {
                 chatType: 'singleChat',
@@ -57,9 +56,11 @@ const send = async () => {
                 time: +new Date(),
                 type: 'txt',
                 to: props.oppositeId,
+            },
+            () => {
+                pageData.text = ''
             }
         )
-        pageData.text = ''
     } catch (error) {
         showToast('发送失败')
     }

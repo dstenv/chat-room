@@ -6,12 +6,16 @@
                 alt=""
                 @click="router.back()"
             />
-            <span>{{ nickname || '未知' }}</span>
+            <span>{{ friendStore.friend?.nickname || '未知' }}</span>
             <img :src="tools.getUrl('many.png')" alt="" />
         </div>
 
         <main>
-            <VanPullRefresh>
+            <VanPullRefresh
+                pulling-text="获取历史消息"
+                v-model="pageData.refresh"
+                @refresh="methods.getHistory"
+            >
                 <div class="msg-list">
                     <MessageItem
                         v-for="item in chatStore.messageList"
@@ -28,20 +32,16 @@
 
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
+import { useFriendStore } from '@/stores/friend'
 import { EaseChatClient } from '@/utils/config'
 import tools from '@/utils/tools'
 import Footer from './components/footer.vue'
 import MessageItem from './components/message-item.vue'
-import { db } from '@/utils/indexDB'
 
 const route = useRoute()
 const router = useRouter()
 const chatStore = useChatStore()
-
-const { nickname, id } = route.query as {
-    nickname: string
-    id: string
-}
+const friendStore = useFriendStore()
 
 /** 监听事件回调的id */
 const watchFnId = `chat_page_${Date.now().toString(36)}${Math.floor(
@@ -49,14 +49,14 @@ const watchFnId = `chat_page_${Date.now().toString(36)}${Math.floor(
 )}`
 
 const pageData = reactive({
-    id,
+    id: friendStore.friend?.userid || '',
+    refresh: false,
 })
 
-const getHistoryMsg = async () => {
-    try {
-        const list = await db.findSourceByTable('message')
-        console.log(list, 'list')
-    } catch (error) {}
+const methods = {
+    getHistory() {
+        chatStore.getHistoryMsg()
+    },
 }
 
 EaseChatClient.addEventHandler(watchFnId, {
@@ -65,7 +65,13 @@ EaseChatClient.addEventHandler(watchFnId, {
         chatStore.addMessage({ ...message, loading: false, error: false })
     },
 })
-getHistoryMsg()
+methods.getHistory()
+
+onBeforeMount(() => {
+    if (route.query.id) {
+        chatStore.setTargetId(route.query.id as string)
+    }
+})
 </script>
 
 <style scoped lang="scss">
@@ -82,6 +88,7 @@ getHistoryMsg()
     align-items: center;
     justify-content: space-between;
     padding: 10rem;
+    background-color: rgba(230, 230, 230, 0.7);
     img {
         display: block;
         width: 20rem;
@@ -92,6 +99,13 @@ getHistoryMsg()
     }
 }
 main {
+}
+.msg-list {
     max-height: calc(100vh - 100rem);
+    display: flex;
+    flex-direction: column;
+    gap: 12rem;
+    font-size: 14rem;
+    padding: 15rem 10rem;
 }
 </style>

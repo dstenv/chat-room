@@ -1,9 +1,11 @@
 import type { MessageData } from '@/types/message'
+import { Defer } from './defer'
 
 class DB {
     private dbName = ''
     dbVersion = 0
     private db: IDBOpenDBRequest
+    read: null | Defer<void>
     storage: any
     tables: string[]
 
@@ -12,9 +14,22 @@ class DB {
         this.dbVersion = version
         this.tables = tables
         this.db = window.indexedDB.open(this.dbName, this.dbVersion)
-        this.db.onupgradeneeded = () => {
-            this.storage = this.db.result
-            this.createTable()
+        this.read = new Defer()
+        this.db.onupgradeneeded = async (e: any) => {
+            this.storage = e.target.result
+            if (this.read) {
+                await this.read.promise
+                this.createTable()
+                this.read = null
+            }
+        }
+        this.db.onsuccess = async (e: any) => {
+            this.storage = e.target.result
+            if (this.read) {
+                await this.read.promise
+                this.createTable()
+                this.read = null
+            }
         }
     }
 
@@ -22,16 +37,19 @@ class DB {
         if (!this.storage) return
         this.tables.forEach((table) => {
             if (!this.storage.objectStoreNames.contains(table)) {
+                console.log(this.storage, 'this.storage')
                 this.storage.createObjectStore(table, { autoIncrement: true })
             }
         })
+        this.read!.resolve()
     }
 
     /** 更新数据库 */
     private update() {
+        console.log('update')
         this.db = window.indexedDB.open(this.dbName, this.dbVersion)
-        this.db.onupgradeneeded = () => {
-            this.storage = this.db.result
+        this.db.onupgradeneeded = (e: any) => {
+            this.storage = e.target.result
             this.createTable()
         }
     }

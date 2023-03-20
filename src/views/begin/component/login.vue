@@ -30,6 +30,7 @@ import Tool from '@/utils/tools'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
 import { errorData } from '@/apis/base'
+import { useChatStore } from '@/stores/chat'
 
 export interface RuleItem {
     message: string
@@ -49,6 +50,7 @@ interface FormItem {
 
 const router = useRouter()
 const userStore = useUserStore()
+const chatStore = useChatStore()
 
 const bg = Tool.getUrl('login-bg.png', 'imgs')
 
@@ -119,11 +121,13 @@ const login = async () => {
         try {
             const result = await loginUser(login)
 
-            userStore.setToken(result.access_token as string)
-            userStore.setUserID(result.user.username as string)
+            userStore.setToken(result.access_token)
+            userStore.setUserID(result.user.username)
+            chatStore.setUserId(result.user.username)
+
             // console.log(userStore, 'desc')
-            localStorage.setItem('userToken', result.access_token as string)
-            localStorage.setItem('userId', result.user.username as string)
+            localStorage.setItem('userToken', result.access_token)
+            localStorage.setItem('userId', result.user.username)
 
             router.replace({
                 path: '/chat',

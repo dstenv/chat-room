@@ -110,8 +110,8 @@ export const request = <T, U>(
         requestOptions.timeout =
             requestOptions.timeout || requestBaseConfig.timeout
         requestOptions.url = `/${requestOptions.httpType || 'api'}/${
-            chatRoomBaseConfig.orgName
-        }/${chatRoomBaseConfig.appName}/${requestOptions.url}`
+            baseConfig.orgName
+        }/${baseConfig.appName}/${requestOptions.url}`
 
         const bodyKey = bodyObj[requestOptions.method as Method]
         if (bodyKey) {

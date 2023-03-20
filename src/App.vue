@@ -9,7 +9,7 @@ import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 import Tool from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
-import { db } from './utils/indexDB'
+// import { db } from './utils/indexDB'
 
 interface AdminStorage {
     application: string
@@ -84,8 +84,8 @@ const initAdmin = async () => {
     if (!adminToken) {
         const result = await getAdminToken({
             grant_type: 'client_credentials',
-            client_id: chatRoomBaseConfig.clientID,
-            client_secret: chatRoomBaseConfig.clientSecret,
+            client_id: baseConfig.clientID,
+            client_secret: baseConfig.clientSecret,
             ttl: 0,
         })
 
@@ -110,6 +110,7 @@ const initAdmin = async () => {
 
 const initUser = () => {
     const userStore = useUserStore()
+    const chatStore = useChatStore()
     const userToken = localStorage.getItem('userToken')
     if (!userToken) {
         router.replace('/begin')
@@ -118,6 +119,7 @@ const initUser = () => {
     const userId = localStorage.getItem('userId')
     userStore.setToken(userToken)
     userStore.setUserID(userId || '')
+    chatStore.setUserId(userId || '')
 }
 
 const init = async () => {
@@ -129,10 +131,8 @@ const init = async () => {
     }
     await initAdmin()
     initUser()
-    await chatStore.connect()
+    chatStore.connect()
 }
-
-const initDataBase = () => {}
 
 EaseChatSDK.logger.disableAll()
 // connect监听
@@ -206,7 +206,7 @@ EaseChatClient.addEventHandler('connection', {
 
 router.beforeEach((to, from) => {
     if (from.path === '/') {
-        db.open()
+        // db.open()
     }
 
     if (

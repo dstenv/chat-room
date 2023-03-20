@@ -25,23 +25,11 @@ export type SendMsgType =
     | 'inform' // 自定义
 
 /** 消息类型 */
-export type MessageData = (
-    | EasemobChat.TextMsgBody
-    | EasemobChat.ImgMsgBody
-    | EasemobChat.AudioMsgBody
-    | EasemobChat.VideoMsgBody
-    | EasemobChat.FileMsgBody
-    | EasemobChat.LocationMsgBody
-    | EasemobChat.CustomMsgBody
-    | EasemobChat.ReceivedMsgBody
-    | EasemobChat.DeliveryMsgBody
-    | EasemobChat.ReadMsgBody
-    | EasemobChat.RecallMsgBody
-    | EasemobChat.ChannelMsgBody
-) & {
+export type MessageData = EasemobChat.MessageBody & {
     keyId?: number
-    loading: boolean
-    error: boolean
+    loading?: boolean
+    error?: boolean
+    url?: string
 }
 
 /** 发送消息的基础配置 */
