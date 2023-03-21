@@ -9,7 +9,13 @@
             <img v-show="!pageData.isKeyBoard" src="" alt="" />
         </div>
         <div class="center">
-            <textarea v-model="pageData.text" autocomplete="on" wrap="hard" />
+            <textarea
+                v-model="pageData.text"
+                autocomplete="on"
+                wrap="hard"
+                enterkeyhint="send"
+                @keydown="keydown"
+            />
         </div>
         <div class="right">
             <div class="no-send" v-show="!pageData.text">
@@ -32,7 +38,7 @@ const props = defineProps<{
     /** 对方的用户id */
     oppositeId: string
 }>()
-const emits = defineEmits([])
+const emits = defineEmits(['scrollBottom'])
 
 const pageData = reactive({
     text: '',
@@ -40,30 +46,34 @@ const pageData = reactive({
     isKeyBoard: true,
 })
 
-const send = async () => {
-    try {
-        await chatStore.sendMessage(
-            'txt',
-            {
-                chatType: 'singleChat',
-                msg: pageData.text,
-                to: props.oppositeId,
-            },
-            {
-                chatType: 'singleChat',
-                id: '',
-                msg: pageData.text,
-                time: +new Date(),
-                type: 'txt',
-                to: props.oppositeId,
-            },
-            () => {
-                pageData.text = ''
-            }
-        )
-    } catch (error) {
-        showToast('发送失败')
+const keydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+        e.preventDefault()
+        send()
     }
+}
+
+const send = () => {
+    chatStore.sendMessage(
+        'txt',
+        {
+            chatType: 'singleChat',
+            msg: pageData.text,
+            to: props.oppositeId,
+        },
+        {
+            chatType: 'singleChat',
+            id: '',
+            msg: pageData.text,
+            time: +new Date(),
+            type: 'txt',
+            to: props.oppositeId,
+        },
+        () => {
+            pageData.text = ''
+        }
+    )
+    emits('scrollBottom', true)
 }
 </script>
 

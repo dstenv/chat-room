@@ -8,6 +8,7 @@ class DB {
     read: null | Defer<void>
     storage: any
     tables: string[]
+    static DBInstance: null | DB
 
     constructor(name: string, version: number, tables: string[]) {
         this.dbName = name
@@ -113,10 +114,17 @@ class DB {
             }
         })
     }
+
+    static getIntance() {
+        if (!DB.DBInstance) {
+            DB.DBInstance = new this('chat_DB', 1, tableList)
+        }
+        return DB.DBInstance
+    }
 }
 
 export const tableList = ['message']
 
-const createDB = () => new DB('chat_DB', 1, tableList)
+const createDB = () => DB.getIntance()
 
 export const db = createDB()

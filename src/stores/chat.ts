@@ -10,6 +10,7 @@ import type {
     SendMsgType,
 } from '@/types/message'
 import { Hook } from '@/utils/hooks'
+import type { EasemobChat } from 'easemob-websdk'
 
 export const useChatStore = defineStore('chat', () => {
     const chatData = {
@@ -105,7 +106,7 @@ export const useChatStore = defineStore('chat', () => {
         tempData: AllRecieveMsg[T],
         /** 自定义操作函数 */
         opreate: (msg: MessageData) => void
-    ) => {
+    ): Promise<EasemobChat.SendMsgResult | null> => {
         data = {
             ...data,
             type,
@@ -119,12 +120,17 @@ export const useChatStore = defineStore('chat', () => {
             from: userStore.userId,
         }
 
+        addMessage(message)
+        console.log('发送2')
+
         opreate && opreate(message)
 
-        addMessage(message)
+        console.log('发送3')
 
         /** 使用IM生成消息 */
         const msg = EaseChatSDK.message.create(data)
+
+        console.log(msg, '发送的msg')
         try {
             const result = await EaseChatClient.send(msg)
 
@@ -140,6 +146,8 @@ export const useChatStore = defineStore('chat', () => {
                     break
                 }
             }
+
+            console.log('发送的result', result)
             return result
         } catch (error) {
             for (let i = messageList.value.length - 1; i >= 0; i--) {
@@ -165,11 +173,23 @@ export const useChatStore = defineStore('chat', () => {
         try {
             console.log('try getHistoryMsg')
             // const list = await db.findSourceByTable('message')
-            // console.log(list, 'list')
+
+            console.log('请求历史消息的请求体', {
+                targetId: chatData.targetId,
+                pageSize: 20,
+                chatType: 'singleChat',
+                searchDirection: 'down',
+                /** 获取消息的起始位置 */
+                cursor: chatData.startId,
+            })
+
             const list = await EaseChatClient.getHistoryMessages({
                 targetId: chatData.targetId,
                 pageSize: 20,
                 chatType: 'singleChat',
+                searchDirection: 'up',
+                /** 获取消息的起始位置 */
+                cursor: chatData.startId,
             })
             chatData.startId = list.cursor as string
 
@@ -181,18 +201,18 @@ export const useChatStore = defineStore('chat', () => {
 
             if (list.messages.length > 0) {
                 console.log(`有历史消息${list.messages.length}条`)
+                console.log('messageList', messageList.value)
             } else {
                 console.log('历史消息为空')
             }
-            insertBefore(messages)
-            console.log(list, messageList, 'list')
+            insertBefore(messages.reverse())
         } catch (error) {}
     }
 
     const addMessage = (msg: MessageData, loading = true, error = false) => {
         if (messageList.value.map((msg) => msg.id).includes(msg.id)) return
         messageList.value.push({ ...msg, loading, error })
-        console.log(messageList, 'messageList')
+        // console.log(messageList, 'messageList')
     }
 
     const setUserId = (id: string) => {
@@ -208,14 +228,17 @@ export const useChatStore = defineStore('chat', () => {
         deleteManyMsg()
     }
 
+    /** 去除重复的消息 */
     const deleteManyMsg = () => {
-        const ids = messageList.value.map((msg) => msg.id)
+        const newList: MessageData[] = []
 
-        const newIds = [...new Set(ids)]
+        for (let i = 0; i < messageList.value.length; i++) {
+            if (!newList.find((item) => item.id === messageList.value[i].id)) {
+                newList.push({ ...messageList.value[i] })
+            }
+        }
 
-        messageList.value = messageList.value.filter((msg) =>
-            newIds.includes(msg.id)
-        )
+        messageList.value = newList.map((item) => ({ ...item }))
     }
 
     return {
