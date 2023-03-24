@@ -7,6 +7,7 @@ import {
     CellGroup,
     Popover,
     PullRefresh,
+    Image,
 } from 'vant'
 import type { App } from 'vue'
 
@@ -19,6 +20,7 @@ const vantUIComponents = [
     CellGroup,
     Popover,
     PullRefresh,
+    Image,
 ]
 
 export default {

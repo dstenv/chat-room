@@ -10,7 +10,7 @@
             <img :src="tools.getUrl('many.png')" alt="" />
         </div>
 
-        <main ref="mainRef">
+        <main ref="mainRef" :class="{ shinrk: pageData.isSelFuns }">
             <VanPullRefresh
                 pulling-text="获取历史消息"
                 v-model="pageData.refresh"
@@ -27,8 +27,16 @@
         </main>
 
         <Footer
+            :is-sel-funs="pageData.isSelFuns"
             :opposite-id="pageData.id"
             @scrollBottom="methods.scrollToBottom"
+            @toggle-funs="
+                ({ bool, isBehavior }) => {
+                    methods.scroll(isBehavior)
+
+                    pageData.isSelFuns = bool
+                }
+            "
         />
     </div>
 </template>
@@ -63,6 +71,8 @@ const watchFnId = `chat_page_${Date.now().toString(36)}${Math.floor(
 const pageData = reactive({
     id: friendStore.friend?.userid || '',
     refresh: false,
+    /** 是否弹起底部功能区域 */
+    isSelFuns: false,
 })
 
 const scrollData = reactive({
@@ -116,6 +126,16 @@ const methods = {
         scrollData.type = ScrollType.Keep
         scrollData.behavior = false
     },
+
+    /** 滚动到底部 */
+    scroll(isBehavior: boolean) {
+        requestAnimationFrame(() => {
+            mainRef.value.scrollTo({
+                top: listRef.value.scrollHeight,
+                behavior: isBehavior ? 'smooth' : 'auto',
+            })
+        })
+    },
 }
 
 EaseChatClient.addEventHandler(watchFnId, {
@@ -126,8 +146,8 @@ EaseChatClient.addEventHandler(watchFnId, {
 })
 
 onBeforeMount(() => {
-    if (route.query.id) {
-        chatStore.setTargetId(route.query.id as string)
+    if (pageData.id) {
+        chatStore.setTargetId(pageData.id as string)
     }
 })
 
@@ -139,6 +159,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     if (listRef.value) {
         resizeObserver.unobserve(listRef.value)
+        chatStore.clean()
     }
 })
 
@@ -171,14 +192,17 @@ methods.getHistory()
 }
 main {
     box-sizing: border-box;
-    max-height: calc(100vh - 100rem);
+    height: calc(100vh - 100rem);
     padding: 15rem 10rem;
     overflow-y: scroll;
+    &.shinrk {
+        height: calc(100vh - 200rem);
+    }
 }
 .msg-list {
     display: flex;
     flex-direction: column;
-    gap: 12rem;
+    gap: 15rem;
     font-size: 14rem;
 }
 </style>

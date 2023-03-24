@@ -117,15 +117,15 @@ export const useChatStore = defineStore('chat', () => {
             keyId: +new Date(),
             loading: true,
             error: false,
+            longTouch: false,
             from: userStore.userId,
         }
 
+        console.log('本机展示的message -->', message)
+
         addMessage(message)
-        console.log('发送2')
 
         opreate && opreate(message)
-
-        console.log('发送3')
 
         /** 使用IM生成消息 */
         const msg = EaseChatSDK.message.create(data)
@@ -197,6 +197,7 @@ export const useChatStore = defineStore('chat', () => {
                 ...item,
                 loading: false,
                 error: false,
+                longTouch: false,
             }))
 
             if (list.messages.length > 0) {
@@ -211,7 +212,7 @@ export const useChatStore = defineStore('chat', () => {
 
     const addMessage = (msg: MessageData, loading = true, error = false) => {
         if (messageList.value.map((msg) => msg.id).includes(msg.id)) return
-        messageList.value.push({ ...msg, loading, error })
+        messageList.value.push({ ...msg, loading, error, longTouch: false })
         // console.log(messageList, 'messageList')
     }
 
@@ -241,6 +242,18 @@ export const useChatStore = defineStore('chat', () => {
         messageList.value = newList.map((item) => ({ ...item }))
     }
 
+    /** 清除操作 */
+    const clean = () => {
+        socketDefer.connected = null
+
+        socketDefer.reconnected = null
+
+        chatData.startId = ''
+        chatData.targetId = ''
+
+        messageList.value = []
+    }
+
     return {
         socketDefer,
         messageList,
@@ -250,5 +263,6 @@ export const useChatStore = defineStore('chat', () => {
         setUserId,
         setTargetId,
         getHistoryMsg,
+        clean,
     }
 })

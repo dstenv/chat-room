@@ -15,28 +15,44 @@ export default defineComponent({
     setup(props, { emit, expose }) {
         const getUrl = tools.getUrl
 
-        if (props.item.type === 'txt') {
-            return () => (
-                <div class="msg-item">
-                    <div class="item-wrap">
-                        {(props.item as EasemobChat.TextMsgBody).msg}
-                        <div class="sanjiao"></div>
-                    </div>
-                    <div class="avatar">
-                        <img src={getUrl('avatar-default-man.png')} alt="" />
-                    </div>
-                </div>
-            )
+        const pageData = reactive({})
+
+        const methods = {
+            /** 长按事件 */
+            longPress() {},
         }
-        return () => {}
+
+        const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
+            txt: (
+                <div class="item-wrap">
+                    {(props.item as EasemobChat.TextMsgBody).msg}
+                    <div class="sanjiao"></div>
+                </div>
+            ),
+            img: (
+                <div class="item-wrap image">
+                    <img src={(props.item as EasemobChat.ImgMsgBody).url} />
+                </div>
+            ),
+        }
+
+        return () => (
+            <div class="msg-item">
+                {content[props.item.type]}
+
+                <div class="avatar">
+                    <img src={getUrl('avatar-default-man.png')} alt="" />
+                </div>
+            </div>
+        )
     },
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .msg-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-end;
     gap: 10rem;
     .avatar {
@@ -48,6 +64,7 @@ export default defineComponent({
         }
     }
     .item-wrap {
+        margin-top: 5rem;
         position: relative;
         padding: 10rem;
         background-color: #a0ea6f;
@@ -64,6 +81,9 @@ export default defineComponent({
             border-top: 7rem solid transparent;
             border-bottom: 7rem solid transparent;
             border-radius: 5rem;
+        }
+        &.image {
+            background-color: #f3f3f3;
         }
     }
 }

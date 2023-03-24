@@ -40,6 +40,9 @@ const { appKey } = baseConfig
  **/
 const EaseChatClient = new EaseChatSDK.connection({
     appKey,
+    isHttpDNS: true,
+    url: `//${baseConfig.socket3}`,
+    apiUrl: `//${baseConfig.RestApi}`,
 })
 console.log('EaseIMClient', EaseChatClient)
 

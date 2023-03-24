@@ -78,60 +78,65 @@ const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
     },
 ])
 
-const initAdmin = async () => {
-    const adminStore = useAdminStore()
-    const adminToken = localStorage.getItem('adminToken')
-    if (!adminToken) {
-        const result = await getAdminToken({
-            grant_type: 'client_credentials',
-            client_id: baseConfig.clientID,
-            client_secret: baseConfig.clientSecret,
-            ttl: 0,
-        })
+const methods = {
+    setTabbar() {
+        console.log('设置tabbar -->', location.pathname.split('/')[1])
 
-        adminStore.setToken(result.access_token)
-        adminStore.setApplication(result.application)
-        adminStore.setTime(result.expires_in)
-        localStorage.setItem(
-            'adminToken',
-            JSON.stringify({
-                application: result.application,
-                time: result.expires_in,
-                token: result.access_token,
-            })
-        )
-        return
-    }
-    const adminInfo: AdminStorage = JSON.parse(adminToken)
-    adminStore.setToken(adminInfo.token)
-    adminStore.setApplication(adminInfo.application)
-    adminStore.setTime(adminInfo.time)
-}
-
-const initUser = () => {
-    const userStore = useUserStore()
-    const chatStore = useChatStore()
-    const userToken = localStorage.getItem('userToken')
-    if (!userToken) {
-        router.replace('/begin')
-        return
-    }
-    const userId = localStorage.getItem('userId')
-    userStore.setToken(userToken)
-    userStore.setUserID(userId || '')
-    chatStore.setUserId(userId || '')
-}
-
-const init = async () => {
-    for (let i = 0; i < tabbar.value.length; i++) {
-        if (tabbar.value[i].name === route?.name) {
-            activeIndex.value = i
-            break
+        for (let i = 0; i < tabbar.value.length; i++) {
+            if (tabbar.value[i].path === location.pathname.split('/')[1]) {
+                activeIndex.value = i
+                break
+            }
         }
-    }
-    await initAdmin()
-    initUser()
-    chatStore.connect()
+    },
+    async initAdmin() {
+        const adminStore = useAdminStore()
+        const adminToken = localStorage.getItem('adminToken')
+        if (!adminToken) {
+            const result = await getAdminToken({
+                grant_type: 'client_credentials',
+                client_id: baseConfig.clientID,
+                client_secret: baseConfig.clientSecret,
+                ttl: 0,
+            })
+
+            adminStore.setToken(result.access_token)
+            adminStore.setApplication(result.application)
+            adminStore.setTime(result.expires_in)
+            localStorage.setItem(
+                'adminToken',
+                JSON.stringify({
+                    application: result.application,
+                    time: result.expires_in,
+                    token: result.access_token,
+                })
+            )
+            return
+        }
+        const adminInfo: AdminStorage = JSON.parse(adminToken)
+        adminStore.setToken(adminInfo.token)
+        adminStore.setApplication(adminInfo.application)
+        adminStore.setTime(adminInfo.time)
+    },
+    initUser() {
+        const userStore = useUserStore()
+        const chatStore = useChatStore()
+        const userToken = localStorage.getItem('userToken')
+        if (!userToken) {
+            router.replace('/begin')
+            return
+        }
+        const userId = localStorage.getItem('userId')
+        userStore.setToken(userToken)
+        userStore.setUserID(userId || '')
+        chatStore.setUserId(userId || '')
+    },
+    async init() {
+        methods.setTabbar()
+        await methods.initAdmin()
+        methods.initUser()
+        chatStore.connect()
+    },
 }
 
 EaseChatSDK.logger.disableAll()
@@ -205,10 +210,8 @@ EaseChatClient.addEventHandler('connection', {
 // })
 
 router.beforeEach((to, from) => {
-    if (from.path === '/') {
-        // db.open()
-    }
-
+    console.log('>>>>>>>>>beforeEach')
+    methods.setTabbar()
     if (
         showTabbarList.includes(from.path) &&
         showTabbarList.includes(to.path)
@@ -221,7 +224,7 @@ router.beforeEach((to, from) => {
     }
 })
 
-init()
+methods.init()
 </script>
 
 <template>

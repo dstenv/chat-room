@@ -30,6 +30,7 @@ export type MessageData = EasemobChat.MessageBody & {
     loading?: boolean
     error?: boolean
     url?: string
+    longTouch?: boolean
 }
 
 /** 发送消息的基础配置 */

@@ -1,28 +1,60 @@
 <template>
     <div class="footer">
-        <div class="left">
-            <img
-                v-show="pageData.isKeyBoard"
-                :src="tools.getUrl('voice-black.png')"
-                alt=""
-            />
-            <img v-show="!pageData.isKeyBoard" src="" alt="" />
-        </div>
-        <div class="center">
-            <textarea
-                v-model="pageData.text"
-                autocomplete="on"
-                wrap="hard"
-                enterkeyhint="send"
-                @keydown="keydown"
-            />
-        </div>
-        <div class="right">
-            <div class="no-send" v-show="!pageData.text">
-                <img :src="tools.getUrl('expression-black.png')" alt="" />
-                <img :src="tools.getUrl('add-black.png')" alt="" />
+        <div class="top">
+            <div class="left">
+                <img
+                    v-show="pageData.isKeyBoard"
+                    :src="tools.getUrl('voice-black.png')"
+                    alt=""
+                />
+                <img v-show="!pageData.isKeyBoard" src="" alt="" />
             </div>
-            <div class="send" v-show="pageData.text" @click="send">发送</div>
+            <div class="center">
+                <textarea
+                    v-model="pageData.text"
+                    autocomplete="on"
+                    wrap="hard"
+                    enterkeyhint="send"
+                    @keydown="keydown"
+                />
+            </div>
+            <div class="right">
+                <div class="no-send" v-show="!pageData.text">
+                    <img :src="tools.getUrl('expression-black.png')" alt="" />
+                    <img
+                        :src="tools.getUrl('add-black.png')"
+                        alt=""
+                        @click="
+                            emits('toggleFuns', {
+                                bool: !props.isSelFuns,
+                                isBehavior: true,
+                            })
+                        "
+                    />
+                </div>
+                <div class="send" v-show="pageData.text" @click="send">
+                    发送
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="funs"
+            :style="{
+                height: props.isSelFuns ? 'auto' : 0,
+                paddingTop: props.isSelFuns ? '20rem' : 0,
+                paddingBottom: props.isSelFuns ? '10rem' : 0,
+            }"
+        >
+            <div
+                class="fun"
+                v-for="item in funList"
+                :key="item.text"
+                @click="item.oprate"
+            >
+                <img :src="item.icon" alt="" />
+                {{ item.text }}
+            </div>
         </div>
     </div>
 </template>
@@ -30,15 +62,86 @@
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
 import tools from '@/utils/tools'
+import { file } from '@babel/types'
 import { showToast } from 'vant'
+
+interface FunItem {
+    text: string
+    icon: string
+    oprate: () => void
+}
 
 const chatStore = useChatStore()
 
 const props = defineProps<{
     /** 对方的用户id */
     oppositeId: string
+    isSelFuns: boolean
 }>()
-const emits = defineEmits(['scrollBottom'])
+const emits = defineEmits(['scrollBottom', 'toggleFuns'])
+
+const funList: FunItem[] = [
+    {
+        text: '图片',
+        icon: tools.getUrl('pic.png'),
+        oprate() {
+            const inp = document.createElement('input')
+
+            inp.type = 'file'
+            inp.accept = 'image/*'
+            inp.setAttribute('style', 'position:fixed;left:2000px;')
+            inp.onchange = function (e) {
+                setTimeout(async () => {
+                    const { files } = e.target as HTMLInputElement
+
+                    if (files) {
+                        console.log('files[0] -->', files[0])
+                        const url = URL.createObjectURL(files[0])
+
+                        /** 发送图片必须使用这种格式。否则发送无效 */
+                        const file = {
+                            data: files[0],
+                            filename: files[0].name,
+                            filetype: files[0].type,
+                        } as unknown as File
+
+                        chatStore.sendMessage(
+                            'img',
+                            {
+                                chatType: 'singleChat',
+                                file,
+                                to: props.oppositeId,
+                            },
+                            {
+                                chatType: 'singleChat',
+                                id: '',
+                                url,
+                                time: +new Date(),
+                                to: props.oppositeId,
+                                type: 'img',
+                            },
+                            () => {
+                                emits('toggleFuns', {
+                                    bool: false,
+                                    isBehavior: true,
+                                })
+                            }
+                        )
+                    }
+
+                    document.body.removeChild(inp)
+                }, 200)
+            }
+            document.body.appendChild(inp)
+            inp.click()
+        },
+    },
+    {
+        text: '视频',
+        icon: tools.getUrl('video.png'),
+        oprate() {},
+    },
+]
 
 const pageData = reactive({
     text: '',
@@ -83,15 +186,18 @@ const send = () => {
     bottom: 0;
     left: 0;
     width: 100vw;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 10rem;
     background-color: rgba(230, 230, 230, 0.7);
+    border-bottom: 1rem solid #ddd;
     img {
         width: 25rem;
         object-fit: contain;
         outline: none;
+    }
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     .left,
     .right {
@@ -137,6 +243,27 @@ const send = () => {
             transition: background 0.1s ease-in-out;
             &:active {
                 background-color: #50b857;
+            }
+        }
+    }
+    .funs {
+        display: flex;
+        align-items: center;
+        gap: 15rem;
+        overflow: hidden;
+        padding-left: 10rem;
+        padding-right: 10rem;
+        .fun {
+            // width: 80rem;
+            // height: 80rem;
+            padding: 10rem 17rem;
+            border-radius: 10rem;
+            background-color: #fff;
+            text-align: center;
+            img {
+                width: 25rem;
+                display: block;
+                margin: 0 auto 3rem;
             }
         }
     }
