@@ -83,28 +83,30 @@ const scrollData = reactive({
     height: 0,
     differHeight: 0,
     behavior: false,
+    beforeHeight: 0,
 })
 
 const resizeObserver = new ResizeObserver((entries) => {
     if (entries && entries[0]) {
         const contentRect = entries[0].contentRect
 
-        scrollData.differHeight =
-            contentRect.height - mainRef.value.clientHeight - 30
+        scrollData.differHeight = contentRect.height - scrollData.beforeHeight
         scrollData.height = contentRect.height
 
         if (scrollData.type !== ScrollType.None) {
             if (scrollData.type === ScrollType.Bottom) {
                 // 滚动到底部
 
-                mainRef.value.scrollTo({
+                mainRef.value?.scrollTo({
                     top: scrollData.height + scrollData.scrollTop,
                     behavior: scrollData.behavior ? 'smooth' : 'auto',
                 })
             } else {
+                scrollData.scrollTop += scrollData.differHeight
+
                 // 保持当前滚动高度
-                mainRef.value.scrollTo({
-                    top: scrollData.differHeight + scrollData.scrollTop,
+                mainRef.value?.scrollTo({
+                    top: scrollData.scrollTop,
                     behavior: 'auto',
                 })
             }
@@ -114,6 +116,10 @@ const resizeObserver = new ResizeObserver((entries) => {
 
 const methods = {
     getHistory() {
+        scrollData.beforeHeight = listRef.value.scrollHeight - 30
+
+        methods.keepScroll()
+
         chatStore.getHistoryMsg()
     },
 
@@ -163,7 +169,8 @@ onBeforeUnmount(async () => {
     /** 更新会话列表 */
     if (chatStore.socketDefer.send) {
         await chatStore.socketDefer.send.promise
-
+        await chatListStore.getChatList()
+    } else {
         await chatListStore.getChatList()
     }
 
@@ -173,12 +180,15 @@ onBeforeUnmount(async () => {
     }
 })
 
-methods.getHistory()
+chatStore.getHistoryMsg()
 </script>
 
 <style scoped lang="scss">
 ::-webkit-scrollbar {
     display: none;
+}
+.van-pull-refresh {
+    overflow: initial;
 }
 .x-chat {
     width: 100vw;
@@ -203,7 +213,7 @@ methods.getHistory()
 main {
     box-sizing: border-box;
     height: calc(100vh - 100rem);
-    padding: 15rem 10rem;
+    padding: 0 10rem;
     overflow-y: scroll;
     &.shinrk {
         height: calc(100vh - 200rem);
@@ -214,5 +224,6 @@ main {
     flex-direction: column;
     gap: 15rem;
     font-size: 14rem;
+    padding: 15rem 0;
 }
 </style>
