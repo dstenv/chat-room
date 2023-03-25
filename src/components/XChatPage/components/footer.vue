@@ -16,6 +16,9 @@
                     wrap="hard"
                     enterkeyhint="send"
                     @keydown="keydown"
+                    @focus="
+                        emits('toggleFuns', { bool: false, isBehavior: true })
+                    "
                 />
             </div>
             <div class="right">
@@ -62,7 +65,6 @@
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
 import tools from '@/utils/tools'
-import { file } from '@babel/types'
 import { showToast } from 'vant'
 
 interface FunItem {
@@ -71,7 +73,13 @@ interface FunItem {
     oprate: () => void
 }
 
+interface FooterInstance {
+    textControl: (command: 'focus' | 'blur') => void
+}
+
 const chatStore = useChatStore()
+
+const textRef = ref<HTMLTextAreaElement>({} as HTMLTextAreaElement)
 
 const props = defineProps<{
     /** 对方的用户id */
@@ -178,6 +186,17 @@ const send = () => {
     )
     emits('scrollBottom', true)
 }
+
+defineExpose({
+    textControl: (command) => {
+        const controlObj = {
+            focus: textRef.value.focus,
+            blur: textRef.value.blur,
+        }
+
+        controlObj[command]
+    },
+} as FooterInstance)
 </script>
 
 <style scoped lang="scss">

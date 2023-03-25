@@ -13,9 +13,9 @@
         "
     >
         <div class="img">
-            <img :src="info.avatar" alt="" />
+            <img :src="props.info.avatar" alt="" />
         </div>
-        <div class="name">{{ props.info.nickname }}</div>
+        <div class="name">{{ props.info.nickname || props.info.userid }}</div>
     </div>
 </template>
 
@@ -31,6 +31,7 @@ const friendStore = useFriendStore()
 const props = defineProps<{
     info: UserProPertyType
 }>()
+console.log('props.info -->', props.info)
 
 onBeforeUnmount(() => {
     chatStore.setTargetId('')

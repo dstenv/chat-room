@@ -13,8 +13,6 @@ export default defineComponent({
     } as const,
     emits: [],
     setup(props, { emit, expose }) {
-        const getUrl = tools.getUrl
-
         const pageData = reactive({})
 
         const methods = {
@@ -38,10 +36,21 @@ export default defineComponent({
 
         return () => (
             <div class="msg-item">
-                {content[props.item.type]}
+                <div class="msg-item-time">
+                    {tools.showMsgTime(
+                        (props.item as EasemobChat.TextMsgBody).time
+                    )}
+                </div>
 
-                <div class="avatar">
-                    <img src={getUrl('avatar-default-man.png')} alt="" />
+                <div class="msg-item-box">
+                    {content[props.item.type]}
+
+                    <div class="avatar">
+                        <img
+                            src={tools.getUrl('avatar-default-man.png')}
+                            alt=""
+                        />
+                    </div>
                 </div>
             </div>
         )
@@ -51,39 +60,49 @@ export default defineComponent({
 
 <style lang="scss">
 .msg-item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    gap: 10rem;
-    .avatar {
-        border-radius: 5rem;
-        img {
-            width: 35rem;
-            object-fit: cover;
-            border-radius: 5rem;
-        }
+    .msg-item-time {
+        text-align: center;
+        width: 100rem;
+        margin: 5rem auto;
+        // background-color: rgba(0, 0, 0, 0.2);
+        padding: 5rem 0;
+        border-radius: 3rem;
     }
-    .item-wrap {
-        margin-top: 5rem;
-        position: relative;
-        padding: 10rem;
-        background-color: #a0ea6f;
-        border-radius: 4rem;
-        max-width: 70%;
-        .sanjiao {
-            width: 0;
-            height: 0;
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translate(100%, -50%);
-            border-left: 10rem solid #a0ea6f;
-            border-top: 7rem solid transparent;
-            border-bottom: 7rem solid transparent;
+    .msg-item-box {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        gap: 10rem;
+        .avatar {
             border-radius: 5rem;
+            img {
+                width: 35rem;
+                object-fit: cover;
+                border-radius: 5rem;
+            }
         }
-        &.image {
-            background-color: #f3f3f3;
+        .item-wrap {
+            margin-top: 5rem;
+            position: relative;
+            padding: 10rem;
+            background-color: #a0ea6f;
+            border-radius: 4rem;
+            max-width: 70%;
+            .sanjiao {
+                width: 0;
+                height: 0;
+                position: absolute;
+                right: 2rem;
+                top: 50%;
+                transform: translate(100%, -50%);
+                border-left: 10rem solid #a0ea6f;
+                border-top: 7rem solid transparent;
+                border-bottom: 7rem solid transparent;
+                border-radius: 5rem;
+            }
+            &.image {
+                background-color: #f3f3f3;
+            }
         }
     }
 }

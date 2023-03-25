@@ -9,6 +9,7 @@ import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
 import Tool from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
+import { useChatListStore } from './stores/chatList'
 // import { db } from './utils/indexDB'
 
 interface AdminStorage {
@@ -37,6 +38,7 @@ const RouteItem = {
 const route = useRoute()
 const chatStore = useChatStore()
 const router = useRouter()
+const chatListStore = useChatListStore()
 
 const activeIndex = ref(0)
 const transitionName = ref('fade-in')
@@ -144,6 +146,9 @@ EaseChatSDK.logger.disableAll()
 EaseChatClient.addEventHandler('connection', {
     onConnected: () => {
         console.log('>>>>>环信连接成功')
+
+        /** 获取会话列表 */
+        chatListStore.getChatList()
     },
     onDisconnected: () => {
         console.log('------>webscoket断开连接')
@@ -211,7 +216,7 @@ EaseChatClient.addEventHandler('connection', {
 
 router.beforeEach((to, from) => {
     console.log('>>>>>>>>>beforeEach')
-    methods.setTabbar()
+    // methods.setTabbar()
     if (
         showTabbarList.includes(from.path) &&
         showTabbarList.includes(to.path)

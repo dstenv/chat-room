@@ -32,7 +32,7 @@
             </div>
 
             <div class="friend-list">
-                <FriendItem
+                <XFriend
                     v-for="item in pageData.friends"
                     :key="item.userid"
                     :info="item"
@@ -50,7 +50,7 @@ import { storeToRefs } from 'pinia'
 import Tool from '@/utils/tools'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
-import FriendItem from './components/friend.vue'
+import XFriend from '@/components/XFriend/index.vue'
 
 interface MailTopItem {
     text: string

@@ -1,4 +1,22 @@
 type FolderName = 'imgs' | 'icons'
+type TimeType =
+    | 'yyyy-MM-dd'
+    | 'hh:mm'
+    | 'MM月dd日 hh:mm'
+    | 'yyyy年MM月dd日 hh:mm'
+    | '星期day hh:mm'
+
+const weekObj: { [key: string]: string } = {
+    1: '一',
+    2: '二',
+    3: '三',
+    4: '四',
+    5: '五',
+    6: '六',
+    7: '日',
+}
+
+const ONE_DAY_TIME = 86400000
 
 export default {
     getUrl(imgName: string, folderName: FolderName = 'icons') {
@@ -53,5 +71,52 @@ export default {
                 }
             }
         })
+    },
+
+    /** 格式化时间 */
+    format(time: number, type: TimeType = 'yyyy-MM-dd') {
+        const Time = new Date(time)
+
+        const obj: {
+            [key: string]: string
+        } = {
+            yyyy: `${Time.getFullYear()}`,
+            MM: `${Time.getMonth() + 1 + 100}`.slice(1, 3),
+            dd: `${Time.getDate() + 100}`.slice(1, 3),
+            hh: `${Time.getHours() + 100}`.slice(1, 3),
+            mm: `${Time.getMinutes() + 100}`.slice(1, 3),
+            ss: `${Time.getSeconds() + 100}`.slice(1, 3),
+            day: weekObj[`${Time.getDay()}`],
+        }
+
+        let str: string = type
+        for (const key in obj) {
+            str = str.replace(key, obj[key])
+        }
+
+        return str
+    },
+
+    /** 展示消息的时间 */
+    showMsgTime(time: number) {
+        let str = ''
+        const now = +new Date()
+        if (now - time < ONE_DAY_TIME) {
+            // console.log('当天消息')
+            str = this.format(time, 'hh:mm')
+        } else if (now - time < ONE_DAY_TIME * 2) {
+            // console.log('昨天')
+            str = `昨天 ${this.format(time, 'hh:mm')}`
+        } else if (now - time < ONE_DAY_TIME * 7) {
+            // console.log('一周内')
+            str = this.format(time, '星期day hh:mm')
+        } else if (now - time < ONE_DAY_TIME * 366) {
+            // console.log('一年内')
+            str = this.format(time, 'MM月dd日 hh:mm')
+        } else {
+            str = this.format(time, 'yyyy年MM月dd日 hh:mm')
+        }
+
+        return str
     },
 }
