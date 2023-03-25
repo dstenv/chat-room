@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
+import type { UserInfo } from '@/types'
 
 export const useUserStore = defineStore('user', () => {
     const token = ref('')
     const userId = ref('')
+
+    const userInfo = ref<UserInfo>()
 
     const setToken = (value: string) => {
         token.value = value
@@ -11,7 +14,11 @@ export const useUserStore = defineStore('user', () => {
         userId.value = value
     }
 
-    return { token, userId, setToken, setUserID }
+    const setUserInfo = (info: UserInfo) => {
+        userInfo.value = { ...info }
+    }
+
+    return { token, userId, userInfo, setToken, setUserID, setUserInfo }
 })
 
 export const useAdminStore = defineStore('admin', () => {

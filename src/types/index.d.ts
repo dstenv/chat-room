@@ -8,3 +8,10 @@ export class UserProPertyType {
     userid?: string
     avatar?: string
 }
+
+export class UserInfo {
+    nickname?: string
+    id: string
+    avatar?: string
+    sex = '1'
+}

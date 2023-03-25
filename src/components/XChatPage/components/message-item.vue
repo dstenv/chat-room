@@ -1,4 +1,5 @@
 <script lang="tsx">
+import { useUserStore } from '@/stores/user'
 import type { MessageData } from '@/types/message'
 import tools from '@/utils/tools'
 import type { EasemobChat } from 'easemob-websdk'
@@ -13,6 +14,8 @@ export default defineComponent({
     } as const,
     emits: [],
     setup(props, { emit, expose }) {
+        const userStore = useUserStore()
+
         const pageData = reactive({})
 
         const methods = {
@@ -22,9 +25,22 @@ export default defineComponent({
 
         const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
             txt: (
-                <div class="item-wrap">
+                <div
+                    class="item-wrap"
+                    style={{
+                        backgroundColor:
+                            props.item.from === userStore.userId
+                                ? '#a0ea6f'
+                                : '#f3f3f3',
+                    }}
+                >
                     {(props.item as EasemobChat.TextMsgBody).msg}
-                    <div class="sanjiao"></div>
+
+                    {props.item.from === userStore.userId ? (
+                        <div class="sanjiao"></div>
+                    ) : (
+                        <div class="sanjiao him"></div>
+                    )}
                 </div>
             ),
             img: (
@@ -42,7 +58,15 @@ export default defineComponent({
                     )}
                 </div>
 
-                <div class="msg-item-box">
+                <div
+                    class="msg-item-box"
+                    style={{
+                        flexDirection:
+                            props.item.from === userStore.userId
+                                ? 'row'
+                                : 'row-reverse',
+                    }}
+                >
                     {content[props.item.type]}
 
                     <div class="avatar">
@@ -85,7 +109,7 @@ export default defineComponent({
             margin-top: 5rem;
             position: relative;
             padding: 10rem;
-            background-color: #a0ea6f;
+            // background-color: #a0ea6f;
             border-radius: 4rem;
             max-width: 70%;
             .sanjiao {
@@ -99,6 +123,11 @@ export default defineComponent({
                 border-top: 7rem solid transparent;
                 border-bottom: 7rem solid transparent;
                 border-radius: 5rem;
+                &.him {
+                    right: 100%;
+                    transform: translate(2rem, -50%) rotate(180deg);
+                    border-left: 10rem solid #f3f3f3;
+                }
             }
             &.image {
                 background-color: #f3f3f3;

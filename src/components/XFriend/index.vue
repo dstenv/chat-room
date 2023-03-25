@@ -31,7 +31,6 @@ const friendStore = useFriendStore()
 const props = defineProps<{
     info: UserProPertyType
 }>()
-console.log('props.info -->', props.info)
 
 onBeforeUnmount(() => {
     chatStore.setTargetId('')

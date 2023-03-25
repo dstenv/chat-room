@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
+import { useChatListStore } from '@/stores/chatList'
 import { useFriendStore } from '@/stores/friend'
 import { EaseChatClient } from '@/utils/config'
 import tools from '@/utils/tools'
@@ -59,6 +60,7 @@ const route = useRoute()
 const router = useRouter()
 const chatStore = useChatStore()
 const friendStore = useFriendStore()
+const chatListStore = useChatListStore()
 
 const mainRef = ref<HTMLElement>({} as HTMLElement)
 const listRef = ref<HTMLElement>({} as HTMLElement)
@@ -156,7 +158,15 @@ onMounted(() => {
     resizeObserver.observe(listRef.value)
 })
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
+    console.log('聊天页 onBeforeUnmount', chatStore.socketDefer.send)
+    /** 更新会话列表 */
+    if (chatStore.socketDefer.send) {
+        await chatStore.socketDefer.send.promise
+
+        await chatListStore.getChatList()
+    }
+
     if (listRef.value) {
         resizeObserver.unobserve(listRef.value)
         chatStore.clean()

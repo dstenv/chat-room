@@ -49,6 +49,7 @@ const fromList: string[] = []
  * TODO 显示tabbar的路由
  */
 const showTabbarList = ['/chat', '/mail-list', '/wechat-moments', '/my']
+const secondPages = ['/my-chat', '/add-friend']
 const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
     {
         text: '消息',
@@ -222,7 +223,13 @@ router.beforeEach((to, from) => {
         showTabbarList.includes(to.path)
     ) {
         transitionName.value = ''
-    } else if (from.path === '/my-chat' && showTabbarList.includes(to.path)) {
+    } else if (
+        /**
+         *  TODO 二级页面返回一级页面时，需要淡出动画
+         */
+        secondPages.includes(from.path) &&
+        showTabbarList.includes(to.path)
+    ) {
         transitionName.value = 'fade-out'
     } else {
         transitionName.value = 'fade-in'

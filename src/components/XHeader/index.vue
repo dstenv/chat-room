@@ -1,7 +1,14 @@
 <template>
     <div class="xheader">
         <div class="header-box c-bg">
-            <div class="left">
+            <div
+                class="left"
+                @click="
+                    () => {
+                        props.leftClick && props.leftClick()
+                    }
+                "
+            >
                 <img v-if="props.leftIcon" :src="props.leftIcon" alt="" />
             </div>
             <div class="mid">
@@ -20,6 +27,7 @@ const props = defineProps<{
     title: string
     centerIcon?: string
     leftIcon?: string
+    leftClick?: () => void
 }>()
 </script>
 

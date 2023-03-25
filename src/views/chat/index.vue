@@ -36,12 +36,7 @@
             </template>
 
             <template #custom>
-                <div class="search c-bg">
-                    <div>
-                        <img :src="Tool.getUrl('search-gray.png')" alt="" />
-                        搜索
-                    </div>
-                </div>
+                <XSearch />
             </template>
         </XHeader>
 
@@ -52,15 +47,24 @@
                 :key="item.lastMessage.to"
                 @click="
                     () => {
-                        chatStore.setTargetId(item.lastMessage.to)
+                        chatStore.setTargetId(
+                            item.lastMessage.to === userStore.userId
+                                ? item.lastMessage.from
+                                : item.lastMessage.to
+                        )
 
                         friendStore.setFriend({
                             avatar: item.lastMessage.payload.avatar,
                             sex: item.lastMessage.payload.sex || '1',
                             nickname:
                                 item.lastMessage.payload.nickname ||
-                                item.lastMessage.to,
-                            userid: item.lastMessage.to,
+                                item.lastMessage.to === userStore.userId
+                                    ? item.lastMessage.from
+                                    : item.lastMessage.to,
+                            userid:
+                                item.lastMessage.to === userStore.userId
+                                    ? item.lastMessage.from
+                                    : item.lastMessage.to,
                         })
 
                         router.push('/my-chat')
@@ -76,10 +80,19 @@
                             <p>
                                 {{
                                     item.lastMessage.payload.nickname ||
-                                    item.lastMessage.to
+                                    (item.lastMessage.to === userStore.userId
+                                        ? item.lastMessage.from
+                                        : item.lastMessage.to)
                                 }}
                             </p>
-                            <span>{{ (item.lastMessage as any).msg }}</span>
+                            <span
+                                v-if="(item.lastMessage as any).type === 'txt'"
+                                >{{ (item.lastMessage as any).msg }}</span
+                            >
+                            <span
+                                v-if="(item.lastMessage as any).type === 'img'"
+                                >[图片]</span
+                            >
                         </div>
                         <div class="right">
                             <span>{{
@@ -100,6 +113,8 @@ import Tool from '@/utils/tools'
 import { useChatListStore } from '@/stores/chatList'
 import { useChatStore } from '@/stores/chat'
 import { useFriendStore } from '@/stores/friend'
+import XSearch from '@/components/XSearch/index.vue'
+import { useUserStore } from '@/stores/user'
 
 interface AddListItem {
     text: string
@@ -110,6 +125,7 @@ interface AddListItem {
 const chatListStore = useChatListStore()
 const chatStore = useChatStore()
 const friendStore = useFriendStore()
+const userStore = useUserStore()
 const router = useRouter()
 
 const addList: AddListItem[] = [
@@ -124,7 +140,8 @@ const addList: AddListItem[] = [
         text: '添加朋友',
         icon: Tool.getUrl('icon-add-user.png'),
         action() {
-            console.log('添加朋友', 'desc')
+            // console.log('添加朋友', 'desc')
+            router.push('/add-friend')
         },
     },
     {
@@ -170,25 +187,6 @@ onActivated(() => {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    .search {
-        position: relative;
-        padding: 10rem;
-        div {
-            background-color: #fff;
-            border-radius: 5rem;
-            padding: 8rem 0;
-            letter-spacing: 1rem;
-            font-size: 14rem;
-            color: #8b8b8b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            img {
-                width: 14rem;
-                margin-right: 5rem;
-            }
-        }
-    }
 }
 .chat-list {
     flex: 1;

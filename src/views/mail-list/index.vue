@@ -2,15 +2,18 @@
     <div class="mail">
         <XHeader title="通讯录">
             <template #right>
-                <img :src="Tool.getUrl('icon-add.png')" alt="" />
+                <img
+                    :src="Tool.getUrl('icon-add.png')"
+                    alt=""
+                    @click="
+                        () => {
+                            router.push('/add-friend')
+                        }
+                    "
+                />
             </template>
             <template #custom>
-                <div class="search c-bg">
-                    <div>
-                        <img :src="Tool.getUrl('search-gray.png')" alt="" />
-                        搜索
-                    </div>
-                </div>
+                <XSearch />
             </template>
         </XHeader>
 
@@ -51,6 +54,7 @@ import Tool from '@/utils/tools'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
 import XFriend from '@/components/XFriend/index.vue'
+import XSearch from '@/components/XSearch/index.vue'
 
 interface MailTopItem {
     text: string
@@ -60,6 +64,7 @@ interface MailTopItem {
 }
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const { userId } = storeToRefs(userStore)
 
@@ -110,25 +115,6 @@ init()
 .mail {
     height: calc(100vh - 60rem);
     background-color: #ededed;
-    .search {
-        position: relative;
-        padding: 10rem;
-        div {
-            background-color: #fff;
-            border-radius: 5rem;
-            padding: 8rem 0;
-            letter-spacing: 1rem;
-            font-size: 14rem;
-            color: #8b8b8b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            img {
-                width: 14rem;
-                margin-right: 5rem;
-            }
-        }
-    }
 }
 main {
     height: calc(100vh - 60rem - 92rem);

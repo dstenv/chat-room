@@ -58,6 +58,11 @@ const router = createRouter({
             name: 'MY_CHAT',
             component: () => import('@/views/my-chat/index.vue'),
         },
+        {
+            path: '/add-friend',
+            name: 'ADD_FRIEND',
+            component: () => import('@/views/add-friend/index.vue'),
+        },
     ],
 })
 

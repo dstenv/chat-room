@@ -22,6 +22,7 @@ export const useChatStore = defineStore('chat', () => {
     const socketDefer = {
         connected: null as Defer<void> | null,
         reconnected: null as Defer<void> | null,
+        send: null as Defer<void> | null,
     }
 
     const socketHook = {
@@ -107,6 +108,12 @@ export const useChatStore = defineStore('chat', () => {
         /** 自定义操作函数 */
         opreate: (msg: MessageData) => void
     ): Promise<EasemobChat.SendMsgResult | null> => {
+        if (socketDefer.send) {
+            await socketDefer.send.promise
+        } else if (!socketDefer.send) {
+            socketDefer.send = new Defer()
+        }
+
         data = {
             ...data,
             type,
@@ -148,6 +155,7 @@ export const useChatStore = defineStore('chat', () => {
             }
 
             console.log('发送的result', result)
+            socketDefer.send.resolve()
             return result
         } catch (error) {
             for (let i = messageList.value.length - 1; i >= 0; i--) {
@@ -161,6 +169,7 @@ export const useChatStore = defineStore('chat', () => {
                     break
                 }
             }
+            socketDefer.send.reject()
             return null
         }
     }
