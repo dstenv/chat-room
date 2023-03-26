@@ -63,6 +63,11 @@ const router = createRouter({
             name: 'ADD_FRIEND',
             component: () => import('@/views/add-friend/index.vue'),
         },
+        {
+            path: '/search-user',
+            name: 'SEARCH_USER',
+            component: () => import('@/views/search-user/index.vue'),
+        },
     ],
 })
 

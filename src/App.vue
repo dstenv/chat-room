@@ -247,6 +247,7 @@ methods.init()
                     :is="Component"
                     :key="route.name"
                     v-if="route.meta.keep"
+                    @setTabbar="methods.setTabbar"
                 />
             </KeepAlive>
         </transition>

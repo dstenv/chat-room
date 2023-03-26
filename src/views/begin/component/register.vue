@@ -118,9 +118,11 @@ const register = async () => {
             username: userInfo.userID,
             password: userInfo.password,
         })
+        /** 设置用户信息 */
         await setUsetInfo(userInfo.userID)({
             nickname: userInfo.nickName,
             sex: '1',
+            title: 'test',
         })
 
         showToast('注册成功')

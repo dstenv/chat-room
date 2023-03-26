@@ -176,8 +176,9 @@ onBeforeUnmount(async () => {
 
     if (listRef.value) {
         resizeObserver.unobserve(listRef.value)
-        chatStore.clean()
     }
+
+    chatStore.clean()
 })
 
 chatStore.getHistoryMsg()

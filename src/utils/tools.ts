@@ -119,4 +119,15 @@ export default {
 
         return str
     },
+
+    /** 格式化字符串 */
+    queryString(data: { [key: string]: any }) {
+        let str = ''
+
+        for (const key in data) {
+            str += `${key}=${data[key]}&`
+        }
+
+        return str.slice(0, str.length - 1)
+    },
 }

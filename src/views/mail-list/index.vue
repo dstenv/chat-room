@@ -68,6 +68,8 @@ const router = useRouter()
 
 const { userId } = storeToRefs(userStore)
 
+const emits = defineEmits(['setTabbar'])
+
 const mailTopList: MailTopItem[] = [
     {
         icon: Tool.getUrl('icon-room.png'),
@@ -105,6 +107,11 @@ const init = async () => {
         }
     } catch (error) {}
 }
+
+onActivated(() => {
+    console.log('>>>>>> 通讯录页面 onActivated')
+    emits('setTabbar')
+})
 init()
 </script>
 

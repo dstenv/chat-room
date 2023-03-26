@@ -128,6 +128,8 @@ const friendStore = useFriendStore()
 const userStore = useUserStore()
 const router = useRouter()
 
+const emits = defineEmits(['setTabbar'])
+
 const addList: AddListItem[] = [
     {
         text: '发起群聊',
@@ -175,6 +177,7 @@ console.log('chatListStore -->', chatListStore.chatList)
 onActivated(() => {
     console.log('>>>>>>> cahtpage onActivated')
     // methods.getChatList()
+    emits('setTabbar')
 })
 </script>
 

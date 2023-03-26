@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--如果script标签放在body前面，则写js时需要先window.onload=funtion(){代码...}-->
+<html lang="zh">
+<head>
+<!--meta 元标签 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-wdith, initial-scale=1.0"> <!--兼容移动端 -->
+<title></title> <!-- title中的内容可以加快浏览器搜索引擎优化去抓取 -->
+<!-- 导入CSS文件方式1 -->
+<!--     <link rel="stylesheet" href=""> -->
+<!-- 引入less文件需要导入的东西 -->
+<!-- <script src="https://cdn.bootcdn.net/ajax/libs/less.js/4.1.2/less.min.js"></script> -->
+<!-- 引入工具库文件 绝对路径不对 需要自行修改 -->
+<!-- <script src ="F:\培训\Js\testUtil.js"></script> -->
+<!-- <script src ="F:\培训\Js\Util.js"></script> -->
+<style type ="text/css">
+</style>
+</head>
+<body>
+
+<!-- 引入Jquery文件 -->
+<script src =""></script>
+<script type="text/javascript">
+    function queryString(data) {
+        console.log('data -->', data);
+
+        let str = ''
+
+        console.time()
+        for(const key in data){
+            str += `${key}=${data[key]}&`
+        }
+        console.timeEnd()
+
+        console.log('str -->', str.slice(0,str.length - 1));
+    }
+
+    queryString({
+        nickname1: 'aaa',
+        sex1: '1',
+        nickname2: 'aaa',
+        sex2: '1',
+        nickname3: 'aaa',
+        sex3: '1',
+        nickname4: 'aaa',
+        sex4: '1',
+        nickname5: 'aaa',
+        sex5: '1',
+        nickname6: 'aaa',
+        sex6: '1',
+    })
+</script>
+</body>
+</html>

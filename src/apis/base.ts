@@ -4,6 +4,7 @@ import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { showLoadingToast } from 'vant'
 import type { ToastWrapperInstance } from 'vant/lib/toast/types'
+import tools from '@/utils/tools'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
@@ -118,6 +119,12 @@ export const request = <T, U>(
             requestOptions[bodyKey] = body
         }
 
+        if (requestOptions.method === 'PUT') {
+            requestOptions.data = tools.queryString(
+                body as { [key: string]: string }
+            )
+        }
+
         if (requestOptions.loading ?? requestBaseConfig.loading) {
             loadingToastInst = showLoadingToast({
                 message: '加载中',
@@ -128,6 +135,7 @@ export const request = <T, U>(
         let result: ResponseBaseType<U>
 
         try {
+            // console.log('requestOptions -->', requestOptions)
             result = await axios({
                 ...requestOptions,
             })

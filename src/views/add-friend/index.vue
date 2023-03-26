@@ -26,7 +26,7 @@
         </div>
 
         <template v-else>
-            <Search />
+            <Search @cancel="() => (pageData.isSearch = false)" />
         </template>
     </div>
 </template>

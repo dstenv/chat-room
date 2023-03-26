@@ -200,7 +200,7 @@ export const useChatStore = defineStore('chat', () => {
                 /** 获取消息的起始位置 */
                 cursor: chatData.startId,
             })
-            chatData.startId = list.cursor as string
+            chatData.startId = list.cursor || ''
 
             const messages: MessageData[] = list.messages.map((item) => ({
                 ...item,
@@ -214,6 +214,7 @@ export const useChatStore = defineStore('chat', () => {
                 console.log('messageList', messageList.value)
             } else {
                 console.log('历史消息为空')
+                chatData.startId = ''
             }
             insertBefore(messages.reverse())
         } catch (error) {}
@@ -266,6 +267,7 @@ export const useChatStore = defineStore('chat', () => {
     return {
         socketDefer,
         messageList,
+        chatData,
         connect,
         sendMessage,
         addMessage,
