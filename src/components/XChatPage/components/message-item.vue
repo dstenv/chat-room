@@ -1,7 +1,7 @@
 <script lang="tsx">
 import { useUserStore } from '@/stores/user'
 import type { MessageData } from '@/types/message'
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import type { EasemobChat } from 'easemob-websdk'
 import type { PropType } from 'vue'
 
@@ -53,7 +53,7 @@ export default defineComponent({
         return () => (
             <div class="msg-item">
                 <div class="msg-item-time">
-                    {tools.showMsgTime(
+                    {Tools.showMsgTime(
                         (props.item as EasemobChat.TextMsgBody).time
                     )}
                 </div>
@@ -71,7 +71,7 @@ export default defineComponent({
 
                     <div class="avatar">
                         <img
-                            src={tools.getUrl('avatar-default-man.png')}
+                            src={Tools.getUrl('avatar-default-man.png')}
                             alt=""
                         />
                     </div>

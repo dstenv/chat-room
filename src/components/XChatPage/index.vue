@@ -2,12 +2,12 @@
     <div class="x-chat">
         <div class="x-chat-head">
             <img
-                :src="tools.getUrl('back.png')"
+                :src="Tools.getUrl('back.png')"
                 alt=""
                 @click="router.back()"
             />
             <span>{{ friendStore.friend?.nickname || '未知' }}</span>
-            <img :src="tools.getUrl('many.png')" alt="" />
+            <img :src="Tools.getUrl('many.png')" alt="" />
         </div>
 
         <main ref="mainRef" :class="{ shinrk: pageData.isSelFuns }">
@@ -46,7 +46,7 @@ import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from '@/stores/chatList'
 import { useFriendStore } from '@/stores/friend'
 import { EaseChatClient } from '@/utils/config'
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import Footer from './components/footer.vue'
 import MessageItem from './components/message-item.vue'
 

@@ -3,7 +3,7 @@
         <div class="add-friend c-bg" v-if="!pageData.isSearch">
             <XHeader
                 title="添加朋友"
-                :left-icon="tools.getUrl('back.png')"
+                :left-icon="Tools.getUrl('back.png')"
                 :leftClick="
                     () => {
                         router.back()
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import XSearch from '@/components/XSearch/index.vue'
 import { useUserStore } from '@/stores/user'
 import Search from './components/search.vue'

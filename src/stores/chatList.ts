@@ -2,7 +2,7 @@ import { EaseChatClient } from '@/utils/config'
 import type { EasemobChat } from 'easemob-websdk'
 import { defineStore } from 'pinia'
 import { getUserInfo } from '@/apis/user/getUserInfo'
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 
 export const useChatListStore = defineStore('chatList', () => {
     const chatList = ref<EasemobChat.conversationList[]>([])
@@ -21,7 +21,7 @@ export const useChatListStore = defineStore('chatList', () => {
                     sex: property.data.sex,
                     avatar:
                         property.data.avatar ||
-                        tools.getUrl(
+                        Tools.getUrl(
                             property.data.sex === '2'
                                 ? 'avatar-default-woman.png'
                                 : 'avatar-default-man.png'

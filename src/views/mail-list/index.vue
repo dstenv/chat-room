@@ -3,7 +3,7 @@
         <XHeader title="通讯录">
             <template #right>
                 <img
-                    :src="Tool.getUrl('icon-add.png')"
+                    :src="Tools.getUrl('icon-add.png')"
                     alt=""
                     @click="
                         () => {
@@ -50,7 +50,7 @@
 import { getFriendList } from '@/apis/friend/getFriendList'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
 import XFriend from '@/components/XFriend/index.vue'
@@ -72,7 +72,7 @@ const emits = defineEmits(['setTabbar'])
 
 const mailTopList: MailTopItem[] = [
     {
-        icon: Tool.getUrl('icon-room.png'),
+        icon: Tools.getUrl('icon-room.png'),
         text: '群聊',
         bgColor: '#78bd78',
         action() {},
@@ -98,7 +98,7 @@ const init = async () => {
                 sex: property.data.sex,
                 avatar:
                     property.data.avatar ||
-                    Tool.getUrl(
+                    Tools.getUrl(
                         property.data.sex === '2'
                             ? 'avatar-default-woman.png'
                             : 'avatar-default-man.png'

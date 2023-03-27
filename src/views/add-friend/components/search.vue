@@ -2,7 +2,7 @@
     <div class="search c-bg">
         <div class="head">
             <img
-                :src="tools.getUrl('search-gray.png')"
+                :src="Tools.getUrl('search-gray.png')"
                 alt=""
                 @click="methods.search()"
             />
@@ -21,7 +21,7 @@
         <main v-show="pageData.value && !pageData.notFind">
             <div class="search-tip" @click="methods.search">
                 <div class="icon">
-                    <img :src="tools.getUrl('search-white.png')" alt="" />
+                    <img :src="Tools.getUrl('search-white.png')" alt="" />
                 </div>
                 <p class="text">
                     <span>搜索：</span>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { findUser } from '@/apis/user/findUser'
 import { useUserStore } from '@/stores/user'
 import { showToast } from 'vant'

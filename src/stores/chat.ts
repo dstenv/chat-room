@@ -43,7 +43,7 @@ export const useChatStore = defineStore('chat', () => {
             return socketDefer.connected.promise
         } else if (!socketDefer.connected) {
             socketDefer.connected = new Defer()
-            console.log(socketDefer.connected, '创建新的连接defer')
+            console.log('创建新的socket连接defer --> ', socketDefer.connected)
         }
 
         const userStore = useUserStore()
@@ -254,7 +254,7 @@ export const useChatStore = defineStore('chat', () => {
 
     /** 清除操作 */
     const clean = () => {
-        socketDefer.connected = null
+        // socketDefer.connected = null
 
         socketDefer.reconnected = null
 

@@ -7,7 +7,7 @@ import {
 } from '@/utils/config'
 import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from './stores/chatList'
 // import { db } from './utils/indexDB'
@@ -275,8 +275,8 @@ methods.init()
                     <img
                         :src="
                             props.active
-                                ? Tool.getUrl(item.activeIcon)
-                                : Tool.getUrl(item.inActiveIcon)
+                                ? Tools.getUrl(item.activeIcon)
+                                : Tools.getUrl(item.inActiveIcon)
                         "
                     />
                     <span style="font-size: 14rem">{{ item.text }}</span>

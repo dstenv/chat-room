@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { registerUser } from '@/apis/registerUser'
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import type { RuleItem } from './login.vue'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
@@ -44,7 +44,7 @@ interface FormItem {
 
 const emits = defineEmits(['goLogin'])
 
-const bg = Tool.getUrl('register-bg.png', 'imgs')
+const bg = Tools.getUrl('register-bg.png', 'imgs')
 
 const userInfo = reactive({
     userID: '',

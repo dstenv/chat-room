@@ -21,34 +21,20 @@
 <!-- 引入Jquery文件 -->
 <script src =""></script>
 <script type="text/javascript">
-    function queryString(data) {
-        console.log('data -->', data);
+    function test(price) {
+        const strPrice = `${price}`
 
-        let str = ''
-
-        console.time()
-        for(const key in data){
-            str += `${key}=${data[key]}&`
+        const pointNum = strPrice.split('.')[1]
+        let Num = strPrice.split('.')[0]
+        for(let i = Num.length - 4; i >= 0; i-=3){
+            const arr = Num.split('')
+            arr.splice(i + 1, 0, ',')
+            Num = arr.join('')
         }
-        console.timeEnd()
 
-        console.log('str -->', str.slice(0,str.length - 1));
+        return `${Num}.${pointNum}`
     }
 
-    queryString({
-        nickname1: 'aaa',
-        sex1: '1',
-        nickname2: 'aaa',
-        sex2: '1',
-        nickname3: 'aaa',
-        sex3: '1',
-        nickname4: 'aaa',
-        sex4: '1',
-        nickname5: 'aaa',
-        sex5: '1',
-        nickname6: 'aaa',
-        sex6: '1',
-    })
 </script>
 </body>
 </html>

@@ -26,8 +26,8 @@
                         <img
                             :src="
                                 props.active
-                                    ? Tool.getUrl(item.activeIcon)
-                                    : Tool.getUrl(item.inActiveIcon)
+                                    ? Tools.getUrl(item.activeIcon)
+                                    : Tools.getUrl(item.inActiveIcon)
                             "
                         />
                         <span style="font-size: 14rem">{{ item.text }}</span>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
 
 const RouteItem = {

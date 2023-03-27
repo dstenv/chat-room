@@ -1,14 +1,14 @@
 <template>
     <div class="search c-bg" @click="emits('click')">
         <div>
-            <img :src="tools.getUrl('search-gray.png')" alt="" />
+            <img :src="Tools.getUrl('search-gray.png')" alt="" />
             {{ props.tipText || '搜索' }}
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 
 const props = defineProps<{
     tipText?: string

@@ -28,7 +28,7 @@
                     <template #reference>
                         <img
                             class="add-friend-img"
-                            :src="Tool.getUrl('add-gray.png')"
+                            :src="Tools.getUrl('add-gray.png')"
                             alt=""
                         />
                     </template>
@@ -96,7 +96,9 @@
                         </div>
                         <div class="right">
                             <span>{{
-                                Tool.showMsgTime((item.lastMessage as any).time)
+                                Tools.showMsgTime(
+                                    (item.lastMessage as any).time
+                                )
                             }}</span>
                         </div>
                     </div>
@@ -109,7 +111,7 @@
 <script setup lang="ts">
 import { EaseChatClient } from '@/utils/config'
 import { showToast } from 'vant'
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { useChatListStore } from '@/stores/chatList'
 import { useChatStore } from '@/stores/chat'
 import { useFriendStore } from '@/stores/friend'
@@ -133,14 +135,14 @@ const emits = defineEmits(['setTabbar'])
 const addList: AddListItem[] = [
     {
         text: '发起群聊',
-        icon: Tool.getUrl('icon-room.png'),
+        icon: Tools.getUrl('icon-room.png'),
         action() {
             console.log('发起群聊', 'desc')
         },
     },
     {
         text: '添加朋友',
-        icon: Tool.getUrl('icon-add-user.png'),
+        icon: Tools.getUrl('icon-add-user.png'),
         action() {
             // console.log('添加朋友', 'desc')
             router.push('/add-friend')
@@ -148,14 +150,14 @@ const addList: AddListItem[] = [
     },
     {
         text: '扫一扫',
-        icon: Tool.getUrl('icon-sweep.png'),
+        icon: Tools.getUrl('icon-sweep.png'),
         action() {
             console.log('扫一扫', 'desc')
         },
     },
     {
         text: '收付款',
-        icon: Tool.getUrl('icon-money.png'),
+        icon: Tools.getUrl('icon-money.png'),
         action() {
             console.log('收付款', 'desc')
         },

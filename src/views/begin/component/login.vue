@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { loginUser, LoginBody } from '@/apis/loginUser'
 import { useUserStore } from '@/stores/user'
-import Tool from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
 import { errorData } from '@/apis/base'
@@ -52,7 +52,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const chatStore = useChatStore()
 
-const bg = Tool.getUrl('login-bg.png', 'imgs')
+const bg = Tools.getUrl('login-bg.png', 'imgs')
 
 const userInfo = reactive({
     username: '',

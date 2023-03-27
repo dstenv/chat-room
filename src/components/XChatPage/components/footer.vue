@@ -4,7 +4,7 @@
             <div class="left">
                 <img
                     v-show="pageData.isKeyBoard"
-                    :src="tools.getUrl('voice-black.png')"
+                    :src="Tools.getUrl('voice-black.png')"
                     alt=""
                 />
                 <img v-show="!pageData.isKeyBoard" src="" alt="" />
@@ -23,9 +23,9 @@
             </div>
             <div class="right">
                 <div class="no-send" v-show="!pageData.text">
-                    <img :src="tools.getUrl('expression-black.png')" alt="" />
+                    <img :src="Tools.getUrl('expression-black.png')" alt="" />
                     <img
-                        :src="tools.getUrl('add-black.png')"
+                        :src="Tools.getUrl('add-black.png')"
                         alt=""
                         @click="
                             emits('toggleFuns', {
@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 import { showToast } from 'vant'
 
 interface FunItem {
@@ -91,7 +91,7 @@ const emits = defineEmits(['scrollBottom', 'toggleFuns'])
 const funList: FunItem[] = [
     {
         text: '图片',
-        icon: tools.getUrl('pic.png'),
+        icon: Tools.getUrl('pic.png'),
         oprate() {
             const inp = document.createElement('input')
 
@@ -146,7 +146,7 @@ const funList: FunItem[] = [
     },
     {
         text: '视频',
-        icon: tools.getUrl('video.png'),
+        icon: Tools.getUrl('video.png'),
         oprate() {},
     },
 ]
