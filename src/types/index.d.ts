@@ -7,6 +7,7 @@ export class UserProPertyType {
     nickname?: string
     userid?: string
     avatar?: string
+    area?: string
 }
 
 export class UserInfo {

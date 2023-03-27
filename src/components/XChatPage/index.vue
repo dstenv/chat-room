@@ -226,5 +226,6 @@ main {
     gap: 15rem;
     font-size: 14rem;
     padding: 15rem 0;
+    min-height: calc(100vh - 100rem);
 }
 </style>

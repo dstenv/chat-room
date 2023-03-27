@@ -4,7 +4,7 @@ import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { showLoadingToast } from 'vant'
 import type { ToastWrapperInstance } from 'vant/lib/toast/types'
-import tools from '@/utils/tools'
+import { Tools } from '@/utils/tools'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
@@ -120,7 +120,7 @@ export const request = <T, U>(
         }
 
         if (requestOptions.method === 'PUT') {
-            requestOptions.data = tools.queryString(
+            requestOptions.data = Tools.queryString(
                 body as { [key: string]: string }
             )
         }

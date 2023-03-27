@@ -8,6 +8,7 @@ import {
     Popover,
     PullRefresh,
     Image,
+    Popup,
 } from 'vant'
 import type { App } from 'vue'
 
@@ -21,6 +22,7 @@ const vantUIComponents = [
     Popover,
     PullRefresh,
     Image,
+    Popup,
 ]
 
 export default {

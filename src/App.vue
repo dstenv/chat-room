@@ -43,13 +43,14 @@ const chatListStore = useChatListStore()
 const activeIndex = ref(0)
 const transitionName = ref('fade-in')
 
-const toList: string[] = ['/chat']
-const fromList: string[] = []
+const toList: string[] = ['/chat', '/add-friend']
+const fromList: string[] = ['/search-user']
 /**
  * TODO 显示tabbar的路由
  */
 const showTabbarList = ['/chat', '/mail-list', '/wechat-moments', '/my']
 const secondPages = ['/my-chat', '/add-friend']
+
 const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
     {
         text: '消息',
@@ -218,6 +219,13 @@ EaseChatClient.addEventHandler('connection', {
 router.beforeEach((to, from) => {
     console.log('>>>>>>>>>beforeEach')
     // methods.setTabbar()
+
+    const secondBack = () =>
+        secondPages.includes(from.path) && showTabbarList.includes(to.path)
+
+    const fadeOutAnimate = () =>
+        fromList.includes(from.path) && toList.includes(to.path)
+
     if (
         showTabbarList.includes(from.path) &&
         showTabbarList.includes(to.path)
@@ -225,10 +233,10 @@ router.beforeEach((to, from) => {
         transitionName.value = ''
     } else if (
         /**
-         *  TODO 二级页面返回一级页面时，需要淡出动画
+         *  TODO 二级页面返回一级页面时，需要淡出动画,还有一部分也需要
          */
-        secondPages.includes(from.path) &&
-        showTabbarList.includes(to.path)
+        secondBack() ||
+        fadeOutAnimate()
     ) {
         transitionName.value = 'fade-out'
     } else {

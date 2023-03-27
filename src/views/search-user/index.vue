@@ -1,5 +1,5 @@
 <template>
-    <XUser :user-info="pageData.userInfo" />
+    <XUser v-if="pageData.init" :user-info="pageData.userInfo" />
 </template>
 
 <script setup lang="ts">
@@ -12,6 +12,7 @@ const route = useRoute()
 const pageData = reactive({
     userId: (route.query.id as string) || '',
     userInfo: {} as UserProPertyType,
+    init: false,
 })
 
 const methods = {
@@ -20,7 +21,10 @@ const methods = {
             const property = await getUserInfo(pageData.userId)()
 
             pageData.userInfo = property.data
-        } catch (error) {}
+        } catch (error) {
+        } finally {
+            pageData.init = true
+        }
     },
 }
 methods.getUserInfo()
