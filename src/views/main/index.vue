@@ -15,7 +15,7 @@
             />
         </RouterView>
 
-        <van-tabbar v-model="activeIndex" active-color="#59e062">
+        <van-tabbar v-model="activeIndex" active-color="#59e062" fixed>
             <van-tabbar-item
                 v-for="(item, index) in tabbar"
                 :key="index"
@@ -40,7 +40,6 @@
 
 <script setup lang="ts">
 import { Tools } from '@/utils/tools'
-import { useChatStore } from '@/stores/chat'
 
 const RouteItem = {
     'chat': 'CHAT',
@@ -60,7 +59,6 @@ interface TabbarItem<T> {
 }
 
 const route = useRoute()
-const chatStore = useChatStore()
 
 const activeIndex = ref(0)
 
@@ -97,13 +95,13 @@ const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
 
 const init = async () => {
     for (let i = 0; i < tabbar.value.length; i++) {
-        if (tabbar.value[i].name === route?.name) {
+        if (tabbar.value[i].name === route.name) {
             activeIndex.value = i
             break
         }
     }
-    await chatStore.connect()
 }
+
 init()
 </script>
 

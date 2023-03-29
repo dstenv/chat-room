@@ -7,7 +7,6 @@ import {
 } from '@/utils/config'
 import { useAdminStore, useUserStore } from '@/stores/user'
 import { getAdminToken } from '@/apis/getAdminToken'
-import { Tools } from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from './stores/chatList'
 // import { db } from './utils/indexDB'
@@ -18,29 +17,10 @@ interface AdminStorage {
     token: string
 }
 
-interface TabbarItem<T> {
-    name: T[keyof T]
-    text: string
-    path: keyof T
-    // 激活icon
-    activeIcon: string
-    // 未激活icon
-    inActiveIcon: string
-}
-
-const RouteItem = {
-    'chat': 'CHAT',
-    'mail-list': 'MAIL-LIST',
-    'wechat-moments': 'WECHAT-MOMENTS',
-    'my': 'MY',
-}
-
-const route = useRoute()
 const chatStore = useChatStore()
 const router = useRouter()
 const chatListStore = useChatListStore()
 
-const activeIndex = ref(0)
 const transitionName = ref('fade-in')
 
 const toList: string[] = ['/chat', '/add-friend']
@@ -48,51 +28,16 @@ const fromList: string[] = ['/search-user']
 /**
  * TODO 显示tabbar的路由
  */
-const showTabbarList = ['/chat', '/mail-list', '/wechat-moments', '/my']
+const showTabbarList = [
+    '/main/pages/chat',
+    '/main/pages/mail-list',
+    '/main/pages/wechat-moments',
+    '/main/pages/my',
+]
+
 const secondPages = ['/my-chat', '/add-friend']
 
-const tabbar = ref<TabbarItem<typeof RouteItem>[]>([
-    {
-        text: '消息',
-        name: 'CHAT',
-        path: 'chat',
-        activeIcon: 'msg_active.png',
-        inActiveIcon: 'msg_inactive.png',
-    },
-    {
-        text: '通讯录',
-        name: 'MAIL-LIST',
-        path: 'mail-list',
-        activeIcon: 'mail_list_active.png',
-        inActiveIcon: 'mail_list_inactive.png',
-    },
-    {
-        text: '发现',
-        name: 'WECHAT-MOMENTS',
-        path: 'wechat-moments',
-        activeIcon: 'discover_active.png',
-        inActiveIcon: 'discover_inactive.png',
-    },
-    {
-        text: '我的',
-        name: 'MY',
-        path: 'my',
-        activeIcon: 'my_active.png',
-        inActiveIcon: 'my_inactive.png',
-    },
-])
-
 const methods = {
-    setTabbar() {
-        console.log('设置tabbar -->', location.pathname.split('/')[1])
-
-        for (let i = 0; i < tabbar.value.length; i++) {
-            if (tabbar.value[i].path === location.pathname.split('/')[1]) {
-                activeIndex.value = i
-                break
-            }
-        }
-    },
     async initAdmin() {
         const adminStore = useAdminStore()
         const adminToken = localStorage.getItem('adminToken')
@@ -136,7 +81,6 @@ const methods = {
         chatStore.setUserId(userId || '')
     },
     async init() {
-        methods.setTabbar()
         await methods.initAdmin()
         methods.initUser()
         chatStore.connect()
@@ -217,7 +161,7 @@ EaseChatClient.addEventHandler('connection', {
 // })
 
 router.beforeEach((to, from) => {
-    console.log('>>>>>>>>>beforeEach')
+    console.log('>>>>>>>>> App beforeEach')
     // methods.setTabbar()
 
     const secondBack = () =>
@@ -230,6 +174,7 @@ router.beforeEach((to, from) => {
         showTabbarList.includes(from.path) &&
         showTabbarList.includes(to.path)
     ) {
+        console.log('页面同级切换')
         transitionName.value = ''
     } else if (
         /**
@@ -238,8 +183,10 @@ router.beforeEach((to, from) => {
         secondBack() ||
         fadeOutAnimate()
     ) {
+        console.log('子页面返回')
         transitionName.value = 'fade-out'
     } else {
+        console.log('进入子页面')
         transitionName.value = 'fade-in'
     }
 })
@@ -250,64 +197,12 @@ methods.init()
 <template>
     <router-view v-slot="{ Component }">
         <transition :name="transitionName">
-            <KeepAlive>
-                <component
-                    :is="Component"
-                    :key="route.name"
-                    v-if="route.meta.keep"
-                    @setTabbar="methods.setTabbar"
-                />
-            </KeepAlive>
-        </transition>
-        <transition :name="transitionName">
-            <component
-                :is="Component"
-                :key="route.name"
-                v-if="!route.meta.keep"
-            />
+            <component :is="Component" />
         </transition>
     </router-view>
-
-    <van-tabbar
-        v-model="activeIndex"
-        active-color="#59e062"
-        v-if="showTabbarList.includes(route.path)"
-    >
-        <van-tabbar-item
-            v-for="(item, index) in tabbar"
-            :key="index"
-            :to="item.path"
-        >
-            <template #icon="props">
-                <div style="text-align: center">
-                    <img
-                        :src="
-                            props.active
-                                ? Tools.getUrl(item.activeIcon)
-                                : Tools.getUrl(item.inActiveIcon)
-                        "
-                    />
-                    <span style="font-size: 14rem">{{ item.text }}</span>
-                </div>
-            </template>
-        </van-tabbar-item>
-    </van-tabbar>
 </template>
 
 <style lang="scss" scoped>
-.van-tabbar {
-    background-color: #fff;
-    padding-top: 10rem;
-    img {
-        display: block;
-        margin: 0 auto;
-        height: 22rem;
-    }
-}
-.van-tabbar--fixed {
-    // bottom: 18rem;
-}
-
 .fade-in-enter-from {
     transform: translate(100vw);
 }

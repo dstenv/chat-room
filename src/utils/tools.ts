@@ -16,7 +16,7 @@ export namespace Tools {
         4: '四',
         5: '五',
         6: '六',
-        7: '日',
+        0: '日',
     }
 
     export function getUrl(imgName: string, folderName: FolderName = 'icons') {
