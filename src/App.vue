@@ -1,21 +1,10 @@
 <script setup lang="ts">
-import {
-    EaseChatClient,
-    EaseChatSDK,
-    baseConfig,
-    chatRoomBaseConfig,
-} from '@/utils/config'
-import { useAdminStore, useUserStore } from '@/stores/user'
-import { getAdminToken } from '@/apis/getAdminToken'
+import { EaseChatClient, EaseChatSDK } from '@/utils/config'
+import { Tools } from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from './stores/chatList'
 // import { db } from './utils/indexDB'
-
-interface AdminStorage {
-    application: string
-    time: number
-    token: string
-}
+import { init } from '@/utils/initApp'
 
 const chatStore = useChatStore()
 const router = useRouter()
@@ -23,8 +12,6 @@ const chatListStore = useChatListStore()
 
 const transitionName = ref('fade-in')
 
-const toList: string[] = ['/chat', '/add-friend']
-const fromList: string[] = ['/search-user']
 /**
  * TODO 显示tabbar的路由
  */
@@ -36,53 +23,14 @@ const showTabbarList = [
 ]
 
 const secondPages = ['/my-chat', '/add-friend']
+const toList: string[] = ['/add-friend', ...showTabbarList]
+const fromList: string[] = ['/search-user']
 
 const methods = {
-    async initAdmin() {
-        const adminStore = useAdminStore()
-        const adminToken = localStorage.getItem('adminToken')
-        if (!adminToken) {
-            const result = await getAdminToken({
-                grant_type: 'client_credentials',
-                client_id: baseConfig.clientID,
-                client_secret: baseConfig.clientSecret,
-                ttl: 0,
-            })
-
-            adminStore.setToken(result.access_token)
-            adminStore.setApplication(result.application)
-            adminStore.setTime(result.expires_in)
-            localStorage.setItem(
-                'adminToken',
-                JSON.stringify({
-                    application: result.application,
-                    time: result.expires_in,
-                    token: result.access_token,
-                })
-            )
-            return
-        }
-        const adminInfo: AdminStorage = JSON.parse(adminToken)
-        adminStore.setToken(adminInfo.token)
-        adminStore.setApplication(adminInfo.application)
-        adminStore.setTime(adminInfo.time)
-    },
-    initUser() {
-        const userStore = useUserStore()
-        const chatStore = useChatStore()
-        const userToken = localStorage.getItem('userToken')
-        if (!userToken) {
-            router.replace('/begin')
-            return
-        }
-        const userId = localStorage.getItem('userId')
-        userStore.setToken(userToken)
-        userStore.setUserID(userId || '')
-        chatStore.setUserId(userId || '')
-    },
     async init() {
-        await methods.initAdmin()
-        methods.initUser()
+        await init.initAdmin()
+        init.initUser()
+        init.initNewFriend()
         chatStore.connect()
     },
 }
@@ -93,6 +41,8 @@ EaseChatClient.addEventHandler('connection', {
     onConnected: () => {
         console.log('>>>>>环信连接成功')
 
+        /** 监听message */
+        chatListStore.watchMessage()
         /** 获取会话列表 */
         chatListStore.getChatList()
     },

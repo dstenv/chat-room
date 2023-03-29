@@ -1,5 +1,7 @@
 <template>
-    <XUser v-if="pageData.init" :user-info="pageData.userInfo" />
+    <div v-if="pageData.init">
+        <XUser :user-info="pageData.userInfo" />
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +22,10 @@ const methods = {
         try {
             const property = await getUserInfo(pageData.userId)()
 
-            pageData.userInfo = property.data
+            pageData.userInfo = {
+                userid: pageData.userId,
+                ...property.data,
+            }
         } catch (error) {
         } finally {
             pageData.init = true

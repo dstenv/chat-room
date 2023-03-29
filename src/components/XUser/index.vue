@@ -5,7 +5,7 @@
                 <img
                     :src="Tools.getUrl('back.png')"
                     alt=""
-                    @click="() => router.back()"
+                    @click="() => router.go(-2)"
                 />
                 <img :src="Tools.getUrl('many.png')" alt="" />
             </div>
@@ -84,13 +84,13 @@ import { Tools } from '@/utils/tools'
 import OtherItem from './components/other-item.vue'
 import type { OtherInfoItemType } from './components/other-item.vue'
 import { EaseChatClient } from '@/utils/config'
+import { showSuccessToast } from 'vant'
 
 const router = useRouter()
 
 const props = defineProps<{
     userInfo: UserProPertyType
 }>()
-console.log('props -->', props.userInfo)
 
 const otherInfoList: OtherInfoItemType[] = [
     {
@@ -139,6 +139,16 @@ const methods = {
             props.userInfo.userid as string,
             addData.sendText
         )
+
+        showAddPopup.value = false
+
+        showSuccessToast({
+            message: '发送成功',
+        })
+
+        setTimeout(() => {
+            router.go(-2)
+        }, 400)
     },
 }
 </script>

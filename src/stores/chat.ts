@@ -34,6 +34,8 @@ export const useChatStore = defineStore('chat', () => {
 
     const messageList = ref<MessageData[]>([])
 
+    const allHistory = ref(false)
+
     const connect = async () => {
         console.log('try connect', socketDefer.connected)
 
@@ -200,7 +202,10 @@ export const useChatStore = defineStore('chat', () => {
                 /** 获取消息的起始位置 */
                 cursor: chatData.startId,
             })
-            chatData.startId = list.cursor || ''
+            chatData.startId =
+                list.cursor === 'undefined'
+                    ? messageList.value[0].id
+                    : (list.cursor as string)
 
             const messages: MessageData[] = list.messages.map((item) => ({
                 ...item,
@@ -210,11 +215,16 @@ export const useChatStore = defineStore('chat', () => {
             }))
 
             if (list.messages.length > 0) {
-                console.log(`有历史消息${list.messages.length}条`)
+                console.log(
+                    `有历史消息${list.messages.length}条`,
+                    chatData.startId
+                )
                 console.log('messageList', messageList.value)
             } else {
                 console.log('历史消息为空')
-                chatData.startId = ''
+                if (list.cursor === 'undefined') {
+                    allHistory.value = true
+                }
             }
             insertBefore(messages.reverse())
         } catch (error) {}
@@ -268,6 +278,7 @@ export const useChatStore = defineStore('chat', () => {
         socketDefer,
         messageList,
         chatData,
+        allHistory,
         connect,
         sendMessage,
         addMessage,

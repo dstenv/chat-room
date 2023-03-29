@@ -16,3 +16,10 @@ export class UserInfo {
     avatar?: string
     sex = '1'
 }
+
+export class NewFriend {
+    avatar?: string
+    from: string
+    text: string
+    read: boolean
+}

@@ -14,6 +14,7 @@
             <VanPullRefresh
                 pulling-text="获取历史消息"
                 v-model="pageData.refresh"
+                :disabled="chatStore.allHistory"
                 @refresh="methods.getHistory"
             >
                 <div class="msg-list" ref="listRef">
@@ -115,12 +116,13 @@ const resizeObserver = new ResizeObserver((entries) => {
 })
 
 const methods = {
-    getHistory() {
+    async getHistory() {
         scrollData.beforeHeight = listRef.value.scrollHeight - 30
 
         methods.keepScroll()
 
-        chatStore.getHistoryMsg()
+        await chatStore.getHistoryMsg()
+        pageData.refresh = false
     },
 
     /** 设置滚动到底部 */
@@ -226,6 +228,6 @@ main {
     gap: 15rem;
     font-size: 14rem;
     padding: 15rem 0;
-    min-height: calc(100vh - 100rem);
+    // min-height: calc(100vh - 100rem);
 }
 </style>

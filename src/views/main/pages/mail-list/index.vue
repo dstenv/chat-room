@@ -36,7 +36,7 @@
 
             <div class="friend-list">
                 <XFriend
-                    v-for="item in pageData.friends"
+                    v-for="item in chatListStore.friendList"
                     :key="item.userid"
                     :info="item"
                 />
@@ -47,14 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import { getFriendList } from '@/apis/friend/getFriendList'
-import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
 import { Tools } from '@/utils/tools'
-import { getUserInfo } from '@/apis/user/getUserInfo'
-import type { UserProPertyType } from '@/types'
 import XFriend from '@/components/XFriend/index.vue'
 import XSearch from '@/components/XSearch/index.vue'
+import { useChatListStore } from '@/stores/chatList'
 
 interface MailTopItem {
     text: string
@@ -63,10 +59,8 @@ interface MailTopItem {
     action: () => void
 }
 
-const userStore = useUserStore()
+const chatListStore = useChatListStore()
 const router = useRouter()
-
-const { userId } = storeToRefs(userStore)
 
 const mailTopList: MailTopItem[] = [
     {
@@ -77,33 +71,10 @@ const mailTopList: MailTopItem[] = [
     },
 ]
 
-const pageData = reactive({
-    /** 用户好友列表 */
-    friends: [] as UserProPertyType[],
-})
+const pageData = reactive({})
 
 const init = async () => {
-    try {
-        const result = await getFriendList(
-            `users/${userId.value}/contacts/users`
-        )()
-
-        for (let i = 0; i < result.data.length; i++) {
-            const property = await getUserInfo(result.data[i])()
-            pageData.friends.push({
-                userid: result.data[i],
-                nickname: property.data.nickname || result.data[i],
-                sex: property.data.sex,
-                avatar:
-                    property.data.avatar ||
-                    Tools.getUrl(
-                        property.data.sex === '2'
-                            ? 'avatar-default-woman.png'
-                            : 'avatar-default-man.png'
-                    ),
-            })
-        }
-    } catch (error) {}
+    chatListStore.getFriends()
 }
 
 // onActivated(() => {
