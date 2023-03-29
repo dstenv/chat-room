@@ -48,6 +48,7 @@ import { useChatListStore } from '@/stores/chatList'
 import { useFriendStore } from '@/stores/friend'
 import { EaseChatClient } from '@/utils/config'
 import { Tools } from '@/utils/tools'
+import type { EasemobChat } from 'easemob-websdk'
 import Footer from './components/footer.vue'
 import MessageItem from './components/message-item.vue'
 
@@ -171,9 +172,23 @@ onBeforeUnmount(async () => {
     /** 更新会话列表 */
     if (chatStore.socketDefer.send) {
         await chatStore.socketDefer.send.promise
-        await chatListStore.getChatList()
+        chatListStore.setLastMsg(
+            pageData.id,
+            (
+                chatStore.messageList[
+                    chatStore.messageList.length - 1
+                ] as EasemobChat.TextMsgBody
+            ).msg
+        )
     } else {
-        await chatListStore.getChatList()
+        chatListStore.setLastMsg(
+            pageData.id,
+            (
+                chatStore.messageList[
+                    chatStore.messageList.length - 1
+                ] as EasemobChat.TextMsgBody
+            ).msg
+        )
     }
 
     if (listRef.value) {

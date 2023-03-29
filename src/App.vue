@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { EaseChatClient, EaseChatSDK } from '@/utils/config'
-import { Tools } from '@/utils/tools'
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from './stores/chatList'
 // import { db } from './utils/indexDB'
@@ -22,14 +21,15 @@ const showTabbarList = [
     '/main/pages/my',
 ]
 
-const secondPages = ['/my-chat', '/add-friend']
+const secondPages = ['/my-chat', '/add-friend', '/new-friend']
 const toList: string[] = ['/add-friend', ...showTabbarList]
 const fromList: string[] = ['/search-user']
 
 const methods = {
     async init() {
+        const router = useRouter()
         await init.initAdmin()
-        init.initUser()
+        init.initUser(router)
         init.initNewFriend()
         chatStore.connect()
     },
@@ -119,6 +119,7 @@ router.beforeEach((to, from) => {
 
     const fadeOutAnimate = () =>
         fromList.includes(from.path) && toList.includes(to.path)
+    console.log('path -->', from.path, to.path)
 
     if (
         showTabbarList.includes(from.path) &&
@@ -131,7 +132,8 @@ router.beforeEach((to, from) => {
          *  TODO 二级页面返回一级页面时，需要淡出动画,还有一部分也需要
          */
         secondBack() ||
-        fadeOutAnimate()
+        fadeOutAnimate() ||
+        (from.path === '/add-friend' && to.path === '/new-friend')
     ) {
         console.log('子页面返回')
         transitionName.value = 'fade-out'

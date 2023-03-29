@@ -80,6 +80,16 @@ const router = createRouter({
             name: 'SEARCH_USER',
             component: () => import('@/views/search-user/index.vue'),
         },
+        {
+            path: '/new-friend',
+            name: 'NEW_FRIEND',
+            component: () => import('@/views/new-friend/index.vue'),
+        },
+        {
+            path: '/accept-friend',
+            name: 'ACCEPT_FRIEND',
+            component: () => import('@/views/accept-friend/index.vue'),
+        },
     ],
 })
 

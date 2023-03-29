@@ -64,6 +64,7 @@
 
 <script setup lang="ts">
 import { useChatStore } from '@/stores/chat'
+import { useChatListStore } from '@/stores/chatList'
 import { Tools } from '@/utils/tools'
 import { showToast } from 'vant'
 
@@ -78,6 +79,7 @@ interface FooterInstance {
 }
 
 const chatStore = useChatStore()
+const chatListStore = useChatListStore()
 
 const textRef = ref<HTMLTextAreaElement>({} as HTMLTextAreaElement)
 

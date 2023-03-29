@@ -47,7 +47,7 @@ onBeforeUnmount(() => {
         margin: 0 10rem;
         border-radius: 3rem;
         img {
-            width: 32rem;
+            width: 35rem;
             border-radius: 3rem;
             display: block;
             vertical-align: top;

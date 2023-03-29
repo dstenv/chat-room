@@ -31,6 +31,7 @@ import { isUserId } from '@/utils/validate'
 import { showToast } from 'vant'
 import { errorData } from '@/apis/base'
 import { useChatStore } from '@/stores/chat'
+import { getUserInfo } from '@/apis/user/getUserInfo'
 
 export interface RuleItem {
     message: string
@@ -120,17 +121,20 @@ const login = async () => {
         }
         try {
             const result = await loginUser(login)
+            const userInfo = await getUserInfo(result.user.username)()
 
             userStore.setToken(result.access_token)
             userStore.setUserID(result.user.username)
+            userStore.setUserInfo(userInfo.data)
             chatStore.setUserId(result.user.username)
 
             // console.log(userStore, 'desc')
             localStorage.setItem('userToken', result.access_token)
             localStorage.setItem('userId', result.user.username)
+            localStorage.setItem('userInfo', JSON.stringify(userInfo.data))
 
             router.replace({
-                path: '/chat',
+                path: '/main/pages/chat',
             })
         } catch (error) {
             console.log(error, 'error')

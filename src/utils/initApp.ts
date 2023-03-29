@@ -4,6 +4,7 @@ import { baseConfig } from '@/utils/config'
 import { useChatStore } from '@/stores/chat'
 import type { NewFriend } from '@/types'
 import { useChatListStore } from '@/stores/chatList'
+import type { Router } from 'vue-router'
 
 export interface AdminStorage {
     application: string
@@ -41,18 +42,19 @@ export const init = {
         adminStore.setApplication(adminInfo.application)
         adminStore.setTime(adminInfo.time)
     },
-    initUser() {
+    initUser(router: Router) {
         const userStore = useUserStore()
         const chatStore = useChatStore()
-        const router = useRouter()
         const userToken = localStorage.getItem('userToken')
         if (!userToken) {
             router.replace('/begin')
             return
         }
+        const userInfo = localStorage.getItem('userInfo')
         const userId = localStorage.getItem('userId')
         userStore.setToken(userToken)
         userStore.setUserID(userId || '')
+        userStore.setUserInfo(JSON.parse(userInfo || '{}'))
         chatStore.setUserId(userId || '')
     },
     initNewFriend() {

@@ -12,7 +12,7 @@
                 <img v-if="props.leftIcon" :src="props.leftIcon" alt="" />
             </div>
             <div class="mid">
-                {{ props.title }}
+                <div class="mid-content">{{ props.title }}</div>
             </div>
             <div class="right">
                 <slot name="right" />
@@ -42,18 +42,34 @@ const props = defineProps<{
     position: relative;
     .left,
     .right {
-        width: 22rem;
+        position: relative;
+        z-index: 2;
         height: 22rem;
         img {
-            width: 100%;
+            width: 22rem;
         }
         :slotted(img) {
-            width: 100%;
+            width: 22rem;
         }
     }
+    .right {
+        min-width: 22rem;
+        line-height: 22rem;
+    }
     .mid {
-        font-size: 16rem;
-        font-weight: 500;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        .mid-content {
+            font-size: 16rem;
+            font-weight: 500;
+        }
     }
 }
 </style>

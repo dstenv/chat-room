@@ -5,7 +5,7 @@
                 <img
                     :src="Tools.getUrl('back.png')"
                     alt=""
-                    @click="() => router.go(-2)"
+                    @click="() => router.back()"
                 />
                 <img :src="Tools.getUrl('many.png')" alt="" />
             </div>
@@ -49,7 +49,11 @@
                     />
                 </div>
 
-                <div class="add" @click="methods.showPopup">添加到通讯录</div>
+                <slot name="oprate">
+                    <div class="add" @click="methods.showPopup">
+                        添加到通讯录
+                    </div>
+                </slot>
             </main>
         </div>
 
@@ -85,6 +89,7 @@ import OtherItem from './components/other-item.vue'
 import type { OtherInfoItemType } from './components/other-item.vue'
 import { EaseChatClient } from '@/utils/config'
 import { showSuccessToast } from 'vant'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 
@@ -111,7 +116,7 @@ const otherInfoList: OtherInfoItemType[] = [
 
 const defaultData = reactive({
     avatar:
-        Number(props.userInfo.sex) === 1
+        Number(props.userInfo.sex || '1') === 1
             ? Tools.getUrl('avatar-default-uman.png.png')
             : Tools.getUrl('avatar-default-uwoman.png.png'),
     /**
@@ -135,9 +140,21 @@ const methods = {
     },
 
     sendAddMsg() {
+        console.log(props.userInfo.userid, 'props.userInfo.userid')
+        const userStore = useUserStore()
         EaseChatClient.addContact(
             props.userInfo.userid as string,
-            addData.sendText
+            JSON.stringify({
+                text: addData.sendText,
+                avatar:
+                    userStore.userInfo?.avatar ||
+                    Tools.getUrl(
+                        userStore.userInfo?.sex === '2'
+                            ? 'avatar-default-uwoman.png.png'
+                            : 'avatar-default-uman.png.png'
+                    ),
+                nickname: userStore.userInfo?.nickname,
+            })
         )
 
         showAddPopup.value = false

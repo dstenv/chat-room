@@ -1,5 +1,9 @@
 <template>
-    <div class="search c-bg" @click="emits('click')">
+    <div
+        class="search c-bg"
+        @click="emits('click')"
+        @keydown.enter="emits('click')"
+    >
         <div>
             <img :src="Tools.getUrl('search-gray.png')" alt="" />
             {{ props.tipText || '搜索' }}

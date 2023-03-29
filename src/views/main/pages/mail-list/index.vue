@@ -23,11 +23,21 @@
                     class="top-item"
                     v-for="(item, index) in mailTopList"
                     :key="index"
+                    @click="item.action"
                 >
                     <div
                         class="top-img"
                         :style="{ backgroundColor: item.bgColor }"
                     >
+                        <div
+                            class="red-point"
+                            v-if="item.prefix && item.prefix.show"
+                            :style="{
+                                ...(item.prefix.style || {}),
+                            }"
+                        >
+                            {{ item.prefix.text }}
+                        </div>
                         <img :src="item.icon" alt="" />
                     </div>
                     <div class="top-text">{{ item.text }}</div>
@@ -57,6 +67,11 @@ interface MailTopItem {
     icon: string
     bgColor: string
     action: () => void
+    prefix?: {
+        show: boolean
+        text: string | number
+        style?: Object
+    }
 }
 
 const chatListStore = useChatListStore()
@@ -68,6 +83,21 @@ const mailTopList: MailTopItem[] = [
         text: '群聊',
         bgColor: '#78bd78',
         action() {},
+    },
+    {
+        icon: Tools.getUrl('add-friend.png'),
+        text: '新的朋友',
+        bgColor: '#eda054',
+        action() {
+            router.push('/new-friend')
+        },
+        prefix: {
+            show:
+                chatListStore.newFriends.filter((item) => !item.read).length !==
+                0,
+            text: chatListStore.newFriends.filter((item) => !item.read).length,
+            style: {},
+        },
     },
 ]
 
@@ -98,15 +128,29 @@ main {
     .top-list {
         background-color: #fff;
         .top-item {
-            padding: 10rem 0;
+            padding: 10rem 0 0;
             display: flex;
             align-items: flex-start;
             .top-img {
                 margin: 0 10rem;
                 padding: 6rem;
                 border-radius: 3rem;
+                position: relative;
+                .red-point {
+                    width: 15rem;
+                    height: 15rem;
+                    border-radius: 50%;
+                    background-color: red;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    transform: translate(50%, -50%);
+                    text-align: center;
+                    line-height: 15rem;
+                    color: #fff;
+                }
                 img {
-                    width: 20rem;
+                    width: 23rem;
                     border-radius: 3rem;
                     display: block;
                     vertical-align: top;
@@ -120,6 +164,9 @@ main {
                 border-bottom: 1rem solid #ddd;
                 letter-spacing: 1rem;
                 font-weight: 500;
+            }
+            &:active {
+                background-color: #d5d5d5;
             }
         }
     }

@@ -12,6 +12,7 @@
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
     },
     "dependencies": {
+        "@amap/amap-jsapi-loader": "^1.0.1",
         "axios": "^1.2.1",
         "easemob-websdk": "latest",
         "pinia": "^2.0.28",

@@ -42,6 +42,7 @@ import { Tools } from '@/utils/tools'
 import { findUser } from '@/apis/user/findUser'
 import { useUserStore } from '@/stores/user'
 import { showToast } from 'vant'
+import { useChatListStore } from '@/stores/chatList'
 
 export interface SearchInstance {
     focus: () => void
@@ -51,6 +52,7 @@ const emits = defineEmits(['cancel'])
 
 const userStore = useUserStore()
 const router = useRouter()
+const chatListStore = useChatListStore()
 const textRef = ref<HTMLInputElement>({} as HTMLInputElement)
 
 const pageData = reactive({
@@ -78,6 +80,18 @@ const methods = {
             showToast('您不能添加自己成为好友')
             return
         }
+        /** 如果已存在好友则提示 */
+        if (
+            chatListStore.friendList.find(
+                (item) =>
+                    item.userid === pageData.value.trim() ||
+                    item.nickname === pageData.value.trim()
+            )
+        ) {
+            showToast('您已存在该好友')
+            return
+        }
+
         /** 获取用户信息，如果没有则说明没有这个用户 */
         try {
             const result = await findUser(pageData.value.trim())()

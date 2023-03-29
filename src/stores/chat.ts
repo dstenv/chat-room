@@ -12,6 +12,10 @@ import type {
 import { Hook } from '@/utils/hooks'
 import type { EasemobChat } from 'easemob-websdk'
 
+export const messageShowType: Partial<Record<SendMsgType, string>> = {
+    img: '[图片]',
+}
+
 export const useChatStore = defineStore('chat', () => {
     const chatData = {
         userId: '',

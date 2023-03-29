@@ -10,16 +10,12 @@ export class UserProPertyType {
     area?: string
 }
 
-export class UserInfo {
-    nickname?: string
-    id: string
-    avatar?: string
-    sex = '1'
-}
-
 export class NewFriend {
     avatar?: string
     from: string
     text: string
     read: boolean
+    sex?: string
+    nickname?: string
+    agree: boolean
 }

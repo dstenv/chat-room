@@ -80,9 +80,7 @@
                             <p>
                                 {{
                                     item.lastMessage.payload.nickname ||
-                                    (item.lastMessage.to === userStore.userId
-                                        ? item.lastMessage.from
-                                        : item.lastMessage.to)
+                                    item.himId
                                 }}
                             </p>
                             <span
@@ -240,7 +238,7 @@ console.log('chatListStore -->', chatListStore.chatList)
     }
 }
 .add-friend-img {
-    width: 100%;
+    width: 22rem;
 }
 .add-list {
     padding: 5rem 10rem;
