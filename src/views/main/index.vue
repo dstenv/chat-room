@@ -111,7 +111,7 @@ init()
     height: 100vh;
     overflow: hidden;
     // 禁用拖动
-    // touch-action: none;
+    touch-action: none;
 }
 .van-tabbar {
     background-color: #fff;

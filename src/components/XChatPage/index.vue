@@ -22,6 +22,8 @@
                         v-for="item in chatStore.messageList"
                         :key="item.keyId || item.id"
                         :item="item"
+                        @addImage="previewImage.addImg"
+                        @click="methods.msgClick"
                     />
                 </div>
             </VanPullRefresh>
@@ -51,6 +53,8 @@ import { Tools } from '@/utils/tools'
 import type { EasemobChat } from 'easemob-websdk'
 import Footer from './components/footer.vue'
 import MessageItem from './components/message-item.vue'
+import { usePreviewImage } from '@/hooks/preview-image'
+import type { MessageData, SendMsgType } from '@/types/message'
 
 enum ScrollType {
     None,
@@ -63,6 +67,7 @@ const router = useRouter()
 const chatStore = useChatStore()
 const friendStore = useFriendStore()
 const chatListStore = useChatListStore()
+const previewImage = usePreviewImage()
 
 const mainRef = ref<HTMLElement>({} as HTMLElement)
 const listRef = ref<HTMLElement>({} as HTMLElement)
@@ -71,6 +76,12 @@ const listRef = ref<HTMLElement>({} as HTMLElement)
 const watchFnId = `chat_page_${Date.now().toString(36)}${Math.floor(
     Math.random() * 100 + 1 + 1
 )}`
+
+const msgClickOprate: Partial<Record<SendMsgType, (id: string) => void>> = {
+    img: (id) => {
+        previewImage.preview(id)
+    },
+}
 
 const pageData = reactive({
     id: friendStore.friend?.userid || '',
@@ -146,6 +157,10 @@ const methods = {
                 behavior: isBehavior ? 'smooth' : 'auto',
             })
         })
+    },
+
+    msgClick({ id, type }: { id: string; type: SendMsgType }) {
+        msgClickOprate[type]!(id)
     },
 }
 

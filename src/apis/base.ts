@@ -2,9 +2,9 @@ import axios from 'axios'
 import { baseConfig, chatRoomBaseConfig } from '@/utils/config'
 import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { showLoadingToast } from 'vant'
-import type { ToastWrapperInstance } from 'vant/lib/toast/types'
 import { Tools } from '@/utils/tools'
+import { useLoading } from '@/hooks/loading'
+import type { ToastWrapperInstance } from 'vant/lib/toast/types'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
@@ -37,7 +37,7 @@ const requestBaseConfig: RequestBaseType = {
     timeout: 5000,
     loading: true,
 }
-let loadingToastInst: ToastWrapperInstance | null = null
+const loadingToastInst: ToastWrapperInstance | null = null
 
 const bodyObj: Partial<Record<Method, 'data' | 'param'>> = {
     GET: 'param',
@@ -90,6 +90,7 @@ export const request = <T, U>(
     options: RequestBaseType
 ): ((body?: T) => Promise<U>) =>
     async function (body?: T): Promise<U> {
+        let loadingInstance: null | ToastWrapperInstance = null
         const requestOptions = { ...options }
         requestOptions.method =
             requestOptions.method || requestBaseConfig.method
@@ -126,11 +127,7 @@ export const request = <T, U>(
         }
 
         if (requestOptions.loading ?? requestBaseConfig.loading) {
-            loadingToastInst = showLoadingToast({
-                message: '加载中',
-                forbidClick: true,
-                duration: 0,
-            })
+            loadingInstance = useLoading()
         }
         let result: ResponseBaseType<U>
 
@@ -142,8 +139,8 @@ export const request = <T, U>(
         } catch (error) {
             result = new ResponseBaseType<U>()
         } finally {
-            if (loadingToastInst) {
-                loadingToastInst.close()
+            if (loadingInstance) {
+                loadingInstance.close()
             }
         }
         return result.data as U

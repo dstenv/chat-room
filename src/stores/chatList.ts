@@ -130,7 +130,16 @@ export const useChatListStore = defineStore(
             }
         }
 
+        /**
+         * 设置某个会话的最后一条消息
+         * @param himId 对方的会话id
+         * @param content 设置的消息内容
+         */
         const setLastMsg = (himId: string, content: string) => {
+            /**
+             * TODO 存在Bug: 设置图片消息时content时undefined
+             */
+            console.log('setLastmsg -->', himId, content)
             const find = chatList.value.find((item) => item.himId === himId)
 
             if (find) {

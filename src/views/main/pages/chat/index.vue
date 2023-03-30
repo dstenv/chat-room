@@ -218,12 +218,20 @@ console.log('chatListStore -->', chatListStore.chatList)
             border-bottom: 1rem solid #ddd;
         }
         .center {
+            max-width: 276rem;
+            p,
+            sapn {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
             p {
                 font-weight: 500;
                 font-size: 15rem;
                 margin-bottom: 5rem;
             }
             span {
+                display: block;
                 color: #7a7a7a;
             }
         }

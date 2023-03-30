@@ -4,6 +4,7 @@ import type { MessageData } from '@/types/message'
 import { Tools } from '@/utils/tools'
 import type { EasemobChat } from 'easemob-websdk'
 import type { PropType } from 'vue'
+import type { ImgList } from '@/hooks/preview-image'
 
 export default defineComponent({
     props: {
@@ -12,7 +13,7 @@ export default defineComponent({
             required: true,
         },
     } as const,
-    emits: [],
+    emits: ['addImage', 'click'],
     setup(props, { emit, expose }) {
         const userStore = useUserStore()
 
@@ -45,7 +46,23 @@ export default defineComponent({
             ),
             img: (
                 <div class="item-wrap image">
-                    <img src={(props.item as EasemobChat.ImgMsgBody).url} />
+                    <img
+                        src={(props.item as EasemobChat.ImgMsgBody).url}
+                        onLoad={() => {
+                            emit('addImage', {
+                                id: props.item.id,
+                                url: (props.item as EasemobChat.ImgMsgBody).url,
+                                time: (props.item as EasemobChat.ImgMsgBody)
+                                    .time,
+                            } as ImgList)
+                        }}
+                        onClick={() => {
+                            emit('click', {
+                                id: props.item.id,
+                                type: props.item.type,
+                            })
+                        }}
+                    />
                 </div>
             ),
         }
