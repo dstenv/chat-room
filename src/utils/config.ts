@@ -46,4 +46,17 @@ const EaseChatClient = new EaseChatSDK.connection({
 })
 console.log('EaseIMClient', EaseChatClient)
 
-export { EaseChatSDK, EaseChatClient, baseConfig, baseUrl, chatRoomBaseConfig }
+/** 发送视频和图片等文件的大小 */
+const FileLimit = {
+    imgSize: 10,
+    videoSize: 10,
+}
+
+export {
+    EaseChatSDK,
+    EaseChatClient,
+    baseConfig,
+    baseUrl,
+    chatRoomBaseConfig,
+    FileLimit,
+}

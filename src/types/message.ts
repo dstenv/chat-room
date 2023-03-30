@@ -23,6 +23,9 @@ export type SendMsgType =
     | 'custom' //
     | 'cmd' //
     | 'inform' // 自定义
+    | 'read'
+    | 'delivery'
+    | 'channel'
 
 /** 消息类型 */
 export type MessageData = EasemobChat.MessageBody & {
@@ -48,6 +51,9 @@ export interface SendTextOption extends SendMsgBaseOption {
 export interface SendImgOption extends SendMsgBaseOption {
     file: File
 }
+export interface SendVideoOption extends SendMsgBaseOption {
+    file: File
+}
 
 /** 所有消息的配置 */
 export interface AllMsgType {
@@ -55,11 +61,14 @@ export interface AllMsgType {
     img: SendImgOption
     audio: any
     loc: any
-    video: any
+    video: SendVideoOption
     file: any
     custom: any
     cmd: any
     inform: any
+    read: any
+    delivery: any
+    channel: any
 }
 /** 接收消息的类型配置 */
 export interface AllRecieveMsg {
@@ -70,6 +79,9 @@ export interface AllRecieveMsg {
     file: EasemobChat.FileMsgBody
     loc: EasemobChat.LocationMsgBody
     custom: EasemobChat.CustomMsgBody
+    read: EasemobChat.ReadMsgBody
+    delivery: EasemobChat.DeliveryMsgBody
+    channel: EasemobChat.ChannelMsgBody
     cmd: any
     inform: any
 }

@@ -65,6 +65,28 @@ export default defineComponent({
                     />
                 </div>
             ),
+            video: (
+                <div class="item-wrap video">
+                    <video
+                        src={(props.item as EasemobChat.VideoMsgBody).url}
+                        onLoad={() => {
+                            emit('addImage', {
+                                id: props.item.id,
+                                url: (props.item as EasemobChat.VideoMsgBody)
+                                    .url,
+                                time: (props.item as EasemobChat.VideoMsgBody)
+                                    .time,
+                            } as ImgList)
+                        }}
+                        onClick={() => {
+                            emit('click', {
+                                id: props.item.id,
+                                type: props.item.type,
+                            })
+                        }}
+                    />
+                </div>
+            ),
         }
 
         return () => (
@@ -148,6 +170,12 @@ export default defineComponent({
             }
             &.image {
                 background-color: #f3f3f3;
+            }
+            &.video {
+                video {
+                    width: 100%;
+                    height: 100%;
+                }
             }
         }
     }

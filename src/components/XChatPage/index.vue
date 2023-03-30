@@ -83,6 +83,12 @@ const msgClickOprate: Partial<Record<SendMsgType, (id: string) => void>> = {
     },
 }
 
+const lastMsgMap: Partial<Record<SendMsgType, (msg: MessageData) => string>> = {
+    txt: (msg) => (msg as EasemobChat.TextMsgBody).msg,
+    img: () => '[图片]',
+    video: () => '[视频]',
+}
+
 const pageData = reactive({
     id: friendStore.friend?.userid || '',
     refresh: false,
@@ -115,7 +121,11 @@ const resizeObserver = new ResizeObserver((entries) => {
                     behavior: scrollData.behavior ? 'smooth' : 'auto',
                 })
             } else {
+                /**
+                 * TODO Bug: 获取完历史消息会滚动到底部
+                 */
                 scrollData.scrollTop += scrollData.differHeight
+                console.log('scrollData.scrollTop -->', scrollData.scrollTop)
 
                 // 保持当前滚动高度
                 mainRef.value?.scrollTo({
@@ -134,6 +144,7 @@ const methods = {
         methods.keepScroll()
 
         await chatStore.getHistoryMsg()
+
         pageData.refresh = false
     },
 
@@ -160,7 +171,7 @@ const methods = {
     },
 
     msgClick({ id, type }: { id: string; type: SendMsgType }) {
-        msgClickOprate[type]!(id)
+        msgClickOprate[type]?.(id)
     },
 }
 
@@ -184,25 +195,19 @@ onMounted(() => {
 
 onBeforeUnmount(async () => {
     console.log('聊天页 onBeforeUnmount', chatStore.socketDefer.send)
+
+    const last = chatStore.messageList[chatStore.messageList.length - 1]
     /** 更新会话列表 */
     if (chatStore.socketDefer.send) {
         await chatStore.socketDefer.send.promise
         chatListStore.setLastMsg(
             pageData.id,
-            (
-                chatStore.messageList[
-                    chatStore.messageList.length - 1
-                ] as EasemobChat.TextMsgBody
-            ).msg
+            lastMsgMap[last.type]?.(last) || ''
         )
     } else {
         chatListStore.setLastMsg(
             pageData.id,
-            (
-                chatStore.messageList[
-                    chatStore.messageList.length - 1
-                ] as EasemobChat.TextMsgBody
-            ).msg
+            lastMsgMap[last.type]?.(last) || ''
         )
     }
 
@@ -258,6 +263,6 @@ main {
     gap: 15rem;
     font-size: 14rem;
     padding: 15rem 0;
-    // min-height: calc(100vh - 100rem);
+    min-height: calc(100vh - 200rem);
 }
 </style>

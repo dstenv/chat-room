@@ -67,6 +67,7 @@ import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from '@/stores/chatList'
 import { Tools } from '@/utils/tools'
 import { showToast } from 'vant'
+import { FileLimit } from '@/utils/config'
 
 interface FunItem {
     text: string
@@ -101,11 +102,14 @@ const funList: FunItem[] = [
             inp.accept = 'image/*'
             inp.setAttribute('style', 'position:fixed;left:2000px;')
             inp.onchange = function (e) {
-                setTimeout(async () => {
+                setTimeout(() => {
                     const { files } = e.target as HTMLInputElement
 
                     if (files) {
-                        console.log('files[0] -->', files[0])
+                        if (files[0].size / 1024 / 1024 > FileLimit.imgSize) {
+                            showToast(`图片大小最大不超过${FileLimit.imgSize}M`)
+                            return
+                        }
                         const url = URL.createObjectURL(files[0])
 
                         /** 发送图片必须使用这种格式。否则发送无效 */
@@ -149,7 +153,80 @@ const funList: FunItem[] = [
     {
         text: '视频',
         icon: Tools.getUrl('video.png'),
-        oprate() {},
+        oprate() {
+            const inp = document.createElement('input')
+
+            inp.type = 'file'
+            inp.accept = 'video/*'
+            inp.setAttribute('style', 'position:fixed;left:2000px;')
+            inp.onchange = function (e) {
+                setTimeout(() => {
+                    const { files } = e.target as HTMLInputElement
+
+                    if (files) {
+                        if (files[0].size / 1024 / 1024 > FileLimit.videoSize) {
+                            showToast(
+                                `视频大小最大不超过${FileLimit.videoSize}M`
+                            )
+                            return
+                        }
+                        const allowType = [
+                            'video/mp4',
+                            'video/wmv',
+                            'video/avi',
+                            'video/rmvb',
+                            'video/mkv',
+                        ]
+                        if (!allowType.includes(files[0].type)) {
+                            showToast(`只支持${allowType.join('、')}的视频格式`)
+                            return
+                        }
+
+                        const url = URL.createObjectURL(files[0])
+
+                        const file = {
+                            data: files[0],
+                            filename: files[0].name,
+                            filetype: files[0].type,
+                        } as unknown as File
+
+                        chatStore.sendMessage(
+                            'video',
+                            {
+                                chatType: 'singleChat',
+                                to: props.oppositeId,
+                                file,
+                            },
+                            {
+                                chatType: 'singleChat',
+                                id: '',
+                                url,
+                                time: +new Date(),
+                                to: props.oppositeId,
+                                type: 'video',
+                                file: {
+                                    data: files[0],
+                                    filename: files[0].name,
+                                    filetype: files[0].type,
+                                    url,
+                                },
+                                filename: files[0].name,
+                            },
+                            () => {
+                                emits('toggleFuns', {
+                                    bool: false,
+                                    isBehavior: true,
+                                })
+                            }
+                        )
+                    }
+
+                    document.body.removeChild(inp)
+                }, 200)
+            }
+            document.body.appendChild(inp)
+            inp.click()
+        },
     },
 ]
 

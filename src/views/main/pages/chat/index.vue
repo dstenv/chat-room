@@ -91,6 +91,10 @@
                                 v-if="(item.lastMessage as any).type === 'img'"
                                 >[图片]</span
                             >
+                            <span
+                                v-if="(item.lastMessage as any).type === 'video'"
+                                >[视频]</span
+                            >
                         </div>
                         <div class="right">
                             <span>{{
