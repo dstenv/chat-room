@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <div class="friend-list">
+            <div class="friend-list" v-if="chatListStore.friendList.length > 0">
                 <XFriend
                     v-for="item in chatListStore.friendList"
                     :key="item.userid"
@@ -52,6 +52,10 @@
                 />
                 aaa
             </div>
+
+            <template v-else>
+                <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
+            </template>
         </main>
     </div>
 </template>
@@ -61,6 +65,7 @@ import { Tools } from '@/utils/tools'
 import XFriend from '@/components/XFriend/index.vue'
 import XSearch from '@/components/XSearch/index.vue'
 import { useChatListStore } from '@/stores/chatList'
+import XEmpty from '@/components/XEmpty/index.vue'
 
 interface MailTopItem {
     text: string
@@ -125,6 +130,8 @@ init()
 main {
     height: calc(100vh - 60rem - 92rem);
     overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
     .top-list {
         background-color: #fff;
         .top-item {

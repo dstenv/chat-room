@@ -39,8 +39,8 @@
                 <XSearch />
             </template>
         </XHeader>
-
-        <div class="chat-list">
+        <!-- chatListStore.chatList.length > 0 -->
+        <div class="chat-list" v-if="chatListStore.chatList.length > 0">
             <div
                 class="chat-list-item"
                 v-for="item in chatListStore.chatList"
@@ -107,6 +107,10 @@
                 </template>
             </div>
         </div>
+
+        <template v-else>
+            <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
+        </template>
     </div>
 </template>
 
@@ -119,6 +123,7 @@ import { useChatStore } from '@/stores/chat'
 import { useFriendStore } from '@/stores/friend'
 import XSearch from '@/components/XSearch/index.vue'
 import { useUserStore } from '@/stores/user'
+import XEmpty from '@/components/XEmpty/index.vue'
 
 interface AddListItem {
     text: string

@@ -80,7 +80,9 @@
                 </div>
             </div>
 
-            <template v-else> 空状态组件 </template>
+            <template v-else>
+                <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
+            </template>
         </main>
     </div>
 </template>
@@ -94,6 +96,7 @@ import { EaseChatClient } from '@/utils/config'
 import { Tools } from '@/utils/tools'
 import { showSuccessToast } from 'vant'
 import type { NewFriend } from '@/types'
+import XEmpty from '@/components/XEmpty/index.vue'
 
 const router = useRouter()
 const chatListStore = useChatListStore()
@@ -137,6 +140,8 @@ chatListStore.newFriends = chatListStore.newFriends.map((friend) => ({
 <style scoped lang="scss">
 .new-friend {
     height: 100vh;
+    display: flex;
+    flex-direction: column;
     .add {
         font-size: 14rem;
         font-weight: 400;
@@ -189,6 +194,12 @@ chatListStore.newFriends = chatListStore.newFriends.map((friend) => ({
                 }
             }
         }
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 }
 </style>
