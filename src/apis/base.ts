@@ -4,8 +4,6 @@ import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { Tools } from '@/utils/tools'
 import { useLoading } from '@/hooks/loading'
-import type { ToastWrapperInstance } from 'vant/lib/toast/types'
-import { useLoadingStore } from '@/stores/loading'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
@@ -38,8 +36,6 @@ const requestBaseConfig: RequestBaseType = {
     timeout: 5000,
     loading: true,
 }
-
-const loadingInstance: ToastWrapperInstance | null = null
 
 const bodyObj: Partial<Record<Method, 'data' | 'param'>> = {
     GET: 'param',
@@ -92,12 +88,12 @@ export const request = <T, U>(
     options: RequestBaseType
 ): ((body?: T) => Promise<U>) =>
     async function (body?: T): Promise<U> {
-        const loadingStore = useLoadingStore()
+        const loading = useLoading()
 
-        const id = loadingStore.requestId++
+        const id = loading.requestId++
 
-        if (loadingStore.loadingInstance) {
-            loadingStore.request.push({
+        if (loading.loadingInstance) {
+            loading.addRequest({
                 id,
                 finish: false,
             })
@@ -139,7 +135,7 @@ export const request = <T, U>(
         }
 
         if (requestOptions.loading ?? requestBaseConfig.loading) {
-            loadingStore.create()
+            loading.create()
         }
         let result: ResponseBaseType<U>
 
@@ -151,15 +147,9 @@ export const request = <T, U>(
         } catch (error) {
             result = new ResponseBaseType<U>()
         } finally {
-            for (let i = 0; i < loadingStore.request.length; i++) {
-                if (loadingStore.request[i].id === id) {
-                    loadingStore.request[i].finish = false
-                }
-            }
+            loading.finishOneRequest(id)
 
-            if (loadingStore.request.every((item) => item.finish)) {
-                loadingStore.close()
-            }
+            loading.close()
         }
         return result.data as U
     }
