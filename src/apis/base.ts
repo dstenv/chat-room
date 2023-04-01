@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { Tools } from '@/utils/tools'
 import { useLoading } from '@/hooks/loading'
 import type { ToastWrapperInstance } from 'vant/lib/toast/types'
+import { useLoadingStore } from '@/stores/loading'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
@@ -37,7 +38,8 @@ const requestBaseConfig: RequestBaseType = {
     timeout: 5000,
     loading: true,
 }
-const loadingToastInst: ToastWrapperInstance | null = null
+
+const loadingInstance: ToastWrapperInstance | null = null
 
 const bodyObj: Partial<Record<Method, 'data' | 'param'>> = {
     GET: 'param',
@@ -90,7 +92,17 @@ export const request = <T, U>(
     options: RequestBaseType
 ): ((body?: T) => Promise<U>) =>
     async function (body?: T): Promise<U> {
-        let loadingInstance: null | ToastWrapperInstance = null
+        const loadingStore = useLoadingStore()
+
+        const id = loadingStore.requestId++
+
+        if (loadingStore.loadingInstance) {
+            loadingStore.request.push({
+                id,
+                finish: false,
+            })
+        }
+
         const requestOptions = { ...options }
         requestOptions.method =
             requestOptions.method || requestBaseConfig.method
@@ -127,7 +139,7 @@ export const request = <T, U>(
         }
 
         if (requestOptions.loading ?? requestBaseConfig.loading) {
-            loadingInstance = useLoading()
+            loadingStore.create()
         }
         let result: ResponseBaseType<U>
 
@@ -139,8 +151,14 @@ export const request = <T, U>(
         } catch (error) {
             result = new ResponseBaseType<U>()
         } finally {
-            if (loadingInstance) {
-                loadingInstance.close()
+            for (let i = 0; i < loadingStore.request.length; i++) {
+                if (loadingStore.request[i].id === id) {
+                    loadingStore.request[i].finish = false
+                }
+            }
+
+            if (loadingStore.request.every((item) => item.finish)) {
+                loadingStore.close()
             }
         }
         return result.data as U

@@ -164,20 +164,30 @@ const funList: FunItem[] = [
                     const { files } = e.target as HTMLInputElement
 
                     if (files) {
+                        console.log('files[0].type -->', files[0].type)
+
                         if (files[0].size / 1024 / 1024 > FileLimit.videoSize) {
                             showToast(
                                 `视频大小最大不超过${FileLimit.videoSize}M`
                             )
                             return
                         }
+                        const type = files[0].type.split('/')?.[1] || ''
+
+                        if (!type) {
+                            showToast('视频格式错误')
+                            return
+                        }
+
                         const allowType = [
-                            'video/mp4',
-                            'video/wmv',
-                            'video/avi',
-                            'video/rmvb',
-                            'video/mkv',
+                            'mp4',
+                            'wmv',
+                            'avi',
+                            'rmvb',
+                            'mkv',
+                            'quicktime',
                         ]
-                        if (!allowType.includes(files[0].type)) {
+                        if (!allowType.includes(type)) {
                             showToast(`只支持${allowType.join('、')}的视频格式`)
                             return
                         }
@@ -358,6 +368,7 @@ defineExpose({
             border-radius: 10rem;
             background-color: #fff;
             text-align: center;
+            font-size: 12rem;
             img {
                 width: 25rem;
                 display: block;

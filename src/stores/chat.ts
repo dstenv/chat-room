@@ -51,7 +51,6 @@ export const useChatStore = defineStore('chat', () => {
             socketDefer.connected = new Defer()
             console.log('创建新的socket连接defer --> ', socketDefer.connected)
         }
-
         const userStore = useUserStore()
         // sdk登录环信IM
         EaseChatClient.open({
@@ -183,6 +182,8 @@ export const useChatStore = defineStore('chat', () => {
     const getHistoryMsg = async () => {
         if (socketDefer.connected) {
             await socketDefer.connected.promise
+        } else if (!EaseChatClient.isOpened()) {
+            await connect()
         }
 
         try {
@@ -206,10 +207,9 @@ export const useChatStore = defineStore('chat', () => {
                 /** 获取消息的起始位置 */
                 cursor: chatData.startId,
             })
-            chatData.startId =
-                list.cursor === 'undefined'
-                    ? messageList.value[0].id
-                    : (list.cursor as string)
+            chatData.startId = list.cursor?.split('').includes('undefined')
+                ? messageList.value[0].id
+                : (list.cursor as string)
 
             const messages: MessageData[] = list.messages.map((item) => ({
                 ...item,

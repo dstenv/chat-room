@@ -21,7 +21,9 @@ export default defineComponent({
 
         const methods = {
             /** 长按事件 */
-            longPress() {},
+            longPress() {
+                console.log('longpress')
+            },
         }
 
         const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
@@ -48,6 +50,7 @@ export default defineComponent({
                 <div class="item-wrap image">
                     <img
                         src={(props.item as EasemobChat.ImgMsgBody).url}
+                        crossorigin="anonymous"
                         onLoad={() => {
                             emit('addImage', {
                                 id: props.item.id,
@@ -68,21 +71,15 @@ export default defineComponent({
             video: (
                 <div class="item-wrap video">
                     <video
+                        /**
+                         * !TODO 视频在手机上播放不了(安卓可以)
+                         */
                         src={(props.item as EasemobChat.VideoMsgBody).url}
-                        onLoad={() => {
-                            emit('addImage', {
-                                id: props.item.id,
-                                url: (props.item as EasemobChat.VideoMsgBody)
-                                    .url,
-                                time: (props.item as EasemobChat.VideoMsgBody)
-                                    .time,
-                            } as ImgList)
-                        }}
-                        onClick={() => {
-                            emit('click', {
-                                id: props.item.id,
-                                type: props.item.type,
-                            })
+                        controls
+                        crossorigin="anonymous"
+                        preload="metadata"
+                        onError={(e) => {
+                            console.log(props.item)
                         }}
                     />
                 </div>
@@ -170,6 +167,13 @@ export default defineComponent({
             }
             &.image {
                 background-color: #f3f3f3;
+                img {
+                    width: 100%;
+                    height: 100%;
+                    max-width: 100rem;
+                    max-height: 200rem;
+                    object-fit: contain;
+                }
             }
             &.video {
                 video {

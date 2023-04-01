@@ -237,6 +237,7 @@ console.log('chatListStore -->', chatListStore.chatList)
             span {
                 display: block;
                 color: #7a7a7a;
+                font-size: 12rem;
             }
         }
         .right {
