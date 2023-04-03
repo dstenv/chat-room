@@ -90,6 +90,11 @@ const router = createRouter({
             name: 'ACCEPT_FRIEND',
             component: () => import('@/views/accept-friend/index.vue'),
         },
+        {
+            path: '/black-list',
+            name: 'BLACK_LIST',
+            component: () => import('@/views/black-list/index.vue'),
+        },
     ],
 })
 

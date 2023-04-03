@@ -121,6 +121,7 @@ export const useChatListStore = defineStore(
                                     ? 'avatar-default-uwoman.png.png'
                                     : 'avatar-default-uman.png.png'
                             ),
+                        onLine: false,
                     })
                     deleteManyFriend()
                 }

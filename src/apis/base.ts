@@ -20,6 +20,7 @@ export interface RequestBaseType {
     timeout?: number
     httpType?: 'api' | 'apis'
     loading?: boolean
+    oprateUrl?: () => string
 }
 export class ResponseBaseType<T> {
     data?: T
@@ -52,31 +53,6 @@ const customHeaderKeyFn: HeaderKeyFn = {
         payload.Authorization = `Bearer ${token.value}`
     },
 }
-
-// export const request = async <T extends RequestBaseType, U>(
-//     options: T
-// ): Promise<U> => {
-//     options.method = options.method || requestBaseConfig.method
-//     if (options.headers) {
-//         options.headers = {
-//             ...requestBaseConfig.headers,
-//             ...options.headers,
-//         }
-//         for (const key of customHeaderKey) {
-//             if (options.headers[key]) {
-//                 ;(customHeaderKeyFn[key] as keyFn)(options.headers)
-//             }
-//         }
-//     }
-//     options.timeout = options.timeout || requestBaseConfig.timeout
-//     options.url = `/${options.httpType || 'api'}/${baseConfig.orgName}/${
-//         baseConfig.appName
-//     }/${options.url}`
-//     // console.log(options)
-
-//     const result: U = await axios({ ...options })
-//     return result
-// }
 
 /**
  * @description 初步完成 未测试
@@ -119,6 +95,11 @@ export const request = <T, U>(
         }
         requestOptions.timeout =
             requestOptions.timeout || requestBaseConfig.timeout
+
+        if (requestOptions.oprateUrl) {
+            requestOptions.url = requestOptions.oprateUrl()
+        }
+
         requestOptions.url = `/${requestOptions.httpType || 'api'}/${
             baseConfig.orgName
         }/${baseConfig.appName}/${requestOptions.url}`

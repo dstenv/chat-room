@@ -8,6 +8,7 @@ export class UserProPertyType {
     userid?: string
     avatar?: string
     area?: string
+    onLine: boolean
 }
 
 export class NewFriend {

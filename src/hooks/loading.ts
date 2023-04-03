@@ -6,11 +6,7 @@ interface RequestItem {
 }
 
 class Loading {
-    static LoadingInst: null | ToastWrapperInstance
-
-    constructor() {
-        Loading.LoadingInst = null
-    }
+    static LoadingInst: null | ToastWrapperInstance = null
 
     static getInstance() {
         if (!Loading.LoadingInst) {
@@ -61,6 +57,9 @@ class LoadingUtil {
             this.loadingInstance?.close()
 
             this.loadingInstance = null
+
+            this.request = []
+            this.requestId = 1
         }
     }
 

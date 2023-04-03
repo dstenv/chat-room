@@ -124,6 +124,7 @@ const methods = {
                 sex: data.sex || '1',
                 avatar: data.avatar,
                 nickname: data.nickname,
+                onLine: false,
             })
             chatListStore.deleteManyFriend()
 

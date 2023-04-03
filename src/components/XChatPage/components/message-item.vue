@@ -79,9 +79,13 @@ export default defineComponent({
                         crossorigin="anonymous"
                         preload="metadata"
                         onError={(e) => {
-                            console.log(props.item)
+                            {
+                                /* console.log(props.item) */
+                            }
                         }}
-                    />
+                    >
+                        您的手机暂不支持该视频格式播放
+                    </video>
                 </div>
             ),
         }
@@ -95,7 +99,12 @@ export default defineComponent({
                 </div>
 
                 <div
-                    class="msg-item-box"
+                    class={[
+                        'msg-item-box',
+                        props.item.from !== userStore.userId
+                            ? 'msg-item-box-him'
+                            : '',
+                    ]}
                     style={{
                         flexDirection:
                             props.item.from === userStore.userId
@@ -167,18 +176,34 @@ export default defineComponent({
             }
             &.image {
                 background-color: #f3f3f3;
+                padding: 0;
+                border-radius: 4rem;
                 img {
                     width: 100%;
                     height: 100%;
                     max-width: 100rem;
+                    border-radius: 4rem;
                     max-height: 200rem;
                     object-fit: contain;
                 }
             }
             &.video {
+                border-radius: 4rem;
+                padding: 0;
+                text-align: right;
                 video {
+                    border-radius: 4rem;
                     width: 100%;
                     height: 100%;
+                    max-width: 80%;
+                }
+            }
+        }
+
+        &.msg-item-box-him {
+            .item-wrap {
+                &.video {
+                    text-align: left;
                 }
             }
         }

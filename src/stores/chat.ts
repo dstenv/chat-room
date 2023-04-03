@@ -34,6 +34,8 @@ export const useChatStore = defineStore('chat', () => {
         reconnect: new Hook(),
     }
 
+    const MSG_SIZE = 20
+
     const userStore = useUserStore()
 
     const messageList = ref<MessageData[]>([])
@@ -201,7 +203,7 @@ export const useChatStore = defineStore('chat', () => {
 
             const list = await EaseChatClient.getHistoryMessages({
                 targetId: chatData.targetId,
-                pageSize: 20,
+                pageSize: MSG_SIZE,
                 chatType: 'singleChat',
                 searchDirection: 'up',
                 /** 获取消息的起始位置 */
@@ -219,6 +221,11 @@ export const useChatStore = defineStore('chat', () => {
             }))
 
             if (list.messages.length > 0) {
+                if (list.messages.length < MSG_SIZE) {
+                    chatData.startId = ''
+                    allHistory.value = true
+                }
+
                 console.log(
                     `有历史消息${list.messages.length}条`,
                     chatData.startId

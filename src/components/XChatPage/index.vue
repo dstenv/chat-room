@@ -55,6 +55,7 @@ import Footer from './components/footer.vue'
 import MessageItem from './components/message-item.vue'
 import { usePreviewImage } from '@/hooks/preview-image'
 import type { MessageData, SendMsgType } from '@/types/message'
+import { getOnlineStatus } from '@/apis/friend/getOnlineStatus'
 
 enum ScrollType {
     None,
@@ -94,6 +95,7 @@ const pageData = reactive({
     refresh: false,
     /** 是否弹起底部功能区域 */
     isSelFuns: false,
+    userStatus: false,
 })
 
 const scrollData = reactive({
@@ -138,6 +140,28 @@ const resizeObserver = new ResizeObserver((entries) => {
 })
 
 const methods = {
+    async init() {
+        await chatStore.getHistoryMsg()
+
+        //  获取用户在线状态 im服务未开启
+        // try {
+        //     const status = EaseChatClient.getPresenceStatus({
+        //         usernames: [friendStore.friend?.userid || ''],
+        //     })
+        //     console.log('status -->', status)
+        // } catch (error) {
+        // } finally {
+        //     pageData.userStatus = false
+        // }
+
+        // try {
+        //     const result = await getOnlineStatus({
+        //         usernames: [friendStore.friend?.userid || ''],
+        //     })
+        //     console.log('result -->', result)
+        // } catch (error) {}
+    },
+
     async getHistory() {
         scrollData.beforeHeight = listRef.value.scrollHeight - 30
 
@@ -177,8 +201,16 @@ const methods = {
 
 EaseChatClient.addEventHandler(watchFnId, {
     onTextMessage: (message) => {
-        console.log(message, '文本消息')
         chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', message.msg)
+    },
+    onImageMessage: (message) => {
+        chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', '[图片]')
+    },
+    onVideoMessage: (message) => {
+        chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', '[视频]')
     },
 })
 
@@ -218,7 +250,7 @@ onBeforeUnmount(async () => {
     chatStore.clean()
 })
 
-chatStore.getHistoryMsg()
+methods.init()
 </script>
 
 <style scoped lang="scss">

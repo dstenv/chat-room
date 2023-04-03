@@ -65,6 +65,7 @@
                                 item.lastMessage.to === userStore.userId
                                     ? item.lastMessage.from
                                     : item.lastMessage.to,
+                            onLine: false,
                         })
 
                         router.push('/my-chat')
