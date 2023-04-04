@@ -95,6 +95,7 @@ export const useChatListStore = defineStore(
                 console.log('chatList.value -->', chatList.value)
             } catch (error) {
                 console.log('getChatList error -->', error)
+            } finally {
                 getStatus.getChat = false
             }
         }
@@ -124,6 +125,7 @@ export const useChatListStore = defineStore(
                 }
             } catch (error) {
                 console.log('getFriends error -->', error)
+            } finally {
                 getStatus.getFriend = false
             }
         }

@@ -96,6 +96,12 @@ const funList: FunItem[] = [
         text: '图片',
         icon: Tools.getUrl('pic.png'),
         oprate() {
+            if (Tools.checkInBlackList(props.oppositeId)) {
+                showToast('对方已被您加入黑名单，无法发送消息')
+                pageData.text = ''
+                return
+            }
+
             const inp = document.createElement('input')
 
             inp.type = 'file'
@@ -154,6 +160,12 @@ const funList: FunItem[] = [
         text: '视频',
         icon: Tools.getUrl('video.png'),
         oprate() {
+            if (Tools.checkInBlackList(props.oppositeId)) {
+                showToast('对方已被您加入黑名单，无法发送消息')
+                pageData.text = ''
+                return
+            }
+
             const inp = document.createElement('input')
 
             inp.type = 'file'
@@ -254,6 +266,12 @@ const keydown = (e: KeyboardEvent) => {
 }
 
 const send = () => {
+    if (Tools.checkInBlackList(props.oppositeId)) {
+        showToast('对方已被您加入黑名单，无法发送消息')
+        pageData.text = ''
+        return
+    }
+
     chatStore.sendMessage(
         'txt',
         {

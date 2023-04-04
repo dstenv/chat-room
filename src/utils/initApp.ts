@@ -47,6 +47,7 @@ export const init = {
         const chatStore = useChatStore()
         const userToken = localStorage.getItem('userToken')
         if (!userToken) {
+            sessionStorage.clear()
             router.replace('/begin')
             return
         }

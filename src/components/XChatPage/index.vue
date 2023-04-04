@@ -163,6 +163,8 @@ const methods = {
     },
 
     async getHistory() {
+        pageData.refresh = true
+
         scrollData.beforeHeight = listRef.value.scrollHeight - 30
 
         methods.keepScroll()
@@ -229,18 +231,20 @@ onBeforeUnmount(async () => {
     console.log('聊天页 onBeforeUnmount', chatStore.socketDefer.send)
 
     const last = chatStore.messageList[chatStore.messageList.length - 1]
-    /** 更新会话列表 */
-    if (chatStore.socketDefer.send) {
-        await chatStore.socketDefer.send.promise
-        chatListStore.setLastMsg(
-            pageData.id,
-            lastMsgMap[last.type]?.(last) || ''
-        )
-    } else {
-        chatListStore.setLastMsg(
-            pageData.id,
-            lastMsgMap[last.type]?.(last) || ''
-        )
+    if (last) {
+        /** 更新会话列表 */
+        if (chatStore.socketDefer.send) {
+            await chatStore.socketDefer.send.promise
+            chatListStore.setLastMsg(
+                pageData.id,
+                lastMsgMap[last.type]?.(last) || ''
+            )
+        } else {
+            chatListStore.setLastMsg(
+                pageData.id,
+                lastMsgMap[last.type]?.(last) || ''
+            )
+        }
     }
 
     if (listRef.value) {

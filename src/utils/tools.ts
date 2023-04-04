@@ -1,3 +1,5 @@
+import { useChatListStore } from '@/stores/chatList'
+
 export namespace Tools {
     type FolderName = 'imgs' | 'icons'
     type TimeType =
@@ -162,5 +164,12 @@ export namespace Tools {
         }
 
         return newList.map((item) => ({ ...item }))
+    }
+
+    export function checkInBlackList(id: string) {
+        return (
+            useChatListStore().blackList.findIndex((item) => item.id === id) !==
+            -1
+        )
     }
 }
