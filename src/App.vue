@@ -21,7 +21,7 @@ const showTabbarList = [
     '/main/pages/my',
 ]
 
-const secondPages = ['/my-chat', '/add-friend', '/new-friend']
+const secondPages = ['/my-chat', '/add-friend', '/new-friend', '/black-list']
 const toList: string[] = ['/add-friend', ...showTabbarList]
 const fromList: string[] = ['/search-user']
 

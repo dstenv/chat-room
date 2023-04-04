@@ -20,3 +20,9 @@ export class NewFriend {
     nickname?: string
     agree: boolean
 }
+
+export interface BlackListItem {
+    id: string
+    nickname: string
+    avatar: string
+}

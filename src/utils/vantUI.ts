@@ -9,6 +9,7 @@ import {
     PullRefresh,
     Image,
     Popup,
+    SwipeCell,
 } from 'vant'
 import type { App } from 'vue'
 
@@ -23,6 +24,7 @@ const vantUIComponents = [
     PullRefresh,
     Image,
     Popup,
+    SwipeCell,
 ]
 
 export default {

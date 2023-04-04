@@ -59,7 +59,7 @@ onBeforeUnmount(() => {
         text-overflow: ellipsis;
         white-space: nowrap;
         box-sizing: content-box;
-        padding: 9rem 0 15rem;
+        padding: 12rem 0 18rem;
         font-size: 14rem;
         border-bottom: 1rem solid #ddd;
         letter-spacing: 1rem;

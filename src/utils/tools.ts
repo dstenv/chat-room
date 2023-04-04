@@ -133,4 +133,34 @@ export namespace Tools {
 
         return str.slice(0, str.length - 1)
     }
+
+    export function getDefaultAvatar(bool: boolean, avatar?: string) {
+        return (
+            avatar ||
+            Tools.getUrl(
+                bool
+                    ? 'avatar-default-uwoman.png.png'
+                    : 'avatar-default-uman.png.png'
+            )
+        )
+    }
+
+    export function deleteRepeat<T>(list: T[], key?: keyof T) {
+        const newList: T[] = []
+
+        for (let i = 0; i < list.length; i++) {
+            const find = newList.find((item) => {
+                if (key) {
+                    return item[key] === list[i][key]
+                }
+                return item === list[i]
+            })
+
+            if (!find) {
+                newList.push({ ...list[i] })
+            }
+        }
+
+        return newList.map((item) => ({ ...item }))
+    }
 }

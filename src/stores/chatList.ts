@@ -3,9 +3,10 @@ import type { EasemobChat } from 'easemob-websdk'
 import { defineStore } from 'pinia'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import { Tools } from '@/utils/tools'
-import type { UserProPertyType, NewFriend } from '@/types'
+import type { UserProPertyType, NewFriend, BlackListItem } from '@/types'
 import { getFriendList } from '@/apis/friend/getFriendList'
 import { useUserStore } from './user'
+import { getBlackList } from '@/apis/user/getBlackList'
 
 export const useChatListStore = defineStore(
     'chatList',
@@ -15,10 +16,12 @@ export const useChatListStore = defineStore(
         >([])
         const friendList = ref<UserProPertyType[]>([])
         const newFriends = ref<NewFriend[]>([])
+        const blackList = ref<BlackListItem[]>([])
 
         const getStatus = {
             getChat: false,
             getFriend: false,
+            getBlack: false,
         }
 
         const watchHandlerKey = `chat_list_store_${Date.now().toString(
@@ -83,13 +86,10 @@ export const useChatListStore = defineStore(
                     chatList.value[i].lastMessage.payload = {
                         nickname: property.data.nickname,
                         sex: property.data.sex,
-                        avatar:
-                            property.data.avatar ||
-                            Tools.getUrl(
-                                property.data.sex === '2'
-                                    ? 'avatar-default-uwoman.png.png'
-                                    : 'avatar-default-uman.png.png'
-                            ),
+                        avatar: Tools.getDefaultAvatar(
+                            property.data.sex === '2',
+                            property.data.avatar
+                        ),
                     }
                 }
                 console.log('chatList.value -->', chatList.value)
@@ -114,13 +114,10 @@ export const useChatListStore = defineStore(
                         userid: result.data[i],
                         nickname: property.data.nickname || result.data[i],
                         sex: property.data.sex,
-                        avatar:
-                            property.data.avatar ||
-                            Tools.getUrl(
-                                property.data.sex === '2'
-                                    ? 'avatar-default-uwoman.png.png'
-                                    : 'avatar-default-uman.png.png'
-                            ),
+                        avatar: Tools.getDefaultAvatar(
+                            property.data.sex === '2',
+                            property.data.avatar
+                        ),
                         onLine: false,
                     })
                     deleteManyFriend()
@@ -128,6 +125,29 @@ export const useChatListStore = defineStore(
             } catch (error) {
                 console.log('getFriends error -->', error)
                 getStatus.getFriend = false
+            }
+        }
+
+        const getBlackFriendList = async () => {
+            blackList.value = []
+            try {
+                const result = await getBlackList()
+
+                for (let i = 0; i < result.data.length; i++) {
+                    const property = await getUserInfo(result.data[i])()
+
+                    blackList.value.push({
+                        id: result.data[i],
+                        nickname: property.data.nickname || '',
+                        avatar: Tools.getDefaultAvatar(
+                            property.data.sex === '2',
+                            property.data.avatar
+                        ),
+                    })
+                }
+                blackList.value = Tools.deleteRepeat(blackList.value, 'id')
+            } catch (error) {
+                console.log('getBlackList error -->', error)
             }
         }
 
@@ -157,20 +177,15 @@ export const useChatListStore = defineStore(
             })
         }
 
+        /**
+         * 从黑名单列表删除一项
+         */
+        const deleteBlack = (id: string) => {
+            blackList.value = blackList.value.filter((item) => item.id !== id)
+        }
+
         const deleteManyFriend = () => {
-            const newList: UserProPertyType[] = []
-
-            for (let i = 0; i < friendList.value.length; i++) {
-                if (
-                    !newList.find(
-                        (item) => item.userid === friendList.value[i].userid
-                    )
-                ) {
-                    newList.push({ ...friendList.value[i] })
-                }
-            }
-
-            friendList.value = newList.map((item) => ({ ...item }))
+            friendList.value = Tools.deleteRepeat(friendList.value, 'userid')
         }
 
         const unWatch = () => {
@@ -181,12 +196,15 @@ export const useChatListStore = defineStore(
             chatList,
             friendList,
             newFriends,
+            blackList,
             getChatList,
             watchMessage,
             unWatch,
             getFriends,
             deleteManyFriend,
             setLastMsg,
+            getBlackFriendList,
+            deleteBlack,
         }
     },
     {
