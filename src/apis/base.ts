@@ -3,7 +3,7 @@ import { baseConfig, chatRoomBaseConfig } from '@/utils/config'
 import { useAdminStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { Tools } from '@/utils/tools'
-import { useLoading } from '@/hooks/loading'
+import { useLoading } from '@/singleton/loading'
 
 type Method = 'GET' | 'POST' | 'DELETE' | 'PUT'
 type Content = 'application/json'
