@@ -9,7 +9,7 @@ module.exports = {
         node: true,
     },
     extends: [
-        'eslint:recommended',
+        // 'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         // 'plugin:vue/vue3-recommended',
         'plugin:vue/vue3-essential',
