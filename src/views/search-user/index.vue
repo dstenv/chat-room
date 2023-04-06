@@ -1,15 +1,53 @@
 <template>
     <div v-if="pageData.init">
-        <XUser :user-info="pageData.userInfo" />
+        <XUser :user-info="pageData.userInfo" :otherInfoList="otherInfoList" />
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import XUser from '@/components/XUser/index.vue'
+import type { OtherInfoItemType } from '@/components/XUser/components/other-item.vue'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
+import { Tools } from '@/utils/tools'
+
+interface OprateItem {
+    text: string
+    icon: string
+    click?: () => void
+}
 
 const route = useRoute()
+
+const otherInfoList: OtherInfoItemType[] = [
+    {
+        text: '个性签名',
+        border: true,
+        render() {
+            return <div>暂无个性签名</div>
+        },
+    },
+    {
+        text: '朋友圈',
+        border: true,
+    },
+    {
+        text: '视频号',
+    },
+]
+
+const oprateLlist: OprateItem[] = [
+    {
+        text: '发消息',
+        icon: Tools.getUrl('send-msg.png'),
+        click() {},
+    },
+    {
+        text: '音视频童话',
+        icon: Tools.getUrl('call-phone.png'),
+        click() {},
+    },
+]
 
 const pageData = reactive({
     userId: (route.query.id as string) || '',

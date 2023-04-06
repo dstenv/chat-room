@@ -22,6 +22,7 @@ export interface OtherInfoItemType {
     text: string
     border?: boolean
     render?: () => JSX.Element
+    click?: () => void
 }
 
 const props = defineProps<OtherInfoItemType>()

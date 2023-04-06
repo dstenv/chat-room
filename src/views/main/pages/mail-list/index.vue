@@ -107,7 +107,7 @@ const mailTopList: MailTopItem[] = [
     {
         icon: Tools.getUrl('blacklist.png'),
         text: '黑名单',
-        bgColor: 'rgb(50 50 50)',
+        bgColor: 'rgb(50,50,50)',
         action() {
             router.push('/black-list')
         },

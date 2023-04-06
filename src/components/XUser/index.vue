@@ -41,7 +41,7 @@
 
                 <div class="other">
                     <OtherItem
-                        v-for="item in otherInfoList"
+                        v-for="item in props.otherInfoList"
                         :key="item.text"
                         :text="item.text"
                         :border="item.border"
@@ -95,24 +95,8 @@ const router = useRouter()
 
 const props = defineProps<{
     userInfo: UserProPertyType
+    otherInfoList: OtherInfoItemType[]
 }>()
-
-const otherInfoList: OtherInfoItemType[] = [
-    {
-        text: '个性签名',
-        border: true,
-        render() {
-            return <div>暂无个性签名</div>
-        },
-    },
-    {
-        text: '朋友圈',
-        border: true,
-    },
-    {
-        text: '视频号',
-    },
-]
 
 const defaultData = reactive({
     avatar:

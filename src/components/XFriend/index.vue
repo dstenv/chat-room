@@ -3,11 +3,10 @@
         class="friend-item"
         @click="
             () => {
-                chatStore.setTargetId(props.info.userid as string)
-                friendStore.setFriend({...props.info})
+                friendStore.setFriend({ ...props.info })
 
                 router.push({
-                    path: '/my-chat',
+                    path: '/friend-detail',
                 })
             }
         "
