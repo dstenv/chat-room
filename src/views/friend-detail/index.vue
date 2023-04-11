@@ -54,7 +54,7 @@ const oprateLlist: OprateItem[] = [
         text: '发消息',
         icon: Tools.getUrl('send-msg.png'),
         click() {
-            chatStore.setTargetId(friendInfo.friend?.userid)
+            chatStore.setTargetId(friendInfo.friend?.userid || '')
 
             router.push('/my-chat')
         },
