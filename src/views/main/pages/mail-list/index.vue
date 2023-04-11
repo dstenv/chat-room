@@ -119,11 +119,6 @@ const pageData = reactive({})
 const init = async () => {
     chatListStore.getFriends()
 }
-
-// onActivated(() => {
-//     console.log('>>>>>> 通讯录页面 onActivated')
-//     emits('setTabbar')
-// })
 init()
 </script>
 

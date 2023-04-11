@@ -9,13 +9,6 @@ import XUser from '@/components/XUser/index.vue'
 import type { OtherInfoItemType } from '@/components/XUser/components/other-item.vue'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
-import { Tools } from '@/utils/tools'
-
-interface OprateItem {
-    text: string
-    icon: string
-    click?: () => void
-}
 
 const route = useRoute()
 
@@ -33,19 +26,6 @@ const otherInfoList: OtherInfoItemType[] = [
     },
     {
         text: '视频号',
-    },
-]
-
-const oprateLlist: OprateItem[] = [
-    {
-        text: '发消息',
-        icon: Tools.getUrl('send-msg.png'),
-        click() {},
-    },
-    {
-        text: '音视频童话',
-        icon: Tools.getUrl('call-phone.png'),
-        click() {},
     },
 ]
 

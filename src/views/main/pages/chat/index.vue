@@ -178,6 +178,18 @@ EaseChatClient.addEventHandler('chatConnect', {
     onDisconnected: () => {
         showToast('已断线')
     },
+    onTextMessage: (message) => {
+        chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', message.msg, true)
+    },
+    onImageMessage: (message) => {
+        chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', '[图片]', true)
+    },
+    onVideoMessage: (message) => {
+        chatStore.addMessage({ ...message, loading: false, error: false })
+        chatListStore.setLastMsg(message.from || '', '[视频]', true)
+    },
 })
 
 console.log('chatListStore -->', chatListStore.chatList)

@@ -158,12 +158,15 @@ export const useChatListStore = defineStore(
          * @param himId 对方的会话id
          * @param content 设置的消息内容
          */
-        const setLastMsg = (himId: string, content: string) => {
+        const setLastMsg = (himId: string, content: string, unread = false) => {
             console.log('setLastmsg -->', himId, content)
             const find = chatList.value.find((item) => item.himId === himId)
 
             if (find) {
                 ;(find.lastMessage as any).msg = content
+                if (unread) {
+                    find.unread_num++
+                }
             }
         }
 
