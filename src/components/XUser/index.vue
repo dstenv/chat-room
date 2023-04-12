@@ -36,11 +36,11 @@
                 <div style="background-color: #fff">
                     <i class="slide" />
 
-                    <OtherItem text="备注和标签" />
+                    <XOprateItem text="备注和标签" />
                 </div>
 
                 <div class="other">
-                    <OtherItem
+                    <XOprateItem
                         v-for="item in props.otherInfoList"
                         :key="item.text"
                         :text="item.text"
@@ -85,8 +85,8 @@
 <script setup lang="tsx">
 import type { UserProPertyType } from '@/types'
 import { Tools } from '@/utils/tools'
-import OtherItem from './components/other-item.vue'
-import type { OtherInfoItemType } from './components/other-item.vue'
+import XOprateItem from '@/components/XOprateItem/index.vue'
+import type { OtherInfoItemType } from '@/components/XOprateItem/index.vue'
 import { EaseChatClient } from '@/utils/config'
 import { showSuccessToast } from 'vant'
 import { useUserStore } from '@/stores/user'

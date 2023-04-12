@@ -3,6 +3,7 @@
         class="box"
         :style="{
             borderBottom: props.border ? '1px solid #ebebeb' : '',
+            backgroundColor: props.bg ? props.bg : '#fff',
         }"
     >
         <p>{{ props.text }}</p>
@@ -23,6 +24,7 @@ export interface OtherInfoItemType {
     border?: boolean
     render?: () => JSX.Element
     click?: () => void
+    bg?: string
 }
 
 const props = defineProps<OtherInfoItemType>()

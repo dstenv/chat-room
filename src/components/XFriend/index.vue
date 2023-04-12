@@ -29,6 +29,8 @@ const friendStore = useFriendStore()
 
 const props = defineProps<{
     info: UserProPertyType
+    /** 是否可选择 */
+    select?: boolean
 }>()
 
 onBeforeUnmount(() => {
