@@ -6,7 +6,7 @@
 
 <script setup lang="tsx">
 import XUser from '@/components/XUser/index.vue'
-import type { OtherInfoItemType } from '@/components/XUser/components/other-item.vue'
+import type { OtherInfoItemType } from '@/components/XOprateItem/index.vue'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import type { UserProPertyType } from '@/types'
 

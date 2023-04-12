@@ -112,6 +112,17 @@
         <template v-else>
             <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
         </template>
+
+        <!-- 弹出层 -->
+        <VanPopup
+            :show="pageData.showCreateGroup"
+            position="bottom"
+            :overlay="false"
+        >
+            <div class="create-group">
+                <p>选择联系人</p>
+            </div>
+        </VanPopup>
     </div>
 </template>
 
@@ -144,6 +155,7 @@ const addList: AddListItem[] = [
         icon: Tools.getUrl('icon-room.png'),
         action() {
             console.log('发起群聊', 'desc')
+            pageData.showCreateGroup = true
         },
     },
     {
@@ -172,6 +184,8 @@ const addList: AddListItem[] = [
 
 const pageData = reactive({
     showAddList: false,
+    /** 展示创建群聊 */
+    showCreateGroup: false,
 })
 
 EaseChatClient.addEventHandler('chatConnect', {
@@ -267,6 +281,10 @@ console.log('chatListStore -->', chatListStore.chatList)
             background-color: #d5d5d5;
         }
     }
+}
+.create-group {
+    height: 100vh;
+    width: 100vw;
 }
 .add-friend-img {
     width: 22rem;
