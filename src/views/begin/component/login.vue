@@ -133,6 +133,8 @@ const login = async () => {
             localStorage.setItem('userId', result.user.username)
             localStorage.setItem('userInfo', JSON.stringify(userInfo.data))
 
+            sessionStorage.clear()
+
             router.replace({
                 path: '/main/pages/chat',
             })

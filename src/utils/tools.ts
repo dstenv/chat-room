@@ -172,4 +172,24 @@ export namespace Tools {
             -1
         )
     }
+
+    export function doubonce(
+        fn: (...args: any) => Promise<any> | any,
+        wait = 500
+    ) {
+        let timer: null | NodeJS.Timeout | number = null
+
+        return function (this: any, ...args: any) {
+            if (timer) {
+                clearTimeout(timer)
+            }
+
+            timer = setTimeout(() => {
+                console.log('执行函数')
+                fn.apply(this, args)
+                clearTimeout(timer as number)
+                timer = null
+            }, wait)
+        }
+    }
 }

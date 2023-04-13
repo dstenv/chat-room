@@ -10,6 +10,8 @@ import {
     Image,
     Popup,
     SwipeCell,
+    Checkbox,
+    CheckboxGroup,
 } from 'vant'
 import type { App } from 'vue'
 
@@ -25,6 +27,8 @@ const vantUIComponents = [
     Image,
     Popup,
     SwipeCell,
+    Checkbox,
+    CheckboxGroup,
 ]
 
 export default {

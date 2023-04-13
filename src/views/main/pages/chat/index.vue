@@ -120,7 +120,41 @@
             :overlay="false"
         >
             <div class="create-group">
-                <p>选择联系人</p>
+                <div class="head c-bg">
+                    <img
+                        :src="Tools.getUrl('close-gray.png')"
+                        alt=""
+                        @click="closeCreateGroup"
+                    />
+                    <p>选择联系人</p>
+                    <div class="empty-box" />
+                </div>
+
+                <div class="search">
+                    <input
+                        type="text"
+                        enterkeyhint="search"
+                        v-model="pageData.createGroupSearch"
+                        placeholder="输入用户名或id搜索"
+                        maxlength="100"
+                        @input="search"
+                    />
+                    <img :src="Tools.getUrl('search-gray.png')" alt="" />
+                </div>
+
+                <VanCheckboxGroup
+                    v-model="pageData.friendIds"
+                    checked-color="#59ce61"
+                    class="select-box"
+                >
+                    <VanCheckbox
+                        v-for="item in pageData.showList"
+                        :key="item.userid"
+                        :name="item.userid"
+                    >
+                        <SelectFriend :info="item" />
+                    </VanCheckbox>
+                </VanCheckboxGroup>
             </div>
         </VanPopup>
     </div>
@@ -136,6 +170,8 @@ import { useFriendStore } from '@/stores/friend'
 import XSearch from '@/components/XSearch/index.vue'
 import { useUserStore } from '@/stores/user'
 import XEmpty from '@/components/XEmpty/index.vue'
+import SelectFriend from './components/select-friend.vue'
+import type { UserProPertyType } from '@/types'
 
 interface AddListItem {
     text: string
@@ -155,6 +191,7 @@ const addList: AddListItem[] = [
         icon: Tools.getUrl('icon-room.png'),
         action() {
             console.log('发起群聊', 'desc')
+            pageData.showList = chatListStore.friendList
             pageData.showCreateGroup = true
         },
     },
@@ -186,6 +223,11 @@ const pageData = reactive({
     showAddList: false,
     /** 展示创建群聊 */
     showCreateGroup: false,
+    /** 选中的好友的id */
+    friendIds: [] as string[],
+    /** 创建群聊时的搜索值 */
+    createGroupSearch: '',
+    showList: [] as UserProPertyType[],
 })
 
 EaseChatClient.addEventHandler('chatConnect', {
@@ -207,6 +249,23 @@ EaseChatClient.addEventHandler('chatConnect', {
 })
 
 console.log('chatListStore -->', chatListStore.chatList)
+
+const closeCreateGroup = () => {
+    pageData.friendIds = []
+    pageData.createGroupSearch = ''
+    pageData.showCreateGroup = false
+}
+
+const search = Tools.doubonce(() => {
+    if (!pageData.createGroupSearch) {
+        pageData.showList = chatListStore.friendList
+        return
+    }
+
+    pageData.showList = pageData.showList.filter((item) =>
+        [item.userid, item.nickname].includes(pageData.createGroupSearch)
+    )
+})
 
 // onActivated(() => {
 //     console.log('>>>>>>> cahtpage onActivated')
@@ -285,6 +344,46 @@ console.log('chatListStore -->', chatListStore.chatList)
 .create-group {
     height: 100vh;
     width: 100vw;
+    .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15rem;
+        & > img {
+            width: 20rem;
+        }
+        & > p {
+            text-align: center;
+            font-size: 16rem;
+            font-weight: bold;
+        }
+        .empty-box {
+            width: 20rem;
+            height: 20rem;
+        }
+    }
+    .search {
+        position: relative;
+        input {
+            padding: 10rem 0;
+            width: 100%;
+            border: none;
+            border-bottom: 1rem solid #ddd;
+            font-size: 14rem;
+            box-sizing: border-box;
+            padding-left: 40rem;
+        }
+        img {
+            width: 20rem;
+            position: absolute;
+            top: 50%;
+            left: 10rem;
+            transform: translate(0, -55%);
+        }
+    }
+    .select-box {
+        padding: 10rem;
+    }
 }
 .add-friend-img {
     width: 22rem;
@@ -311,5 +410,8 @@ console.log('chatListStore -->', chatListStore.chatList)
 }
 :deep(.van-popover[data-popper-placement='bottom'] .van-popover__arrow) {
     right: 10rem;
+}
+:deep(.van-checkbox__label) {
+    flex: 1;
 }
 </style>

@@ -1,16 +1,5 @@
 <template>
-    <div
-        class="friend-item"
-        @click="
-            () => {
-                friendStore.setFriend({ ...props.info })
-
-                router.push({
-                    path: '/friend-detail',
-                })
-            }
-        "
-    >
+    <div class="friend-item">
         <div class="img">
             <img :src="props.info.avatar" alt="" />
         </div>
@@ -19,21 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from '@/stores/chat'
-import { useFriendStore } from '@/stores/friend'
 import type { UserProPertyType } from '@/types'
-
-const router = useRouter()
-const chatStore = useChatStore()
-const friendStore = useFriendStore()
 
 const props = defineProps<{
     info: UserProPertyType
 }>()
-
-onBeforeUnmount(() => {
-    chatStore.setTargetId('')
-})
 </script>
 
 <style scoped lang="scss">
@@ -41,7 +20,6 @@ onBeforeUnmount(() => {
     padding-top: 10rem;
     display: flex;
     align-items: flex-start;
-    transition: background 0.15s linear;
     .img {
         margin: 0 10rem;
         border-radius: 3rem;
@@ -63,9 +41,6 @@ onBeforeUnmount(() => {
         border-bottom: 1rem solid #ddd;
         letter-spacing: 1rem;
         font-weight: 500;
-    }
-    &:active {
-        background-color: #d5d5d5;
     }
 }
 </style>

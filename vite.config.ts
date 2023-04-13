@@ -34,6 +34,11 @@ export default defineConfig({
                 target: 'https://a1.easemob.com',
                 rewrite: (path) => path.replace(/^\/apis/, ''),
             },
+            '/myapi': {
+                changeOrigin: true,
+                target: '',
+                rewrite: (path) => path.replace(/^\/myapi/, ''),
+            },
         },
     },
 
