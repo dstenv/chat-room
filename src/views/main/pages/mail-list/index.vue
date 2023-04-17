@@ -66,6 +66,7 @@ import XFriend from '@/components/XFriend/index.vue'
 import XSearch from '@/components/XSearch/index.vue'
 import { useChatListStore } from '@/stores/chatList'
 import XEmpty from '@/components/XEmpty/index.vue'
+import { EaseChatClient } from '@/utils/config'
 
 interface MailTopItem {
     text: string
@@ -116,7 +117,7 @@ const mailTopList: MailTopItem[] = [
 
 const pageData = reactive({})
 
-const init = async () => {
+const init = () => {
     chatListStore.getFriends()
 }
 init()

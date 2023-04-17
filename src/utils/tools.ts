@@ -47,7 +47,6 @@ export namespace Tools {
                     canvas.height = originH
 
                     // const myQuality = Math.min((2000 * 2000) / originW / originH, 1)
-
                     if (originW * originH >= 512 * 1024) {
                         const compressH = Math.sqrt((512 * 1024) / imgScale)
                         const compressW = (512 * 1024) / compressH

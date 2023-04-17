@@ -12,7 +12,7 @@
                 <img v-if="props.leftIcon" :src="props.leftIcon" alt="" />
             </div>
             <div class="mid">
-                <div class="mid-content">{{ props.title }}</div>
+                <div class="mid-content text-over">{{ props.title }}</div>
             </div>
             <div class="right">
                 <slot name="right" />
@@ -69,6 +69,7 @@ const props = defineProps<{
         .mid-content {
             font-size: 16rem;
             font-weight: 500;
+            max-width: 200rem;
         }
     }
 }

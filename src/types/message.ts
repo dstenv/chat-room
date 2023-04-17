@@ -1,7 +1,7 @@
 import type { EasemobChat } from 'easemob-websdk'
 
 /** 会话类型：单聊、群聊和聊天室分别为 singleChat groupChat 和 chatRoom */
-export type chatType = 'singleChat' | 'groupChat' | 'chatRoom'
+export type ChatType = 'singleChat' | 'groupChat' | 'chatRoom'
 
 /**
  * 用户消息在线状态
@@ -38,7 +38,7 @@ export type MessageData = EasemobChat.MessageBody & {
 
 /** 发送消息的基础配置 */
 export interface SendMsgBaseOption {
-    chatType: chatType
+    chatType: ChatType
     to: string
 }
 

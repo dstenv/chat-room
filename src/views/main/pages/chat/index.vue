@@ -40,78 +40,122 @@
             </template>
         </XHeader>
         <!-- chatListStore.chatList.length > 0 -->
-        <div class="chat-list" v-if="chatListStore.chatList.length > 0">
-            <div
-                class="chat-list-item"
-                v-for="item in chatListStore.chatList"
-                :key="item.lastMessage.to"
-                @click="
-                    () => {
-                        chatStore.setTargetId(
-                            item.lastMessage.to === userStore.userId
-                                ? item.lastMessage.from
-                                : item.lastMessage.to
-                        )
 
-                        friendStore.setFriend({
-                            avatar: item.lastMessage.payload.avatar,
-                            sex: item.lastMessage.payload.sex || '1',
-                            nickname:
-                                item.lastMessage.payload.nickname ||
-                                item.lastMessage.to === userStore.userId
-                                    ? item.lastMessage.from
-                                    : item.lastMessage.to,
-                            userid:
-                                item.lastMessage.to === userStore.userId
-                                    ? item.lastMessage.from
-                                    : item.lastMessage.to,
-                            onLine: false,
-                        })
+        <main>
+            <div class="section">
+                <p class="title">会话</p>
+                <div class="chat-list" v-if="chatListStore.chatList.length > 0">
+                    <div
+                        class="chat-list-item"
+                        v-for="item in chatListStore.chatList"
+                        :key="item.lastMessage.to"
+                        @click="
+                            () => {
+                                chatStore.setchatData(item.himId, CommonConfig.CHAT_TYPE[(item.lastMessage as any).chatType])
 
-                        router.push('/my-chat')
-                    }
-                "
-            >
-                <template v-if="item.lastMessage.payload">
-                    <div class="left">
-                        <img :src="item.lastMessage.payload?.avatar" alt="" />
+                                friendStore.setFriend({
+                                    avatar: item.lastMessage.payload.avatar,
+                                    sex: item.lastMessage.payload.sex || '1',
+                                    nickname:
+                                        item.lastMessage.payload.nickname ||
+                                        item.lastMessage.to === userStore.userId
+                                            ? item.lastMessage.from
+                                            : item.lastMessage.to,
+                                    userid:
+                                        item.lastMessage.to === userStore.userId
+                                            ? item.lastMessage.from
+                                            : item.lastMessage.to,
+                                    onLine: false,
+                                })
+
+                                router.push({
+                                    path: '/my-chat',
+                                    query: {
+                                        name:
+                                            item.lastMessage.payload.nickname ||
+                                            item.himId,
+                                    },
+                                })
+                            }
+                        "
+                    >
+                        <template v-if="item.lastMessage.payload">
+                            <div class="left">
+                                <img
+                                    :src="item.lastMessage.payload?.avatar"
+                                    alt=""
+                                />
+                            </div>
+                            <div class="info">
+                                <div class="center">
+                                    <p class="text-over">
+                                        {{
+                                            item.lastMessage.payload.nickname ||
+                                            item.himId
+                                        }}
+                                    </p>
+                                    <span
+                                        class="text-over"
+                                        v-if="(item.lastMessage as any).type === 'txt'"
+                                        >{{
+                                            (item.lastMessage as any).msg
+                                        }}</span
+                                    >
+                                    <span
+                                        class="text-over"
+                                        v-if="(item.lastMessage as any).type === 'img'"
+                                        >[图片]</span
+                                    >
+                                    <span
+                                        class="text-over"
+                                        v-if="(item.lastMessage as any).type === 'video'"
+                                        >[视频]</span
+                                    >
+                                </div>
+                                <div class="right">
+                                    <span>{{
+                                        Tools.showMsgTime(
+                                            (item.lastMessage as any).time
+                                        )
+                                    }}</span>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                    <div class="info">
-                        <div class="center">
-                            <p>
-                                {{
-                                    item.lastMessage.payload.nickname ||
-                                    item.himId
-                                }}
-                            </p>
-                            <span
-                                v-if="(item.lastMessage as any).type === 'txt'"
-                                >{{ (item.lastMessage as any).msg }}</span
-                            >
-                            <span
-                                v-if="(item.lastMessage as any).type === 'img'"
-                                >[图片]</span
-                            >
-                            <span
-                                v-if="(item.lastMessage as any).type === 'video'"
-                                >[视频]</span
-                            >
-                        </div>
-                        <div class="right">
-                            <span>{{
-                                Tools.showMsgTime(
-                                    (item.lastMessage as any).time
-                                )
-                            }}</span>
-                        </div>
-                    </div>
+                </div>
+
+                <template v-else>
+                    <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
                 </template>
             </div>
-        </div>
-
-        <template v-else>
-            <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
-        </template>
+            <!--
+            <div class="section">
+                <p class="title">群组</p>
+                <div
+                    class="group-list"
+                    v-if="chatListStore.groupList.length > 0"
+                >
+                    <div
+                        class="group-item"
+                        v-for="item in chatListStore.groupList"
+                        :key="item.groupid"
+                        @click="
+                            goGroupChat(
+                                item.groupid,
+                                item.groupname || item.groupid
+                            )
+                        "
+                    >
+                        <div class="left">
+                            <img :src="item.groupimg" alt="" />
+                        </div>
+                        <div class="info text-over">
+                            {{ item.groupname }}
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </main>
 
         <!-- 弹出层 -->
         <VanPopup
@@ -155,6 +199,12 @@
                         <SelectFriend :info="item" />
                     </VanCheckbox>
                 </VanCheckboxGroup>
+
+                <div class="submit-friend">
+                    <div class="submit-btn" @click="createGroup">
+                        完成({{ pageData.friendIds.length }})
+                    </div>
+                </div>
             </div>
         </VanPopup>
     </div>
@@ -172,6 +222,7 @@ import { useUserStore } from '@/stores/user'
 import XEmpty from '@/components/XEmpty/index.vue'
 import SelectFriend from './components/select-friend.vue'
 import type { UserProPertyType } from '@/types'
+import { CommonConfig } from '@/common/common'
 
 interface AddListItem {
     text: string
@@ -267,6 +318,55 @@ const search = Tools.doubonce(() => {
     )
 })
 
+const createGroup = async () => {
+    if (pageData.friendIds.length === 0) {
+        showToast('请至少选择一个好友')
+        return
+    }
+
+    let inviteNeedConfirm = true
+
+    if (pageData.friendIds.length < CommonConfig.CREATE_GROUP_MAXUSER) {
+        inviteNeedConfirm = false
+    }
+
+    const groupname = `${userStore.userId}、${pageData.friendIds.join('、')}`
+
+    try {
+        const result = await EaseChatClient.createGroup({
+            data: {
+                ...CommonConfig.CREATE_GROUP_CONFIG,
+                desc: '',
+                groupname,
+                members: pageData.friendIds,
+                inviteNeedConfirm,
+            },
+        })
+        console.log('result -->', result)
+        if (result.data) {
+            chatListStore.groupList.push({
+                groupid: result.data.groupid,
+                groupname,
+                groupimg: Tools.getUrl('group-default.png'),
+            })
+        }
+    } catch (error) {
+        showToast('创建群组失败，请稍候重试')
+    } finally {
+        closeCreateGroup()
+    }
+}
+
+const goGroupChat = (id: string, name: string) => {
+    chatStore.setchatData(id, 'groupChat')
+    router.push({
+        path: '/my-chat',
+        query: {
+            name,
+        },
+    })
+}
+
 // onActivated(() => {
 //     console.log('>>>>>>> cahtpage onActivated')
 //     // methods.getChatList()
@@ -281,12 +381,8 @@ const search = Tools.doubonce(() => {
 .chat {
     height: calc(100vh - 60rem);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 .chat-list {
-    flex: 1;
-    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     gap: 10rem;
@@ -314,12 +410,6 @@ const search = Tools.doubonce(() => {
         }
         .center {
             max-width: 276rem;
-            p,
-            sapn {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
             p {
                 font-weight: 500;
                 font-size: 15rem;
@@ -341,9 +431,34 @@ const search = Tools.doubonce(() => {
         }
     }
 }
+.group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10rem;
+    .group-item {
+        display: flex;
+        padding: 10rem 0 0;
+        align-items: center;
+        .left {
+            flex: none;
+            padding-left: 10rem;
+            img {
+                width: 40rem;
+                display: block;
+            }
+        }
+        .info {
+            flex: 1;
+            margin-left: 8rem;
+            font-size: 15rem;
+            max-width: 276rem;
+        }
+    }
+}
 .create-group {
     height: 100vh;
     width: 100vw;
+    position: relative;
     .head {
         display: flex;
         align-items: center;
@@ -383,6 +498,28 @@ const search = Tools.doubonce(() => {
     }
     .select-box {
         padding: 10rem;
+        max-height: calc(100vh - 150rem);
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .submit-friend {
+        width: 100vw;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 60rem;
+        background-color: #ddd;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .submit-btn {
+            margin-right: 10rem;
+            font-size: 16rem;
+            padding: 8rem 12rem;
+            background-color: #59ce61;
+            border-radius: 5rem;
+            color: #fff;
+        }
     }
 }
 .add-friend-img {
@@ -406,6 +543,20 @@ const search = Tools.doubonce(() => {
         &:last-of-type {
             border-bottom: 0rem solid transparent;
         }
+    }
+}
+main {
+    max-height: calc(100vh - 155rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.section {
+    margin-bottom: 10rem;
+    .title {
+        font-size: 17rem;
+        font-weight: bold;
+        padding: 10rem;
+        border-bottom: 1rem solid #eee;
     }
 }
 :deep(.van-popover[data-popper-placement='bottom'] .van-popover__arrow) {

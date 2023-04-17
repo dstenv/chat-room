@@ -26,3 +26,11 @@ export interface BlackListItem {
     nickname: string
     avatar: string
 }
+
+export interface GroupItem extends EasemobChat.BaseGroupInfo {
+    groupimg: string
+}
+
+export interface GroupInfo {
+    groupId: string
+}

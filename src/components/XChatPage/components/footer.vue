@@ -108,7 +108,7 @@ const funList: FunItem[] = [
             inp.accept = 'image/*'
             inp.setAttribute('style', 'position:fixed;left:2000px;')
             inp.onchange = function (e) {
-                setTimeout(() => {
+                setTimeout(async () => {
                     const { files } = e.target as HTMLInputElement
 
                     if (files) {
@@ -116,11 +116,22 @@ const funList: FunItem[] = [
                             showToast(`图片大小最大不超过${FileLimit.imgSize}M`)
                             return
                         }
+                        const reader = new FileReader()
+
                         const url = URL.createObjectURL(files[0])
+
+                        const fileData = await Tools.compressImage(url)
+
+                        reader.onload = () => {
+                            console.log('url -->', reader.result)
+                        }
+
+                        reader.readAsDataURL(fileData)
+                        console.log('压缩前后大小 -->', files[0], fileData)
 
                         /** 发送图片必须使用这种格式。否则发送无效 */
                         const file = {
-                            data: files[0],
+                            data: fileData,
                             filename: files[0].name,
                             filetype: files[0].type,
                         } as unknown as File

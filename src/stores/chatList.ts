@@ -1,12 +1,19 @@
 import { EaseChatClient } from '@/utils/config'
-import type { EasemobChat } from 'easemob-websdk'
 import { defineStore } from 'pinia'
 import { getUserInfo } from '@/apis/user/getUserInfo'
 import { Tools } from '@/utils/tools'
-import type { UserProPertyType, NewFriend, BlackListItem } from '@/types'
+import type {
+    UserProPertyType,
+    NewFriend,
+    BlackListItem,
+    GroupItem,
+} from '@/types'
 import { getFriendList } from '@/apis/friend/getFriendList'
 import { useUserStore } from './user'
 import { getBlackList } from '@/apis/user/getBlackList'
+import { CommonConfig } from '@/common/common'
+import type { EasemobChat } from 'easemob-websdk'
+import { showToast } from 'vant'
 
 export const useChatListStore = defineStore(
     'chatList',
@@ -17,6 +24,7 @@ export const useChatListStore = defineStore(
         const friendList = ref<UserProPertyType[]>([])
         const newFriends = ref<NewFriend[]>([])
         const blackList = ref<BlackListItem[]>([])
+        const groupList = ref<GroupItem[]>([])
 
         const getStatus = {
             getChat: false,
@@ -100,6 +108,36 @@ export const useChatListStore = defineStore(
             }
         }
 
+        const getGroupList = async () => {
+            try {
+                const list = await EaseChatClient.getJoinedGroups({
+                    pageNum: 0,
+                    pageSize: CommonConfig.GET_GROUP_LIST_SIZE,
+                })
+                if (list.data) {
+                    groupList.value = list.data.map((item) => ({
+                        ...item,
+                        groupimg: Tools.getUrl('group-default.png'),
+                    }))
+                    groupList.value.forEach((item) => {
+                        const find = chatList.value.find(
+                            (chat) => chat.himId === item.groupid
+                        )
+
+                        if (find) {
+                            find.lastMessage.payload = {
+                                ...find.lastMessage.payload,
+                                nickname: item.groupname,
+                                avatar: item.groupimg,
+                            }
+                        }
+                    })
+                }
+            } catch (error) {
+                showToast('获取群组列表失败，请稍候刷新')
+            }
+        }
+
         const getFriends = async () => {
             if (getStatus.getFriend) return
 
@@ -179,6 +217,10 @@ export const useChatListStore = defineStore(
                     console.log('收到好友申请 msg -->', msg)
                     contactOprate[msg.type] && contactOprate[msg.type](msg)
                 },
+                /** 收到群聊邀请 */
+                onGroupEvent(data) {
+                    console.log('收到群聊邀请 -->', data)
+                },
             })
         }
 
@@ -202,6 +244,7 @@ export const useChatListStore = defineStore(
             friendList,
             newFriends,
             blackList,
+            groupList,
             getChatList,
             watchMessage,
             unWatch,
@@ -210,6 +253,7 @@ export const useChatListStore = defineStore(
             setLastMsg,
             getBlackFriendList,
             deleteBlack,
+            getGroupList,
         }
     },
     {

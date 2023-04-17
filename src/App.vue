@@ -43,7 +43,10 @@ EaseChatClient.addEventHandler('connection', {
         /** 监听message */
         chatListStore.watchMessage()
         /** 获取会话列表 */
-        chatListStore.getChatList()
+        chatListStore.getChatList().then(() => {
+            /** 获取群组列表 */
+            chatListStore.getGroupList()
+        })
     },
     onDisconnected: () => {
         console.log('------>webscoket断开连接')

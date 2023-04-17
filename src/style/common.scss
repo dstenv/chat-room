@@ -23,3 +23,9 @@
     padding: 14rem 0;
     font-size: 15rem;
 }
+/** 文本单行溢出 */
+.text-over {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

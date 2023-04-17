@@ -6,7 +6,7 @@
                 alt=""
                 @click="router.back()"
             />
-            <span>{{ friendStore.friend?.nickname || '未知' }}</span>
+            <span>{{ name || '未知' }}</span>
             <img :src="Tools.getUrl('many.png')" alt="" />
         </div>
 
@@ -69,6 +69,10 @@ const chatStore = useChatStore()
 const friendStore = useFriendStore()
 const chatListStore = useChatListStore()
 const previewImage = usePreviewImage()
+
+const { name } = route.query as {
+    name: string
+}
 
 const mainRef = ref<HTMLElement>({} as HTMLElement)
 const listRef = ref<HTMLElement>({} as HTMLElement)
@@ -214,12 +218,6 @@ EaseChatClient.addEventHandler(watchFnId, {
         chatStore.addMessage({ ...message, loading: false, error: false })
         chatListStore.setLastMsg(message.from || '', '[视频]')
     },
-})
-
-onBeforeMount(() => {
-    if (pageData.id) {
-        chatStore.setTargetId(pageData.id as string)
-    }
 })
 
 onMounted(() => {
