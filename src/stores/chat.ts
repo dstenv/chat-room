@@ -13,6 +13,7 @@ import type {
 import { Hook } from '@/utils/hooks'
 import type { EasemobChat } from 'easemob-websdk'
 import type { GroupInfo } from '@/types'
+import { Tools } from '@/utils/tools'
 
 export const messageShowType: Partial<Record<SendMsgType, string>> = {
     img: '[图片]',
@@ -134,6 +135,12 @@ export const useChatStore = defineStore(
                 type,
                 chatType: chatData.chatType,
                 to: chatData.targetId,
+                ext: {
+                    avatar:
+                        userStore.userInfo?.avatar ||
+                        Tools.getUrl('avatar-default-man.png'),
+                    name: userStore.userInfo?.nickname || userStore.userId,
+                },
             }
 
             const message: MessageData = {
@@ -143,6 +150,14 @@ export const useChatStore = defineStore(
                 error: false,
                 longTouch: false,
                 from: userStore.userId,
+                chatType: chatData.chatType,
+                to: chatData.targetId,
+                ext: {
+                    avatar:
+                        userStore.userInfo?.avatar ||
+                        Tools.getUrl('avatar-default-man.png'),
+                    name: userStore.userInfo?.nickname || userStore.userId,
+                },
             }
 
             console.log('本机展示的message -->', message)

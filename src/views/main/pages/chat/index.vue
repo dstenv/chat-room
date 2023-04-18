@@ -58,13 +58,8 @@
                                     sex: item.lastMessage.payload.sex || '1',
                                     nickname:
                                         item.lastMessage.payload.nickname ||
-                                        item.lastMessage.to === userStore.userId
-                                            ? item.lastMessage.from
-                                            : item.lastMessage.to,
-                                    userid:
-                                        item.lastMessage.to === userStore.userId
-                                            ? item.lastMessage.from
-                                            : item.lastMessage.to,
+                                        item.himId,
+                                    userid: item.himId,
                                     onLine: false,
                                 })
 

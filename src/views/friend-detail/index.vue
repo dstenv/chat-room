@@ -17,7 +17,7 @@
 
 <script setup lang="tsx">
 import XUser from '@/components/XUser/index.vue'
-import type { OtherInfoItemType } from '@/components/XUser/components/other-item.vue'
+import type { OtherInfoItemType } from '@/components/XOprateItem/index.vue'
 import { useFriendStore } from '@/stores/friend'
 import { Tools } from '@/utils/tools'
 import router from '@/router'
@@ -54,9 +54,16 @@ const oprateLlist: OprateItem[] = [
         text: '发消息',
         icon: Tools.getUrl('send-msg.png'),
         click() {
-            chatStore.setTargetId(friendInfo.friend?.userid || '')
+            chatStore.setchatData(friendInfo.friend?.userid || '', 'singleChat')
 
-            router.push('/my-chat')
+            router.push({
+                path: '/my-chat',
+                query: {
+                    name:
+                        friendInfo.friend?.nickname ||
+                        friendInfo.friend?.userid,
+                },
+            })
         },
     },
     {

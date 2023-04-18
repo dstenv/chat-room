@@ -117,6 +117,24 @@ const methods = {
 
             if (find) {
                 find.agree = true
+                /**
+                 * TODO 更新localstorage的数据 否则刷新后获取的为添加的列表(此处后面的关于localstorage的操作需要更换为封装的)
+                 */
+                const newFriend = localStorage.getItem('newFriend')
+                if (newFriend) {
+                    const newFriendList: NewFriend[] = JSON.parse(newFriend)
+
+                    newFriendList.forEach((item) => {
+                        if (item.from === data.from) {
+                            item.agree = true
+                        }
+                    })
+
+                    localStorage.setItem(
+                        'newFriend',
+                        JSON.stringify(newFriendList)
+                    )
+                }
             }
 
             chatListStore.friendList.push({

@@ -17,6 +17,13 @@ export default defineComponent({
     setup(props, { emit, expose }) {
         const userStore = useUserStore()
 
+        const avatar = computed((): string => {
+            if (props.item.from && props.item.from === userStore.userId) {
+                return userStore.userInfo?.avatar || ''
+            }
+            return (props.item as any).ext.avatar
+        })
+
         const pageData = reactive({})
 
         const methods = {
@@ -28,44 +35,60 @@ export default defineComponent({
 
         const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
             txt: (
-                <div
-                    class="item-wrap"
-                    style={{
-                        backgroundColor:
-                            props.item.from === userStore.userId
-                                ? '#a0ea6f'
-                                : '#f3f3f3',
-                    }}
-                >
-                    {(props.item as EasemobChat.TextMsgBody).msg}
+                <>
+                    <div class="item-wrap">
+                        {(props.item as EasemobChat.TextMsgBody).chatType ===
+                        'groupChat' ? (
+                            <div class="msg-name text-over">
+                                {
+                                    (props.item as EasemobChat.TextMsgBody).ext
+                                        ?.name
+                                }
+                            </div>
+                        ) : null}
+                        <div
+                            class="item-content"
+                            style={{
+                                backgroundColor:
+                                    props.item.from === userStore.userId
+                                        ? '#a0ea6f'
+                                        : '#f3f3f3',
+                            }}
+                        >
+                            {(props.item as EasemobChat.TextMsgBody).msg}
 
-                    {props.item.from === userStore.userId ? (
-                        <div class="sanjiao"></div>
-                    ) : (
-                        <div class="sanjiao him"></div>
-                    )}
-                </div>
+                            {props.item.from === userStore.userId ? (
+                                <div class="sanjiao"></div>
+                            ) : (
+                                <div class="sanjiao him"></div>
+                            )}
+                        </div>
+                    </div>
+                </>
             ),
             img: (
-                <div class="item-wrap image">
-                    <img
-                        src={(props.item as EasemobChat.ImgMsgBody).url}
-                        crossorigin="anonymous"
-                        onLoad={() => {
-                            emit('addImage', {
-                                id: props.item.id,
-                                url: (props.item as EasemobChat.ImgMsgBody).url,
-                                time: (props.item as EasemobChat.ImgMsgBody)
-                                    .time,
-                            } as ImgList)
-                        }}
-                        onClick={() => {
-                            emit('click', {
-                                id: props.item.id,
-                                type: props.item.type,
-                            })
-                        }}
-                    />
+                <div class="item-wrap">
+                    <div class="item-content image">
+                        <img
+                            src={(props.item as EasemobChat.ImgMsgBody).url}
+                            crossorigin="anonymous"
+                            onLoad={() => {
+                                emit('addImage', {
+                                    id: props.item.id,
+                                    url: (props.item as EasemobChat.ImgMsgBody)
+                                        .url,
+                                    time: (props.item as EasemobChat.ImgMsgBody)
+                                        .time,
+                                } as ImgList)
+                            }}
+                            onClick={() => {
+                                emit('click', {
+                                    id: props.item.id,
+                                    type: props.item.type,
+                                })
+                            }}
+                        />
+                    </div>
                 </div>
             ),
             video: (
@@ -116,7 +139,10 @@ export default defineComponent({
 
                     <div class="avatar">
                         <img
-                            src={Tools.getUrl('avatar-default-man.png')}
+                            src={
+                                avatar.value ||
+                                Tools.getUrl('avatar-default-man.png')
+                            }
                             alt=""
                         />
                     </div>
@@ -151,58 +177,70 @@ export default defineComponent({
             }
         }
         .item-wrap {
-            margin-top: 5rem;
-            position: relative;
-            padding: 10rem;
-            // background-color: #a0ea6f;
-            border-radius: 4rem;
+            padding-top: 5rem;
             max-width: 70%;
-            .sanjiao {
-                width: 0;
-                height: 0;
-                position: absolute;
-                right: 2rem;
-                top: 50%;
-                transform: translate(100%, -50%);
-                border-left: 10rem solid #a0ea6f;
-                border-top: 7rem solid transparent;
-                border-bottom: 7rem solid transparent;
-                border-radius: 5rem;
-                &.him {
-                    right: 100%;
-                    transform: translate(2rem, -50%) rotate(180deg);
-                    border-left: 10rem solid #f3f3f3;
-                }
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            .msg-name {
+                color: #5a5a5a;
+                max-width: 100rem;
             }
-            &.image {
-                background-color: #f3f3f3;
-                padding: 0;
+            .item-content {
+                position: relative;
+                padding: 10rem;
+                // background-color: #a0ea6f;
                 border-radius: 4rem;
-                img {
-                    width: 100%;
-                    height: 100%;
-                    max-width: 100rem;
-                    border-radius: 4rem;
-                    max-height: 200rem;
-                    object-fit: contain;
+                width: fit-content;
+
+                .sanjiao {
+                    width: 0;
+                    height: 0;
+                    position: absolute;
+                    right: 2rem;
+                    top: 50%;
+                    transform: translate(100%, -50%);
+                    border-left: 10rem solid #a0ea6f;
+                    border-top: 7rem solid transparent;
+                    border-bottom: 7rem solid transparent;
+                    border-radius: 5rem;
+                    &.him {
+                        right: 100%;
+                        transform: translate(2rem, -50%) rotate(180deg);
+                        border-left: 10rem solid #f3f3f3;
+                    }
                 }
-            }
-            &.video {
-                border-radius: 4rem;
-                padding: 0;
-                text-align: right;
-                video {
+                &.image {
+                    background-color: #f3f3f3;
+                    padding: 0;
                     border-radius: 4rem;
-                    width: 100%;
-                    height: 100%;
-                    max-width: 80%;
-                    max-height: 300rem;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        max-width: 100rem;
+                        border-radius: 4rem;
+                        max-height: 200rem;
+                        object-fit: contain;
+                    }
+                }
+                &.video {
+                    border-radius: 4rem;
+                    padding: 0;
+                    text-align: right;
+                    video {
+                        border-radius: 4rem;
+                        width: 100%;
+                        height: 100%;
+                        max-width: 80%;
+                        max-height: 300rem;
+                    }
                 }
             }
         }
 
         &.msg-item-box-him {
             .item-wrap {
+                align-items: flex-start;
                 &.video {
                     text-align: left;
                 }

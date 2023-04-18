@@ -32,7 +32,7 @@ const props = defineProps<{
 }>()
 
 onBeforeUnmount(() => {
-    chatStore.setTargetId('')
+    chatStore.setchatData('', 'singleChat')
 })
 </script>
 

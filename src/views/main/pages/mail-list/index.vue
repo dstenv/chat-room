@@ -99,9 +99,9 @@ const mailTopList: MailTopItem[] = [
         },
         prefix: {
             show:
-                chatListStore.newFriends.filter((item) => !item.read).length !==
-                0,
-            text: chatListStore.newFriends.filter((item) => !item.read).length,
+                chatListStore.newFriends.filter((item) => !item.agree)
+                    .length !== 0,
+            text: chatListStore.newFriends.filter((item) => !item.agree).length,
             style: {},
         },
     },

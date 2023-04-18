@@ -131,7 +131,7 @@ const funList: FunItem[] = [
 
                         /** 发送图片必须使用这种格式。否则发送无效 */
                         const file = {
-                            data: fileData,
+                            data: files[0],
                             filename: files[0].name,
                             filetype: files[0].type,
                         } as unknown as File
