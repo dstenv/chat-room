@@ -389,11 +389,17 @@ const goGroupChat = (id: string, name: string) => {
     })
 }
 
-// onActivated(() => {
-//     console.log('>>>>>>> cahtpage onActivated')
-//     // methods.getChatList()
-//     emits('setTabbar')
-// })
+onActivated(() => {
+    console.log('>>>>>>> cahtpage onActivated')
+    // methods.getChatList()
+    if (EaseChatClient.isOpened()) {
+        /** 获取会话列表 */
+        chatListStore.getChatList().then(() => {
+            /** 获取群组列表 */
+            chatListStore.getGroupList()
+        })
+    }
+})
 </script>
 
 <style scoped lang="scss">

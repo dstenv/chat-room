@@ -5,6 +5,7 @@
             borderBottom: props.border ? '1px solid #ebebeb' : '',
             backgroundColor: props.bg ? props.bg : '#fff',
         }"
+        @click="props.click"
     >
         <p>{{ props.text }}</p>
 

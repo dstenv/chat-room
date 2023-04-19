@@ -6,25 +6,29 @@ interface RequestItem {
 }
 
 class Loading {
-    static LoadingInst: null | ToastWrapperInstance = null
+    static LoadingInst: null | Loading = null
+    static Load: null | ToastWrapperInstance
 
     static getInstance() {
         if (!Loading.LoadingInst) {
-            Loading.LoadingInst = showLoadingToast({
-                message: '加载中',
-                forbidClick: true,
-                duration: 0,
-            })
+            Loading.LoadingInst = new Loading()
         }
         return Loading.LoadingInst
     }
 
-    show() {}
+    show() {
+        Loading.Load = showLoadingToast({
+            message: '加载中',
+            forbidClick: true,
+            duration: 0,
+        })
+    }
 
     close() {
-        Loading.LoadingInst?.close()
-
+        Loading.Load?.close()
         Loading.LoadingInst = null
+
+        Loading.Load = null
     }
 }
 
@@ -34,29 +38,29 @@ class Loading {
 class LoadingUtil {
     requestId = 1
     request: RequestItem[] = []
-    loadingInstance: null | ToastWrapperInstance
+    static loadingInstance: null | Loading
     static loadingUtil: null | LoadingUtil
 
     static getInst() {
         if (!LoadingUtil.loadingUtil) {
-            LoadingUtil.loadingUtil = new this()
+            LoadingUtil.loadingUtil = new LoadingUtil()
+            LoadingUtil.loadingInstance = Loading.getInstance()
         }
         return LoadingUtil.loadingUtil
     }
 
-    constructor() {
-        this.loadingInstance = null
-        LoadingUtil.loadingUtil = null
-    }
-
     create() {
-        this.loadingInstance = Loading.getInstance()
+        LoadingUtil.loadingInstance?.show()
     }
     close() {
-        if (this.request.every((item) => item.finish)) {
-            this.loadingInstance?.close()
+        if (
+            this.request.length > 0 &&
+            this.request.every((item) => item.finish)
+        ) {
+            LoadingUtil.loadingInstance?.close()
 
-            this.loadingInstance = null
+            LoadingUtil.loadingInstance = null
+            LoadingUtil.loadingUtil = null
 
             this.request = []
             this.requestId = 1
@@ -70,7 +74,7 @@ class LoadingUtil {
     finishOneRequest(id: number) {
         for (let i = 0; i < this.request.length; i++) {
             if (this.request[i].id === id) {
-                this.request[i].finish = false
+                this.request[i].finish = true
             }
         }
     }

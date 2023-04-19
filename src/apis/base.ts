@@ -67,13 +67,10 @@ export const request = <T, U>(
         const loading = useLoading()
 
         const id = loading.requestId++
-
-        if (loading.loadingInstance) {
-            loading.addRequest({
-                id,
-                finish: false,
-            })
-        }
+        loading.addRequest({
+            id,
+            finish: false,
+        })
 
         const requestOptions = { ...options }
         requestOptions.method =
@@ -130,7 +127,9 @@ export const request = <T, U>(
         } finally {
             loading.finishOneRequest(id)
 
-            loading.close()
+            setTimeout(() => {
+                loading.close()
+            }, 300)
         }
         return result.data as U
     }

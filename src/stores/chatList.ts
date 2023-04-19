@@ -352,6 +352,18 @@ export const useChatListStore = defineStore(
             EaseChatClient.removeEventHandler(watchHandlerKey)
         }
 
+        const clear = () => {
+            getStatus.getBlack = false
+            getStatus.getChat = false
+            getStatus.getFriend = false
+
+            friendList.value = []
+            newFriends.value = []
+            blackList.value = []
+            groupList.value = []
+            momentGroup.value = {} as GroupItem
+        }
+
         return {
             chatList,
             friendList,
@@ -370,6 +382,7 @@ export const useChatListStore = defineStore(
             getGroupList,
             getMoment,
             pullIntoGroup,
+            clear,
         }
     },
     {
