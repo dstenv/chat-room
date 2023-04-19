@@ -44,10 +44,10 @@
         <main>
             <div class="section">
                 <p class="title">会话</p>
-                <div class="chat-list" v-if="chatListStore.chatList.length > 0">
+                <div class="chat-list" v-if="chatList.length > 0">
                     <div
                         class="chat-list-item"
-                        v-for="item in chatListStore.chatList"
+                        v-for="item in chatList"
                         :key="item.lastMessage.to"
                         @click="
                             () => {
@@ -265,6 +265,14 @@ const addList: AddListItem[] = [
     },
 ]
 
+const chatList = computed(() =>
+    chatListStore.chatList.filter(
+        (item) =>
+            CommonConfig.CHAT_TYPE[(item.lastMessage as any).chatType] !==
+                'groupChat' || item.lastMessage.payload?.nickname !== 'moment'
+    )
+)
+
 const pageData = reactive({
     showAddList: false,
     /** 展示创建群聊 */
@@ -344,6 +352,25 @@ const createGroup = async () => {
                 groupname,
                 groupimg: Tools.getUrl('group-default.png'),
             })
+            chatStore.setchatData(result.data.groupid, 'groupChat')
+            await chatStore.sendMessage(
+                'txt',
+                {
+                    chatType: 'groupChat',
+                    msg: 'welcome',
+                    to: result.data.groupid,
+                },
+                {
+                    chatType: 'groupChat',
+                    id: '',
+                    msg: 'welcome',
+                    time: +new Date(),
+                    type: 'txt',
+                    to: result.data.groupid,
+                },
+                () => {}
+            )
+            chatListStore.getChatList()
         }
     } catch (error) {
         showToast('创建群组失败，请稍候重试')

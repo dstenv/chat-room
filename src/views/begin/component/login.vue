@@ -133,6 +133,7 @@ const login = async () => {
             localStorage.setItem('userId', result.user.username)
             localStorage.setItem('userInfo', JSON.stringify(userInfo.data))
 
+            localStorage.setItem('newFriend', JSON.stringify([]))
             sessionStorage.clear()
 
             router.replace({

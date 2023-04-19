@@ -1,6 +1,6 @@
 <template>
     <div v-if="pageData.init">
-        <XUser :user-info="pageData.userInfo">
+        <XUser :user-info="pageData.userInfo" :other-info-list="[]">
             <template #oprate>
                 <div class="add" @click="methods.agree">同意好友申请</div>
             </template>

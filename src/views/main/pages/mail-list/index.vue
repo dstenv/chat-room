@@ -31,12 +31,12 @@
                     >
                         <div
                             class="red-point"
-                            v-if="item.prefix && item.prefix.show"
+                            v-if="showRed[item.key] && showRed[item.key].show"
                             :style="{
-                                ...(item.prefix.style || {}),
+                                ...(showRed[item.key].style || {}),
                             }"
                         >
-                            {{ item.prefix.text }}
+                            {{ showRed[item.key].content }}
                         </div>
                         <img :src="item.icon" alt="" />
                     </div>
@@ -71,13 +71,9 @@ import { EaseChatClient } from '@/utils/config'
 interface MailTopItem {
     text: string
     icon: string
+    key: string
     bgColor: string
     action: () => void
-    prefix?: {
-        show: boolean
-        text: string | number
-        style?: Object
-    }
 }
 
 const chatListStore = useChatListStore()
@@ -87,33 +83,49 @@ const mailTopList: MailTopItem[] = [
     {
         icon: Tools.getUrl('icon-room.png'),
         text: '群聊',
+        key: 'group',
         bgColor: '#78bd78',
         action() {},
     },
     {
         icon: Tools.getUrl('add-friend.png'),
         text: '新的朋友',
+        key: 'new',
         bgColor: '#eda054',
         action() {
             router.push('/new-friend')
-        },
-        prefix: {
-            show:
-                chatListStore.newFriends.filter((item) => !item.agree)
-                    .length !== 0,
-            text: chatListStore.newFriends.filter((item) => !item.agree).length,
-            style: {},
         },
     },
     {
         icon: Tools.getUrl('blacklist.png'),
         text: '黑名单',
+        key: 'black',
         bgColor: 'rgb(50,50,50)',
         action() {
             router.push('/black-list')
         },
     },
 ]
+
+const showRed = computed(
+    (): Record<
+        string,
+        {
+            show: boolean
+            content: string | number
+            style?: Object
+        }
+    > => ({
+        new: {
+            show:
+                chatListStore.newFriends.filter((item) => !item.agree)
+                    .length !== 0,
+            content: chatListStore.newFriends.filter((item) => !item.agree)
+                .length,
+            style: {},
+        },
+    })
+)
 
 const pageData = reactive({})
 

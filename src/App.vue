@@ -31,6 +31,7 @@ const methods = {
         await init.initAdmin()
         init.initUser(router)
         init.initNewFriend()
+        chatStore.connect()
     },
 }
 

@@ -106,6 +106,9 @@ const methods = {
     agree(data: NewFriend) {
         if (!chatListStore.momentGroup.groupid) {
             chatListStore.getMoment(false)
+            if (chatListStore.momentGroup.groupid) {
+                chatListStore.pullIntoGroup(data.from)
+            }
         }
 
         EaseChatClient.acceptContactInvite(data.from)

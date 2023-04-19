@@ -14,6 +14,7 @@ import { getBlackList } from '@/apis/user/getBlackList'
 import { CommonConfig } from '@/common/common'
 import type { EasemobChat } from 'easemob-websdk'
 import { showToast } from 'vant'
+import { useChatStore } from './chat'
 
 export const useChatListStore = defineStore(
     'chatList',
@@ -192,7 +193,7 @@ export const useChatListStore = defineStore(
             }
         }
 
-        const getMoment = async (create = true) => {
+        const getMoment = async (create: boolean) => {
             try {
                 const list = await EaseChatClient.getJoinedGroups({
                     pageNum: 0,
@@ -219,6 +220,28 @@ export const useChatListStore = defineStore(
                             groupname: 'moment',
                             groupimg: Tools.getUrl('group-default.png'),
                         }
+                        useChatStore().setchatData(
+                            result.data.groupid,
+                            'groupChat'
+                        )
+                        await useChatStore().sendMessage(
+                            'txt',
+                            {
+                                chatType: 'groupChat',
+                                msg: 'welcome',
+                                to: result.data.groupid,
+                            },
+                            {
+                                chatType: 'groupChat',
+                                id: '',
+                                msg: 'welcome',
+                                time: +new Date(),
+                                type: 'txt',
+                                to: result.data.groupid,
+                            },
+                            () => {}
+                        )
+                        getChatList()
                         // groupList.value.push({ ...momentGroup.value })
                     }
                 }
@@ -229,6 +252,7 @@ export const useChatListStore = defineStore(
                     )
 
                     if (moment) {
+                        console.log('存在moment的群组')
                         momentGroup.value = {
                             ...moment,
                             groupimg: Tools.getUrl('group-default.png'),
@@ -239,11 +263,24 @@ export const useChatListStore = defineStore(
                 } else if (create) {
                     await createMoment()
                 }
-
-                /** 拉好友进群, 先获取群成员列表，没有再添加 */
-                if (momentGroup.value.groupid) {
-                }
+                console.log('moment -->', momentGroup.value)
             } catch (error) {}
+        }
+
+        const pullIntoGroup = async (user: string) => {
+            console.log(`邀请${user}进入群聊${momentGroup.value.groupid}`)
+            await EaseChatClient.inviteUsersToGroup({
+                groupId: momentGroup.value.groupid,
+                users: [user],
+            })
+
+            EaseChatClient.listGroupMembers({
+                pageNum: 1,
+                pageSize: 100,
+                groupId: momentGroup.value.groupid,
+            }).then((list) => {
+                console.log('群成员 -->', list.data)
+            })
         }
 
         /**
@@ -271,14 +308,31 @@ export const useChatListStore = defineStore(
                 onContactInvited: (msg) => {
                     console.log('收到好友申请 msg -->', msg)
                     contactOprate[msg.type] && contactOprate[msg.type](msg)
-
-                    if (!momentGroup.value.groupid) {
-                        getMoment()
-                    }
                 },
                 /** 收到群聊邀请 */
                 onGroupEvent(data) {
                     console.log('收到群聊邀请 -->', data)
+                },
+
+                // 当前用户发送的好友请求经过了对方同意。用户 A 向用户 B 发送好友请求，用户 B 收到好友请求后，同意加好友，则用户 A 收到该事件。
+                async onContactAgreed(msg) {
+                    console.log('同意好友申请 -->', msg)
+                    const property = await getUserInfo(msg.from)()
+                    friendList.value.push({
+                        userid: msg.from,
+                        sex: property.data.sex || '1',
+                        avatar: Tools.getDefaultAvatar(
+                            property.data.avatar === '2',
+                            property.data.avatar
+                        ),
+                        nickname: property.data.nickname || '',
+                        onLine: false,
+                    })
+                    deleteManyFriend()
+                    if (!momentGroup.value.groupid) {
+                        await getMoment(true)
+                    }
+                    pullIntoGroup(msg.from)
                 },
             })
         }
@@ -315,6 +369,7 @@ export const useChatListStore = defineStore(
             deleteBlack,
             getGroupList,
             getMoment,
+            pullIntoGroup,
         }
     },
     {
