@@ -104,6 +104,10 @@ const userStore = useUserStore()
 
 const methods = {
     agree(data: NewFriend) {
+        if (!chatListStore.momentGroup.groupid) {
+            chatListStore.getMoment(false)
+        }
+
         EaseChatClient.acceptContactInvite(data.from)
 
         showSuccessToast({

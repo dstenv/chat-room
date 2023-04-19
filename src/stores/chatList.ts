@@ -192,7 +192,7 @@ export const useChatListStore = defineStore(
             }
         }
 
-        const getMoment = async () => {
+        const getMoment = async (create = true) => {
             try {
                 const list = await EaseChatClient.getJoinedGroups({
                     pageNum: 0,
@@ -219,6 +219,7 @@ export const useChatListStore = defineStore(
                             groupname: 'moment',
                             groupimg: Tools.getUrl('group-default.png'),
                         }
+                        // groupList.value.push({ ...momentGroup.value })
                     }
                 }
 
@@ -232,11 +233,15 @@ export const useChatListStore = defineStore(
                             ...moment,
                             groupimg: Tools.getUrl('group-default.png'),
                         }
-                    } else {
-                        createMoment()
+                    } else if (create) {
+                        await createMoment()
                     }
-                } else {
-                    createMoment()
+                } else if (create) {
+                    await createMoment()
+                }
+
+                /** 拉好友进群, 先获取群成员列表，没有再添加 */
+                if (momentGroup.value.groupid) {
                 }
             } catch (error) {}
         }
@@ -266,6 +271,10 @@ export const useChatListStore = defineStore(
                 onContactInvited: (msg) => {
                     console.log('收到好友申请 msg -->', msg)
                     contactOprate[msg.type] && contactOprate[msg.type](msg)
+
+                    if (!momentGroup.value.groupid) {
+                        getMoment()
+                    }
                 },
                 /** 收到群聊邀请 */
                 onGroupEvent(data) {
@@ -295,6 +304,7 @@ export const useChatListStore = defineStore(
             newFriends,
             blackList,
             groupList,
+            momentGroup,
             getChatList,
             watchMessage,
             unWatch,
