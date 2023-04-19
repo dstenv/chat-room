@@ -49,30 +49,7 @@
                         class="chat-list-item"
                         v-for="item in chatList"
                         :key="item.lastMessage.to"
-                        @click="
-                            () => {
-                                chatStore.setchatData(item.himId, CommonConfig.CHAT_TYPE[(item.lastMessage as any).chatType])
-
-                                friendStore.setFriend({
-                                    avatar: item.lastMessage.payload.avatar,
-                                    sex: item.lastMessage.payload.sex || '1',
-                                    nickname:
-                                        item.lastMessage.payload.nickname ||
-                                        item.himId,
-                                    userid: item.himId,
-                                    onLine: false,
-                                })
-
-                                router.push({
-                                    path: '/my-chat',
-                                    query: {
-                                        name:
-                                            item.lastMessage.payload.nickname ||
-                                            item.himId,
-                                    },
-                                })
-                            }
-                        "
+                        @click="goChat(item)"
                     >
                         <template v-if="item.lastMessage.payload">
                             <div class="left">
@@ -218,6 +195,7 @@ import XEmpty from '@/components/XEmpty/index.vue'
 import SelectFriend from './components/select-friend.vue'
 import type { UserProPertyType } from '@/types'
 import { CommonConfig } from '@/common/common'
+import type { EasemobChat } from 'easemob-websdk'
 
 interface AddListItem {
     text: string
@@ -385,6 +363,29 @@ const goGroupChat = (id: string, name: string) => {
         path: '/my-chat',
         query: {
             name,
+        },
+    })
+}
+
+const goChat = (data: EasemobChat.conversationList & { himId: string }) => {
+    console.log('data -->', data)
+    chatStore.setchatData(
+        data.himId,
+        CommonConfig.CHAT_TYPE[(data.lastMessage as any).chatType]
+    )
+
+    friendStore.setFriend({
+        avatar: data.lastMessage.payload.avatar,
+        sex: data.lastMessage.payload.sex || '1',
+        nickname: data.lastMessage.payload.nickname || data.himId,
+        userid: data.himId,
+        onLine: false,
+    })
+
+    router.push({
+        path: '/my-chat',
+        query: {
+            name: data.lastMessage.payload.nickname || data.himId,
         },
     })
 }

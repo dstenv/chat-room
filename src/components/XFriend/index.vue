@@ -31,9 +31,10 @@ const props = defineProps<{
     info: UserProPertyType
 }>()
 
-onBeforeUnmount(() => {
-    chatStore.setchatData('', 'singleChat')
-})
+// onBeforeUnmount(() => {
+//     console.log('xfriend')
+//     chatStore.setchatData('', 'singleChat')
+// })
 </script>
 
 <style scoped lang="scss">
