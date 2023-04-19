@@ -25,6 +25,7 @@ export const useChatListStore = defineStore(
         const newFriends = ref<NewFriend[]>([])
         const blackList = ref<BlackListItem[]>([])
         const groupList = ref<GroupItem[]>([])
+        const momentGroup = ref<GroupItem>({} as GroupItem)
 
         const getStatus = {
             getChat: false,
@@ -191,6 +192,55 @@ export const useChatListStore = defineStore(
             }
         }
 
+        const getMoment = async () => {
+            try {
+                const list = await EaseChatClient.getJoinedGroups({
+                    pageNum: 0,
+                    pageSize: CommonConfig.GET_GROUP_LIST_SIZE,
+                })
+
+                const createMoment = async () => {
+                    const result = await EaseChatClient.createGroup({
+                        data: {
+                            ...CommonConfig.CREATE_GROUP_CONFIG,
+                            public: false,
+                            allowinvites: true,
+                            desc: '朋友圈',
+                            groupname: 'moment',
+                            members: friendList.value.map(
+                                (item) => item.userid || ''
+                            ),
+                            inviteNeedConfirm: false,
+                        },
+                    })
+                    if (result.data) {
+                        momentGroup.value = {
+                            groupid: result.data.groupid,
+                            groupname: 'moment',
+                            groupimg: Tools.getUrl('group-default.png'),
+                        }
+                    }
+                }
+
+                if (list.data) {
+                    const moment = list.data.find(
+                        (item) => item.groupname === 'moment'
+                    )
+
+                    if (moment) {
+                        momentGroup.value = {
+                            ...moment,
+                            groupimg: Tools.getUrl('group-default.png'),
+                        }
+                    } else {
+                        createMoment()
+                    }
+                } else {
+                    createMoment()
+                }
+            } catch (error) {}
+        }
+
         /**
          * 设置某个会话的最后一条消息
          * @param himId 对方的会话id
@@ -254,6 +304,7 @@ export const useChatListStore = defineStore(
             getBlackFriendList,
             deleteBlack,
             getGroupList,
+            getMoment,
         }
     },
     {

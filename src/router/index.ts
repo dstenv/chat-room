@@ -105,6 +105,11 @@ const router = createRouter({
             name: 'FRIEND_DETAIL',
             component: () => import('@/views/friend-detail/index.vue'),
         },
+        {
+            path: '/moments',
+            name: 'MOMENTS',
+            component: () => import('@/views/moments/index.vue'),
+        },
     ],
 })
 

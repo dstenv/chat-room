@@ -34,6 +34,7 @@ export type MessageData = EasemobChat.MessageBody & {
     error?: boolean
     url?: string
     longTouch?: boolean
+    ext?: Record<string, any>
 }
 
 /** 发送消息的基础配置 */
