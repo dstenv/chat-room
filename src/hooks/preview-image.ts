@@ -4,6 +4,7 @@ export interface ImgList {
     url: string
     id: string
     time: number
+    file?: File | Blob | string
 }
 
 export const usePreviewImage = () => {

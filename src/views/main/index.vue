@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from '@/stores/chat'
 import { Tools } from '@/utils/tools'
 
 const RouteItem = {
@@ -59,6 +60,7 @@ interface TabbarItem<T> {
 }
 
 const route = useRoute()
+const chatStore = useChatStore()
 
 const activeIndex = ref(0)
 
@@ -100,6 +102,7 @@ const init = async () => {
             break
         }
     }
+    chatStore.connect()
 }
 
 init()

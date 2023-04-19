@@ -136,9 +136,10 @@ export const useChatStore = defineStore(
                 chatType: chatData.chatType,
                 to: chatData.targetId,
                 ext: {
-                    avatar:
-                        userStore.userInfo?.avatar ||
-                        Tools.getUrl('avatar-default-man.png'),
+                    avatar: Tools.getDefaultAvatar(
+                        userStore.userInfo?.sex === '2',
+                        userStore.userInfo?.avatar
+                    ),
                     name: userStore.userInfo?.nickname || userStore.userId,
                 },
             }
@@ -153,9 +154,10 @@ export const useChatStore = defineStore(
                 chatType: chatData.chatType,
                 to: chatData.targetId,
                 ext: {
-                    avatar:
-                        userStore.userInfo?.avatar ||
-                        Tools.getUrl('avatar-default-man.png'),
+                    avatar: Tools.getDefaultAvatar(
+                        userStore.userInfo?.sex === '2',
+                        userStore.userInfo?.avatar
+                    ),
                     name: userStore.userInfo?.nickname || userStore.userId,
                 },
             }
@@ -207,6 +209,7 @@ export const useChatStore = defineStore(
         }
 
         const getHistoryMsg = async () => {
+            console.log(socketDefer.connected)
             if (socketDefer.connected) {
                 await socketDefer.connected.promise
             } else if (!EaseChatClient.isOpened()) {
@@ -255,7 +258,6 @@ export const useChatStore = defineStore(
                         `有历史消息${list.messages.length}条`,
                         chatData.startId
                     )
-                    console.log('messageList', messageList.value)
                 } else {
                     console.log('历史消息为空')
                     if (list.cursor === 'undefined') {
@@ -263,6 +265,7 @@ export const useChatStore = defineStore(
                     }
                 }
                 insertBefore(messages.reverse())
+                console.log('messageList', messageList.value)
             } catch (error) {}
         }
 

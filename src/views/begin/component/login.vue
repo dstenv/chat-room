@@ -135,6 +135,7 @@ const login = async () => {
 
             localStorage.setItem('newFriend', JSON.stringify([]))
             sessionStorage.clear()
+            chatStore.connect()
 
             router.replace({
                 path: '/main/pages/chat',

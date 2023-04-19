@@ -139,9 +139,7 @@ export namespace Tools {
         return (
             avatar ||
             Tools.getUrl(
-                bool
-                    ? 'avatar-default-uwoman.png.png'
-                    : 'avatar-default-uman.png.png'
+                bool ? 'avatar-default-uwoman.png' : 'avatar-default-uman.png'
             )
         )
     }

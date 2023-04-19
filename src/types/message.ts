@@ -43,6 +43,34 @@ export interface SendMsgBaseOption {
     to: string
 }
 
+export interface MomentMsg {
+    text: string
+    type: 'txt' | 'img'
+    files?: File[]
+}
+
+export interface MomentOprateMsg {
+    type: 'follow' | 'say'
+    data: {
+        /** 评论或者点赞的消息id */
+        msgId: string
+        /** 评论者或点赞的id */
+        oprateId: string
+        /** 评论者或点赞的昵称 */
+        oprateName: string
+        /** 是否点赞 */
+        follow: boolean
+        /** 评论内容 */
+        sayText: string[]
+    }
+}
+
+export interface CustomMsgType {
+    /** 朋友圈消息 */
+    Moment: MomentMsg
+    OprateMsg: MomentOprateMsg
+}
+
 /** 发送文本消息的配置 */
 export interface SendTextOption extends SendMsgBaseOption {
     msg: string
@@ -55,6 +83,10 @@ export interface SendImgOption extends SendMsgBaseOption {
 export interface SendVideoOption extends SendMsgBaseOption {
     file: File
 }
+export interface SendCustomOption extends SendMsgBaseOption {
+    customExts: CustomMsgType['Moment'] | CustomMsgType['OprateMsg']
+    ext: Object
+}
 
 /** 所有消息的配置 */
 export interface AllMsgType {
@@ -64,7 +96,7 @@ export interface AllMsgType {
     loc: any
     video: SendVideoOption
     file: any
-    custom: any
+    custom: SendCustomOption
     cmd: any
     inform: any
     read: any
