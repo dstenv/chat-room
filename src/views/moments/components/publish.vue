@@ -55,7 +55,12 @@ const pageData = reactive({
 const { imgList, addImg, preview } = usePreviewImage()
 
 const publish = () => {
-    chatStore.setchatData(chatListStore.momentGroup.groupid, 'groupChat')
+    chatStore.setchatData(
+        chatListStore.momentGroup.groupid,
+        'groupChat',
+        'down',
+        50
+    )
     chatStore.sendMessage(
         'custom',
         {

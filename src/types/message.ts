@@ -34,6 +34,8 @@ export type MessageData = EasemobChat.MessageBody & {
     error?: boolean
     url?: string
     longTouch?: boolean
+    click?: boolean
+    follow?: boolean
     ext?: Record<string, any>
 }
 
@@ -49,19 +51,23 @@ export interface MomentMsg {
     files?: File[]
 }
 
+export interface MomentUser {
+    /** 评论者或点赞的id */
+    id: string
+    /** 评论者或点赞的昵称 */
+    name: string
+    /** 是否点赞 */
+    follow?: boolean
+    /** 评论内容 */
+    sayText?: string[]
+}
+
 export interface MomentOprateMsg {
     type: 'follow' | 'say'
     data: {
         /** 评论或者点赞的消息id */
         msgId: string
-        /** 评论者或点赞的id */
-        oprateId: string
-        /** 评论者或点赞的昵称 */
-        oprateName: string
-        /** 是否点赞 */
-        follow: boolean
-        /** 评论内容 */
-        sayText: string[]
+        users?: MomentUser[]
     }
 }
 

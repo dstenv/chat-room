@@ -27,6 +27,8 @@ export const useChatStore = defineStore(
             targetId: '',
             startId: '',
             chatType: 'singleChat' as ChatType,
+            searchDirection: 'up' as 'up' | 'down',
+            msgSize: 20,
         }
 
         const socketDefer = {
@@ -222,18 +224,18 @@ export const useChatStore = defineStore(
 
                 console.log('请求历史消息的请求体', {
                     targetId: chatData.targetId,
-                    pageSize: 20,
+                    pageSize: chatData.msgSize,
                     chatType: chatData.chatType,
-                    searchDirection: 'up',
+                    searchDirection: chatData.searchDirection,
                     /** 获取消息的起始位置 */
                     cursor: chatData.startId,
                 })
 
                 const list = await EaseChatClient.getHistoryMessages({
                     targetId: chatData.targetId,
-                    pageSize: MSG_SIZE,
+                    pageSize: chatData.msgSize,
                     chatType: chatData.chatType,
-                    searchDirection: 'up',
+                    searchDirection: chatData.searchDirection,
                     /** 获取消息的起始位置 */
                     cursor: chatData.startId,
                 })
@@ -283,9 +285,16 @@ export const useChatStore = defineStore(
             chatData.userId = id
         }
 
-        const setchatData = (id: string, chatType: ChatType) => {
+        const setchatData = (
+            id: string,
+            chatType: ChatType,
+            searchType: 'up' | 'down' = 'up',
+            msgSize = 20
+        ) => {
             chatData.targetId = id
             chatData.chatType = chatType
+            chatData.searchDirection = searchType
+            chatData.msgSize = msgSize
             console.log('setchatData', { ...chatData })
         }
 
