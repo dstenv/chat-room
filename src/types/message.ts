@@ -59,7 +59,7 @@ export interface MomentUser {
     /** 是否点赞 */
     follow?: boolean
     /** 评论内容 */
-    sayText?: string[]
+    sayText?: string
 }
 
 export interface MomentOprateMsg {

@@ -120,7 +120,28 @@
                         </div>
 
                         <div class="follow-list">
-                            {{ getFollowList(item.id).join('、') }}
+                            <div class="follow">
+                                <img
+                                    :src="Tools.getUrl('like-blue.png')"
+                                    alt=""
+                                />
+                                <p
+                                    v-for="followItem in getFollowList(item.id)"
+                                    :key="followItem.id"
+                                >
+                                    {{ followItem.name }}
+                                </p>
+                            </div>
+
+                            <div class="say-list">
+                                <p
+                                    v-for="sayItem in getSayList(item.id)"
+                                    :key="sayItem.id"
+                                >
+                                    <span>{{ sayItem.name }}</span>
+                                    <span>{{ sayItem.content }}</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -133,6 +154,12 @@
                 @hide="() => (pageData.showPopup = false)"
             />
         </VanPopup>
+
+        <!-- <Transition name="say-input-animate"> -->
+        <div class="say-input" :show="pageData.showSayInput">
+            <input type="text" v-model="pageData.sayInputValue" />
+        </div>
+        <!-- </Transition> -->
     </div>
 </template>
 
@@ -264,13 +291,12 @@ const momentManyList = [
         key: 'say',
         icon: Tools.getUrl('say.png'),
         activeIcon: Tools.getUrl('say.png'),
-        action() {},
+        action() {
+            pageData.showSayInput = true
+        },
     },
 ]
 
-/**
- * TODO 这里还需要做处理(处理点赞的和评论的数据,放在ext属性中)
- */
 const showList = computed(
     () =>
         chatStore.messageList.filter(
@@ -317,20 +343,50 @@ const isFollow = computed(() => (id: string): boolean => {
     return false
 })
 
-const getFollowList = computed(() => (id: string): string[] => {
-    const find = followList.value.find(
-        (item) =>
-            (item as EasemobChat.CustomMsgBody).customExts.data.msgId === id
-    ) as EasemobChat.CustomMsgBody
+const getFollowList = computed(
+    () =>
+        (id: string): { id: string; name: string }[] => {
+            const find = followList.value.find(
+                (item) =>
+                    (item as EasemobChat.CustomMsgBody).customExts.data
+                        .msgId === id
+            ) as EasemobChat.CustomMsgBody
 
-    if (find) {
-        return (find.customExts.data.users || []).map(
-            (item: MomentUser) => item.name
-        )
-    }
+            if (find) {
+                return (find.customExts.data.users || [])
+                    .filter((item: any) => item.follow)
+                    .map((item: MomentUser) => ({
+                        id: item.id,
+                        name: item.name,
+                    }))
+            }
 
-    return []
-})
+            return []
+        }
+)
+
+const getSayList = computed(
+    () =>
+        (id: string): { id: string; name: string; content: string }[] => {
+            const find = sayList.value.find(
+                (item) =>
+                    (item as EasemobChat.CustomMsgBody).customExts.data
+                        .msgId === id
+            ) as EasemobChat.CustomMsgBody
+
+            if (find) {
+                return (find.customExts.data.users || []).map(
+                    (item: MomentUser) => ({
+                        id: item.id,
+                        name: item.name,
+                        content: item.sayText,
+                    })
+                )
+            }
+
+            return []
+        }
+)
 
 const pageData = reactive({
     longTouch: false,
@@ -338,6 +394,8 @@ const pageData = reactive({
     publishType: 'img' as PublishType,
     showPopup: false,
     manyCliCK: [] as { id: string; click: boolean; follow: boolean }[],
+    showSayInput: false,
+    sayInputValue: '',
 })
 
 const longFn = () => {
@@ -585,8 +643,45 @@ EaseChatClient.addEventHandler(watchFnId, {
                             }
                         }
                     }
+                    .follow-list {
+                        background-color: #f7f7f9;
+                        border-radius: 3rem;
+                        padding: 7rem 10rem;
+                        .follow {
+                            display: flex;
+                            align-items: center;
+                            flex-wrap: wrap;
+                            border-bottom: 1rem solid #e9e9e9;
+                            padding-bottom: 5rem;
+                            img {
+                                width: 15rem;
+                                display: block;
+                                margin-right: 3rem;
+                            }
+                            p {
+                                color: #687492;
+                                &::after {
+                                    content: '、';
+                                }
+                                &:last-of-type::after {
+                                    content: '';
+                                }
+                            }
+                        }
+                        .say-list {
+                            padding: 3rem 0;
+                        }
+                    }
                 }
             }
+        }
+    }
+    .say-input {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        input {
+            width: 100%;
         }
     }
 }
