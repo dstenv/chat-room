@@ -141,7 +141,7 @@ export default defineComponent({
                         <img
                             src={
                                 avatar.value ||
-                                Tools.getUrl('avatar-default-man.png')
+                                Tools.getUrl('avatar-default-uman.png')
                             }
                             alt=""
                         />

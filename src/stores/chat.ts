@@ -291,6 +291,10 @@ export const useChatStore = defineStore(
             searchType: 'up' | 'down' = 'up',
             msgSize = 20
         ) => {
+            if (chatType !== chatData.chatType) {
+                chatData.startId = ''
+            }
+
             chatData.targetId = id
             chatData.chatType = chatType
             chatData.searchDirection = searchType

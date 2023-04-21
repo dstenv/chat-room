@@ -16,7 +16,12 @@
             />
         </div>
 
-        <main>
+        <main @touchstart="mainTouchStart">
+            <img
+                class="bg"
+                :src="Tools.getUrl('moment-bg.jpg', 'imgs')"
+                alt=""
+            />
             <div class="user">
                 <img
                     :src="
@@ -55,13 +60,16 @@
                             }}
                         </div>
 
-                        <div class="img-content">
+                        <div
+                            class="img-content"
+                            v-if="(item as EasemobChat.CustomMsgBody).customExts.files?.length > 0"
+                        >
                             <img
                                 v-for="(url, index) in (item as EasemobChat.CustomMsgBody).customExts.files"
                                 :key="url"
                                 :src="url"
                                 alt=""
-                                @click="
+                                @click.stop="
                                     previewImg(
                                         index,
                                         (item as EasemobChat.CustomMsgBody)
@@ -85,7 +93,16 @@
                                 <div
                                     v-for="many in momentManyList"
                                     :key="many.key"
-                                    @click="() => many.action(item)"
+                                    @click.stop="
+                                        () => {
+                                            pageData.manyCliCK.forEach(
+                                                (manyItem) => {
+                                                    manyItem.click = false
+                                                }
+                                            )
+                                            many.action(item)
+                                        }
+                                    "
                                 >
                                     <img
                                         :src="
@@ -100,7 +117,7 @@
                             </div>
                             <div
                                 class="moment-many"
-                                @click="
+                                @click.stop="
                                     () => {
                                         pageData.manyCliCK.forEach(
                                             (manyItem) => {
@@ -138,9 +155,18 @@
                                     v-for="sayItem in getSayList(item.id)"
                                     :key="sayItem.id"
                                 >
-                                    <span>{{ sayItem.name }}</span>
+                                    <span class="say-name"
+                                        >{{ sayItem.name }}:
+                                    </span>
                                     <span>{{ sayItem.content }}</span>
                                 </p>
+
+                                <div
+                                    class="say-empty"
+                                    v-if="getSayList(item.id).length === 0"
+                                >
+                                    暂无任何评论
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,8 +182,19 @@
         </VanPopup>
 
         <!-- <Transition name="say-input-animate"> -->
-        <div class="say-input" :show="pageData.showSayInput">
-            <input type="text" v-model="pageData.sayInputValue" />
+        <!--  v-show="pageData.showSayInput" -->
+        <div class="say-input" v-show="pageData.showSayInput">
+            <input type="text" v-model="pageData.sayInputValue" autofocus />
+
+            <span
+                :style="{
+                    backgroundColor: pageData.sayInputValue
+                        ? '#59ce61'
+                        : '#ddd',
+                }"
+                @click="sendSay"
+                >发送</span
+            >
         </div>
         <!-- </Transition> -->
     </div>
@@ -171,7 +208,7 @@ import { EaseChatClient } from '@/utils/config'
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from '@/stores/chatList'
 import type { EasemobChat } from 'easemob-websdk'
-import { showImagePreview } from 'vant'
+import { showImagePreview, showToast } from 'vant'
 import type { MessageData, MomentUser } from '@/types/message'
 
 export type PublishType = 'txt' | 'img'
@@ -183,6 +220,8 @@ const chatListStore = useChatListStore()
 
 let start = 0
 const watchFnId = `moments_${Date.now().toString(36).slice(0, 11)}`
+let currentSayId = ''
+
 const momentManyList = [
     {
         text: '赞',
@@ -291,7 +330,8 @@ const momentManyList = [
         key: 'say',
         icon: Tools.getUrl('say.png'),
         activeIcon: Tools.getUrl('say.png'),
-        action() {
+        action(msg: MessageData) {
+            currentSayId = msg.id
             pageData.showSayInput = true
         },
     },
@@ -328,6 +368,7 @@ const sayList = computed(
         )
     // .reverse()
 )
+console.log('sayList -->', sayList.value)
 
 const isFollow = computed(() => (id: string): boolean => {
     const find = followList.value.find(
@@ -453,6 +494,11 @@ const init = async () => {
     console.log('pageData.manyCliCK  -->', pageData.manyCliCK)
 }
 
+const mainTouchStart = () => {
+    pageData.showSayInput = false
+    pageData.sayInputValue = ''
+}
+
 const touchStart = () => {
     start = +new Date()
     pageData.timer = setTimeout(() => {
@@ -485,6 +531,62 @@ const previewImg = (index: number, imgs: string[]) => {
         loop: false,
         startPosition: index,
     })
+}
+
+const sendSay = () => {
+    if (!pageData.sayInputValue.trim()) {
+        showToast('评论内容不能为空')
+        return
+    }
+
+    const find = sayList.value.find(
+        (say) =>
+            (say as EasemobChat.CustomMsgBody).customExts.data.msgId ===
+            currentSayId
+    ) as EasemobChat.CustomMsgBody
+
+    let users: MomentUser[] = []
+
+    if (find) {
+        users = find.customExts.data.users || []
+    }
+    users.push({
+        id: userStore.userId,
+        name: userStore.userInfo?.nickname || userStore.userId,
+        sayText: pageData.sayInputValue.trim(),
+    })
+
+    chatStore.sendMessage(
+        'custom',
+        {
+            chatType: 'groupChat',
+            to: chatListStore.momentGroup.groupid,
+            customExts: {
+                type: 'say',
+                data: {
+                    msgId: currentSayId,
+                    users,
+                },
+            },
+            ext: {},
+        },
+        {
+            chatType: 'groupChat',
+            customEvent: '',
+            customExts: {
+                type: 'say',
+                data: {
+                    msgId: currentSayId,
+                    users,
+                },
+            },
+            id: '',
+            time: +new Date(),
+            to: chatListStore.momentGroup.groupid,
+            type: 'custom',
+        },
+        () => {}
+    )
 }
 
 init()
@@ -522,6 +624,7 @@ EaseChatClient.addEventHandler(watchFnId, {
         position: fixed;
         top: 0;
         left: 0;
+        z-index: 10;
         img {
             width: 30rem;
         }
@@ -531,7 +634,16 @@ EaseChatClient.addEventHandler(watchFnId, {
         background-color: #fff;
         padding: 80rem 0 0;
         overflow-x: hidden;
-        max-height: calc(100vh - 50rem);
+        max-height: calc(100vh - 100rem);
+        position: relative;
+        .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 128rem;
+            object-fit: cover;
+        }
         .user {
             padding: 0 20rem;
             display: flex;
@@ -596,6 +708,7 @@ EaseChatClient.addEventHandler(watchFnId, {
                         display: flex;
                         align-items: center;
                         justify-content: flex-end;
+                        margin-bottom: 10rem;
                         .moment-btn {
                             // height: 12rem;
                             overflow: hidden;
@@ -660,6 +773,7 @@ EaseChatClient.addEventHandler(watchFnId, {
                             }
                             p {
                                 color: #687492;
+                                font-size: 13rem;
                                 &::after {
                                     content: '、';
                                 }
@@ -669,7 +783,25 @@ EaseChatClient.addEventHandler(watchFnId, {
                             }
                         }
                         .say-list {
-                            padding: 3rem 0;
+                            padding: 5rem 0;
+                            p {
+                                overflow: hidden;
+                                word-break: break-all;
+                                display: -webkit-box;
+                                -webkit-box-orient: vertical;
+                                overflow: hidden;
+                                -webkit-line-clamp: 2;
+                            }
+                            span {
+                                font-size: 13rem;
+                            }
+                            .say-name {
+                                color: #687492;
+                            }
+                            .say-empty {
+                                color: #a5a5a5;
+                                text-align: center;
+                            }
                         }
                     }
                 }
@@ -680,8 +812,26 @@ EaseChatClient.addEventHandler(watchFnId, {
         position: fixed;
         bottom: 0;
         left: 0;
+        width: 100vw;
+        z-index: 999;
+        background-color: rgb(245, 245, 245);
+        padding: 10rem;
+        display: flex;
+        align-items: center;
         input {
             width: 100%;
+            border: none;
+            outline: none;
+            height: 25rem;
+            font-size: 14rem;
+        }
+        span {
+            display: block;
+            white-space: nowrap;
+            color: #fff;
+            padding: 8rem 12rem;
+            border-radius: 5rem;
+            margin-left: 5rem;
         }
     }
 }
