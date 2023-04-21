@@ -26,13 +26,26 @@
 ## 项目描述
 
 - src: 主要文件夹
-    - apis：网络请求相关
-    - assets：静态资源
-    - components：公共组件
-    - hooks：业务相关的hook
-    - router：路由
-    - singleton：存放单例模式的文件
-    - stores：pinia
-    - style：公共样式
-    - types：类型
-    - utils：工具库
+  - apis：网络请求相关
+  - assets：静态资源
+  - components：公共组件
+  - hooks：业务相关的hook
+  - router：路由
+  - singleton：存放单例模式的文件
+  - stores：pinia
+  - style：公共样式
+  - types：类型
+  - utils：工具库
+
+## 项目启动
+
+```shell
+# 克隆到本地
+git clone git@github.com:dstenv/chat-room.git
+# 安装依赖
+npm i
+# 运行(暂不支持正式环境上线，使用的环信的demo的应用)
+npm run dev
+# 打包
+npm run build
+```

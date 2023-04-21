@@ -6,7 +6,7 @@ export interface MyStorageType {
 }
 
 export class MyStorage {
-    static storageInst: null | MyStorage
+    static storageInst: null | MyStorage = null
     /**
      * @description: 存储空值自定义操作函数
      * @return {*}
@@ -38,7 +38,6 @@ export class MyStorage {
         this.noTimeFn = noTimeFn
         this.getNullFn = getNullFn
         this.expireTimeFn = expireTimeFn
-        MyStorage.storageInst = null
     }
 
     set<T extends { time: string }>(key: string, value: T): boolean {
