@@ -165,6 +165,7 @@ const register = async () => {
             justify-content: space-between;
             align-items: center;
             padding: 5rem 10rem;
+            font-size: 12rem;
             input {
                 box-sizing: border-box;
                 padding: 10rem 0;

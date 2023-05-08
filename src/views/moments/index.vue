@@ -261,6 +261,7 @@ const momentManyList = [
                             data: {
                                 msgId: msg.id,
                                 users,
+                                time: +new Date(),
                             },
                         },
                         ext: {},
@@ -273,6 +274,7 @@ const momentManyList = [
                             data: {
                                 msgId: msg.id,
                                 users,
+                                time: +new Date(),
                             },
                         },
                         id: '',
@@ -301,6 +303,7 @@ const momentManyList = [
                             data: {
                                 msgId: msg.id,
                                 users,
+                                time: +new Date(),
                             },
                         },
                         ext: {},
@@ -313,6 +316,7 @@ const momentManyList = [
                             data: {
                                 msgId: msg.id,
                                 users,
+                                time: +new Date(),
                             },
                         },
                         id: '',
@@ -356,19 +360,23 @@ const followList = computed(() => {
             item.customExts.type === 'follow'
     )
     // .reverse()
+    // .sort((a, b) => (a as any).time - (b as any).time)
     return list
 })
 const sayList = computed(
-    () =>
-        chatStore.messageList.filter(
+    () => {
+        const list = chatStore.messageList.filter(
             (item) =>
                 item.type === 'custom' &&
                 item.customExts &&
                 item.customExts.type === 'say'
         )
+
+        // .sort((a, b) => (a as any).time - (b as any).time)
+        return list
+    }
     // .reverse()
 )
-console.log('sayList -->', sayList.value)
 
 const isFollow = computed(() => (id: string): boolean => {
     const find = followList.value.find(
@@ -387,6 +395,7 @@ const isFollow = computed(() => (id: string): boolean => {
 const getFollowList = computed(
     () =>
         (id: string): { id: string; name: string }[] => {
+            if (pageData.useRecieve) return pageData.followList
             const find = followList.value.find(
                 (item) =>
                     (item as EasemobChat.CustomMsgBody).customExts.data
@@ -401,7 +410,6 @@ const getFollowList = computed(
                         name: item.name,
                     }))
             }
-
             return []
         }
 )
@@ -437,6 +445,9 @@ const pageData = reactive({
     manyCliCK: [] as { id: string; click: boolean; follow: boolean }[],
     showSayInput: false,
     sayInputValue: '',
+    sayList: [] as { id: string; name: string; content: string }[],
+    followList: [] as { id: string; name: string }[],
+    useRecieve: false,
 })
 
 const longFn = () => {
@@ -524,7 +535,8 @@ const touchEnd = (e: TouchEvent) => {
         pageData.timer = null
         pageData.longTouch = false
         console.log('+new Date() - start -->', +new Date(), start)
-        if (+new Date() - start > 100) {
+        if (+new Date() - start > 500) {
+            console.log('touchend拦截')
             e.preventDefault()
         }
     }
@@ -571,6 +583,7 @@ const sendSay = () => {
                 data: {
                     msgId: currentSayId,
                     users,
+                    time: +new Date(),
                 },
             },
             ext: {},
@@ -583,6 +596,7 @@ const sendSay = () => {
                 data: {
                     msgId: currentSayId,
                     users,
+                    time: +new Date(),
                 },
             },
             id: '',
@@ -607,15 +621,61 @@ EaseChatClient.addEventHandler(watchFnId, {
     onCustomMessage(msg) {
         console.log('收到朋友圈的自定义消息 -->', msg)
 
-        if (['img', 'txt'].includes(msg.customExts.type)) {
-            chatStore.addMessage({
-                ...msg,
-                loading: false,
-                error: false,
-                click: false,
-                follow: false,
-            })
+        if (['img', 'txt', 'follow', 'say'].includes(msg.customExts.type)) {
+            chatStore.addMessage(
+                {
+                    ...msg,
+                    loading: false,
+                    error: false,
+                    click: false,
+                    follow: false,
+                },
+                false,
+                false,
+                false
+            )
         }
+
+        // if (msg.customExts.type === 'follow') {
+        //     pageData.useRecieve = true
+        //     setTimeout(() => {
+        //         const findList = followList.value.filter(
+        //             (item) =>
+        //                 (item as EasemobChat.CustomMsgBody).customExts.data
+        //                     .msgId === msg.customExts.data.msgId
+        //         ) as EasemobChat.CustomMsgBody[]
+
+        //         let maxIndex = 0
+
+        //         for (let i = 1; i < findList.length; i++) {
+        //             if (
+        //                 findList[i].customExts.data.time >
+        //                 findList[maxIndex].customExts.data.time
+        //             ) {
+        //                 maxIndex = i
+        //             }
+        //         }
+
+        //         pageData.followList = (
+        //             findList[maxIndex].customExts.data.users || []
+        //         )
+        //             .filter((item: any) => item.follow)
+        //             .map((item: MomentUser) => ({
+        //                 id: item.id,
+        //                 name: item.name,
+        //             }))
+        //         console.log(
+        //             'max -->',
+        //             findList[maxIndex].customExts.data.users.filter(
+        //                 (item: any) => item.follow
+        //             ),
+        //             pageData.followList
+        //         )
+        //     }, 300)
+        // }
+
+        // if (msg.customExts.type === 'say') {
+        // }
     },
 })
 </script>
@@ -721,6 +781,7 @@ EaseChatClient.addEventHandler(watchFnId, {
                         align-items: center;
                         justify-content: flex-end;
                         margin-bottom: 10rem;
+                        font-size: 12rem;
                         .moment-btn {
                             // height: 12rem;
                             overflow: hidden;
@@ -830,6 +891,7 @@ EaseChatClient.addEventHandler(watchFnId, {
         padding: 10rem;
         display: flex;
         align-items: center;
+        font-size: 12rem;
         input {
             width: 100%;
             border: none;

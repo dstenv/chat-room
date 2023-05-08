@@ -7,8 +7,9 @@
     >
         <div class="form">
             <div v-for="item in formList" :key="item.key" class="form-item">
-                <span>{{ item.label }}</span>
+                <span class="span">{{ item.label }}</span>
                 <input
+                    class="input"
                     v-model="userInfo[item.key]"
                     :placeholder="item.placeholder"
                     :maxlength="item.maxlength || 20"
@@ -131,7 +132,13 @@ const login = async () => {
             // console.log(userStore, 'desc')
             localStorage.setItem('userToken', result.access_token)
             localStorage.setItem('userId', result.user.username)
-            localStorage.setItem('userInfo', JSON.stringify(userInfo.data))
+            localStorage.setItem(
+                'userInfo',
+                JSON.stringify({
+                    ...userInfo.data,
+                    userid: login.username,
+                })
+            )
 
             localStorage.setItem('newFriend', JSON.stringify([]))
             sessionStorage.clear()
@@ -152,6 +159,10 @@ const login = async () => {
 </script>
 
 <style scoped lang="scss">
+::-webkit-input-placeholder {
+    font-size: 12rem;
+}
+
 @keyframes inpActive {
     0% {
         border-bottom: 2rem solid #a5a5a5;
@@ -188,14 +199,12 @@ const login = async () => {
             justify-content: space-between;
             align-items: center;
             padding: 5rem 10rem;
-            span {
-                font-size: 12rem;
-            }
-            input {
+            font-size: 12rem;
+            .input {
+                display: block;
                 box-sizing: border-box;
-                padding: 10rem 0;
-                padding-left: 5rem;
-                width: 80%;
+                padding: 10rem 0 10rem 5rem;
+                width: 200rem;
                 border: none;
                 outline: none;
                 background-color: transparent;

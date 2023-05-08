@@ -68,6 +68,7 @@ export interface MomentOprateMsg {
         /** 评论或者点赞的消息id */
         msgId: string
         users?: MomentUser[]
+        time: number
     }
 }
 
