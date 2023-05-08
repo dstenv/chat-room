@@ -7,7 +7,15 @@
                     alt=""
                     @click="() => router.back()"
                 />
-                <img :src="Tools.getUrl('many.png')" alt="" />
+                <img
+                    :src="Tools.getUrl('many.png')"
+                    alt=""
+                    @click="
+                        () => {
+                            props.rightClick && props.rightClick()
+                        }
+                    "
+                />
             </div>
 
             <main>
@@ -96,13 +104,11 @@ const router = useRouter()
 const props = defineProps<{
     userInfo: UserProPertyType
     otherInfoList: OtherInfoItemType[]
+    rightClick?: () => void
 }>()
 
 const defaultData = reactive({
-    avatar:
-        Number(props.userInfo.sex || '1') === 1
-            ? Tools.getUrl('avatar-default-uman.png.png')
-            : Tools.getUrl('avatar-default-uwoman.png.png'),
+    avatar: Tools.getDefaultAvatar(Number(props.userInfo.sex || '1') !== 1, ''),
     /**
      * TODO 这里可以使用地图api获取当前定位的城市作为默认地址显示
      */

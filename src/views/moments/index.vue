@@ -443,8 +443,8 @@ const longFn = () => {
     console.log('长按')
     // 执行操作
     pageData.publishType = 'txt'
-    pageData.showPopup = true
     pageData.longTouch = true
+    pageData.showPopup = true
 }
 
 const pushImg = () => {
@@ -463,6 +463,10 @@ const init = async () => {
     )
     await chatStore.getHistoryMsg()
 
+    setManyClick()
+}
+
+const setManyClick = () => {
     pageData.manyCliCK = chatStore.messageList
         .filter(
             (item) =>
@@ -519,6 +523,7 @@ const touchEnd = (e: TouchEvent) => {
         clearTimeout(pageData.timer)
         pageData.timer = null
         pageData.longTouch = false
+        console.log('+new Date() - start -->', +new Date(), start)
         if (+new Date() - start > 100) {
             e.preventDefault()
         }
@@ -585,9 +590,16 @@ const sendSay = () => {
             to: chatListStore.momentGroup.groupid,
             type: 'custom',
         },
-        () => {}
+        () => {
+            pageData.sayInputValue = ''
+            pageData.showSayInput = false
+        }
     )
 }
+
+watch(chatStore.messageList, () => {
+    setManyClick()
+})
 
 init()
 

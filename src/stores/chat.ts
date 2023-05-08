@@ -124,7 +124,8 @@ export const useChatStore = defineStore(
             /** 视图层展示的消息 */
             tempData: AllRecieveMsg[T],
             /** 自定义操作函数 */
-            opreate: (msg: MessageData) => void
+            opreate: (msg: MessageData) => void,
+            push = true
         ): Promise<EasemobChat.SendMsgResult | null> => {
             if (socketDefer.send) {
                 await socketDefer.send.promise
@@ -166,7 +167,7 @@ export const useChatStore = defineStore(
 
             console.log('本机展示的message -->', message)
 
-            addMessage(message)
+            addMessage(message, true, false, push)
 
             opreate && opreate(message)
 
@@ -274,10 +275,26 @@ export const useChatStore = defineStore(
         const addMessage = (
             msg: MessageData,
             loading = true,
-            error = false
+            error = false,
+            push = true
         ) => {
             if (messageList.value.map((msg) => msg.id).includes(msg.id)) return
-            messageList.value.push({ ...msg, loading, error, longTouch: false })
+
+            if (push) {
+                messageList.value.push({
+                    ...msg,
+                    loading,
+                    error,
+                    longTouch: false,
+                })
+            } else {
+                messageList.value.unshift({
+                    ...msg,
+                    loading,
+                    error,
+                    longTouch: false,
+                })
+            }
             // console.log(messageList, 'messageList')
         }
 

@@ -108,7 +108,7 @@ export const request = <T, U>(
 
         if (requestOptions.method === 'PUT') {
             requestOptions.data = Tools.queryString(
-                body as { [key: string]: string }
+                body as unknown as { [key: string]: string }
             )
         }
 

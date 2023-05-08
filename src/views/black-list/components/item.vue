@@ -67,9 +67,9 @@ const close = ({
     return true
 }
 
-onBeforeUnmount(() => {
-    chatStore.setTargetId('')
-})
+// onBeforeUnmount(() => {
+//     chatStore.setTargetId('')
+// })
 </script>
 
 <style scoped lang="scss">

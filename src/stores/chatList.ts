@@ -84,10 +84,18 @@ export const useChatListStore = defineStore(
                 const result = await EaseChatClient.getConversationlist()
                 chatList.value = (result.data as any).channel_infos
 
-                chatList.value = chatList.value.map((item) => ({
-                    ...item,
-                    himId: /_.*@/.exec(item.channel_id)![0].slice(1, -1) || '',
-                }))
+                chatList.value = chatList.value
+                    .filter(
+                        (item) =>
+                            !!friendList.value.find(
+                                (friend) => friend.userid === item.himId
+                            )
+                    )
+                    .map((item) => ({
+                        ...item,
+                        himId:
+                            /_.*@/.exec(item.channel_id)![0].slice(1, -1) || '',
+                    }))
 
                 for (let i = 0; i < chatList.value.length; i++) {
                     const property = await getUserInfo(
@@ -111,6 +119,7 @@ export const useChatListStore = defineStore(
         }
 
         const getGroupList = async () => {
+            groupList.value = []
             try {
                 const list = await EaseChatClient.getJoinedGroups({
                     pageNum: 0,
@@ -148,6 +157,11 @@ export const useChatListStore = defineStore(
                 const result = await getFriendList(
                     `users/${userStore.userId}/contacts/users`
                 )()
+
+                if (result.data.length === 0) {
+                    friendList.value = []
+                    return
+                }
 
                 for (let i = 0; i < result.data.length; i++) {
                     const property = await getUserInfo(result.data[i])()

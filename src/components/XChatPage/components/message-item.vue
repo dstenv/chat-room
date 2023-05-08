@@ -92,23 +92,25 @@ export default defineComponent({
                 </div>
             ),
             video: (
-                <div class="item-wrap video">
-                    <video
-                        /**
-                         * !TODO 视频在手机上播放不了(安卓可以)
-                         */
-                        src={(props.item as EasemobChat.VideoMsgBody).url}
-                        controls
-                        crossorigin="anonymous"
-                        preload="metadata"
-                        onError={(e) => {
-                            {
-                                /* console.log(props.item) */
-                            }
-                        }}
-                    >
-                        您的手机暂不支持该视频格式播放
-                    </video>
+                <div class="item-wrap">
+                    <div class="item-content video">
+                        <video
+                            /**
+                             * !TODO 视频在手机上播放不了(安卓可以)
+                             */
+                            src={(props.item as EasemobChat.VideoMsgBody).url}
+                            controls
+                            crossorigin="anonymous"
+                            preload="metadata"
+                            onError={(e) => {
+                                {
+                                    /* console.log(props.item) */
+                                }
+                            }}
+                        >
+                            您的手机暂不支持该视频格式播放
+                        </video>
+                    </div>
                 </div>
             ),
         }

@@ -88,8 +88,10 @@ const publish = () => {
         },
         () => {
             pageData.text = ''
+            console.log('chatStore.messageList -->', chatStore.messageList)
             emits('hide')
-        }
+        },
+        false
     )
 }
 

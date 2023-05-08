@@ -217,18 +217,8 @@ const funList: FunItem[] = [
 
                         const url = URL.createObjectURL(files[0])
 
-                        let data: File | Blob = files[0]
-
-                        if (files[0].size / 1024 / 1024 > 2) {
-                            try {
-                                data = await Tools.compressImage(url)
-                            } catch (error) {
-                                data = files[0]
-                            }
-                        }
-
                         const file = {
-                            data,
+                            data: files[0],
                             filename: files[0].name,
                             filetype: files[0].type,
                         } as unknown as File
