@@ -612,11 +612,6 @@ const sendSay = () => {
     )
 }
 
-// watch(chatStore.messageList, (list) => {
-//     console.log('list -->', list)
-//     setManyClick()
-// })
-
 watchEffect(() => {
     pageData.manyCliCK = chatStore.messageList
         .filter(
