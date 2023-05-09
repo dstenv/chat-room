@@ -44,9 +44,9 @@
                 </div>
             </div>
 
-            <div class="friend-list" v-if="chatListStore.friendList.length > 0">
+            <div class="friend-list" v-if="showList.length > 0">
                 <XFriend
-                    v-for="item in chatListStore.friendList"
+                    v-for="item in showList"
                     :key="item.userid"
                     :info="item"
                 />
@@ -126,6 +126,22 @@ const showRed = computed(
         },
     })
 )
+
+const showList = computed(() => {
+    const list = []
+    for (let i = 0; i < chatListStore.friendList.length; i++) {
+        if (
+            !chatListStore.blackList.find(
+                (item) => item.id === chatListStore.friendList[i].userid
+            )
+        ) {
+            list.push({
+                ...chatListStore.friendList[i],
+            })
+        }
+    }
+    return list
+})
 
 const pageData = reactive({})
 

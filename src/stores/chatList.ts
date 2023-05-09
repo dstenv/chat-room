@@ -54,7 +54,9 @@ export const useChatListStore = defineStore(
 
                 if (!find) {
                     newFriends.value.push({
-                        avatar: content.avatar || '',
+                        avatar:
+                            content.avatar ||
+                            Tools.getUrl('avatar-default-uman.png'),
                         from: msg.from,
                         text: content.text || '',
                         read: false,
@@ -67,6 +69,7 @@ export const useChatListStore = defineStore(
                     )
                 } else {
                     find.text = content.text || ''
+                    find.avatar = content.avatar
                     find.nickname = content.nickname || ''
                 }
             },
@@ -83,19 +86,22 @@ export const useChatListStore = defineStore(
                 getStatus.getChat = true
                 const result = await EaseChatClient.getConversationlist()
                 chatList.value = (result.data as any).channel_infos
+                console.log('desc -->', blackList.value)
 
-                chatList.value = chatList.value
-                    .filter(
-                        (item) =>
-                            !!friendList.value.find(
-                                (friend) => friend.userid === item.himId
-                            )
-                    )
-                    .map((item) => ({
-                        ...item,
-                        himId:
-                            /_.*@/.exec(item.channel_id)![0].slice(1, -1) || '',
-                    }))
+                chatList.value = chatList.value.map((item) => ({
+                    ...item,
+                    himId: /_.*@/.exec(item.channel_id)![0].slice(1, -1) || '',
+                }))
+
+                for (let i = 0; i < chatList.value.length; i++) {
+                    if (
+                        blackList.value.find(
+                            (item) => item.id === chatList.value[i].himId
+                        )
+                    ) {
+                        chatList.value.splice(i, 1)
+                    }
+                }
 
                 for (let i = 0; i < chatList.value.length; i++) {
                     const property = await getUserInfo(

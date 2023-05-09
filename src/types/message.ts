@@ -89,10 +89,11 @@ export interface SendImgOption extends SendMsgBaseOption {
 }
 export interface SendVideoOption extends SendMsgBaseOption {
     file: File
+    ext?: Record<string, any>
 }
 export interface SendCustomOption extends SendMsgBaseOption {
     customExts: CustomMsgType['Moment'] | CustomMsgType['OprateMsg']
-    ext: Object
+    ext?: Object
 }
 
 /** 所有消息的配置 */

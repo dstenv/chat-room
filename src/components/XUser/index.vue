@@ -130,8 +130,19 @@ const methods = {
     },
 
     sendAddMsg() {
-        console.log(props.userInfo.userid, 'props.userInfo.userid')
         const userStore = useUserStore()
+        console.log(
+            props.userInfo.userid,
+            userStore.userInfo?.avatar,
+            Tools.getUrl(
+                userStore.userInfo?.sex === '2'
+                    ? 'avatar-default-uwoman.png'
+                    : 'avatar-default-uman.png'
+            ),
+
+            'props.userInfo.userid'
+        )
+
         EaseChatClient.addContact(
             props.userInfo.userid as string,
             JSON.stringify({
@@ -140,8 +151,8 @@ const methods = {
                     userStore.userInfo?.avatar ||
                     Tools.getUrl(
                         userStore.userInfo?.sex === '2'
-                            ? 'avatar-default-uwoman.png.png'
-                            : 'avatar-default-uman.png.png'
+                            ? 'avatar-default-uwoman.png'
+                            : 'avatar-default-uman.png'
                     ),
                 nickname: userStore.userInfo?.nickname,
             })

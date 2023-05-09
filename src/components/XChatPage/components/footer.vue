@@ -66,7 +66,7 @@
 import { useChatStore } from '@/stores/chat'
 import { useChatListStore } from '@/stores/chatList'
 import { Tools } from '@/utils/tools'
-import { showToast } from 'vant'
+import { Form, showToast } from 'vant'
 import { FileLimit } from '@/utils/config'
 
 interface FunItem {

@@ -22,14 +22,14 @@ export const messageShowType: Partial<Record<SendMsgType, string>> = {
 export const useChatStore = defineStore(
     'chat',
     () => {
-        const chatData = {
+        const chatData = reactive({
             userId: '',
             targetId: '',
             startId: '',
             chatType: 'singleChat' as ChatType,
             searchDirection: 'up' as 'up' | 'down',
             msgSize: 20,
-        }
+        })
 
         const socketDefer = {
             connected: null as Defer<void> | null,
@@ -139,6 +139,7 @@ export const useChatStore = defineStore(
                 chatType: chatData.chatType,
                 to: chatData.targetId,
                 ext: {
+                    ...data.ext,
                     avatar: Tools.getDefaultAvatar(
                         userStore.userInfo?.sex === '2',
                         userStore.userInfo?.avatar
@@ -157,6 +158,7 @@ export const useChatStore = defineStore(
                 chatType: chatData.chatType,
                 to: chatData.targetId,
                 ext: {
+                    ...tempData.ext,
                     avatar: Tools.getDefaultAvatar(
                         userStore.userInfo?.sex === '2',
                         userStore.userInfo?.avatar

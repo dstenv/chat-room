@@ -50,7 +50,7 @@
                         <img
                             :src="
                                 item.avatar ||
-                                Tools.getUrl('avatar-default-uman.png.png')
+                                Tools.getUrl('avatar-default-uman.png')
                             "
                             alt=""
                         />

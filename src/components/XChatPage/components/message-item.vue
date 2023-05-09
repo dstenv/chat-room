@@ -33,6 +33,17 @@ export default defineComponent({
             },
         }
 
+        if (props.item.type === 'video') {
+            console.log(
+                (props.item as EasemobChat.VideoMsgBody).file.data,
+                '(props.item as EasemobChat.VideoMsgBody).file.data'
+            )
+            // const url = URL.createObjectURL(
+            //     (props.item as EasemobChat.VideoMsgBody).file.data
+            // )
+            // console.log(url, 'url')
+        }
+
         const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
             txt: (
                 <>
@@ -243,8 +254,10 @@ export default defineComponent({
         &.msg-item-box-him {
             .item-wrap {
                 align-items: flex-start;
-                &.video {
-                    text-align: left;
+                .item-content {
+                    &.video {
+                        text-align: left;
+                    }
                 }
             }
         }

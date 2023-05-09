@@ -391,7 +391,7 @@ const goChat = (data: EasemobChat.conversationList & { himId: string }) => {
 }
 
 onActivated(() => {
-    console.log('>>>>>>> cahtpage onActivated')
+    console.log('>>>>>>> cahtpage onActivated', EaseChatClient.isOpened())
     // methods.getChatList()
     if (EaseChatClient.isOpened()) {
         /** 获取会话列表 */
