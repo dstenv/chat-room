@@ -110,6 +110,11 @@ const router = createRouter({
             name: 'MOMENTS',
             component: () => import('@/views/moments/index.vue'),
         },
+        {
+            path: '/my-info',
+            name: 'MY_INFO',
+            component: () => import('@/views/my-info/index.vue'),
+        },
     ],
 })
 

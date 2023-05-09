@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { UserProPertyType } from '@/types'
+import { Tools } from '@/utils/tools'
 
 export const useUserStore = defineStore('user', () => {
     const token = ref('')
@@ -15,10 +16,17 @@ export const useUserStore = defineStore('user', () => {
     }
 
     const setUserInfo = (info: UserProPertyType) => {
-        userInfo.value = { ...info }
+        userInfo.value = { ...userInfo.value, ...info }
     }
 
-    return { token, userId, userInfo, setToken, setUserID, setUserInfo }
+    return {
+        token,
+        userId,
+        userInfo,
+        setToken,
+        setUserID,
+        setUserInfo,
+    }
 })
 
 export const useAdminStore = defineStore('admin', () => {

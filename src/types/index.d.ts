@@ -9,6 +9,9 @@ export class UserProPertyType {
     avatar?: string
     area?: string
     onLine: boolean
+    sign?: string
+    mail?: string
+    phone?: string
 }
 
 export class NewFriend {

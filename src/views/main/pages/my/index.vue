@@ -1,12 +1,29 @@
 <template>
     <div class="my c-bg">
-        <div class="head">
+        <div
+            class="head"
+            @click="
+                () => {
+                    router.push('/my-info')
+                }
+            "
+        >
             <div class="left">
-                <img :src="showMyInfo.avatar" alt="" />
+                <img
+                    :src="
+                        Tools.getDefaultAvatar(
+                            userStore.userInfo?.sex === '2',
+                            userStore.userInfo?.avatar
+                        )
+                    "
+                    alt=""
+                />
             </div>
             <div class="center">
-                <p>{{ showMyInfo.nickname }}</p>
-                <span>用户id：{{ showMyInfo.id }}</span>
+                <p>
+                    {{ userStore.userInfo?.nickname || userStore.userId }}
+                </p>
+                <span>用户id：{{ userStore.userId }}</span>
             </div>
             <div class="right">
                 <img :src="Tools.getUrl('back.png')" alt="" />
@@ -27,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import router from '@/router'
+import { getUserInfo } from '@/apis/user/getUserInfo'
 import { useUserStore } from '@/stores/user'
 import { Tools } from '@/utils/tools'
 import { showConfirmDialog, showLoadingToast } from 'vant'
@@ -39,17 +56,7 @@ interface OprateItem {
 }
 
 const userStore = useUserStore()
-
-const showMyInfo = computed(() => ({
-    id: userStore.userInfo?.userid || userStore.userId,
-    avatar:
-        userStore.userInfo?.area ||
-        Tools.getDefaultAvatar(
-            userStore.userInfo?.sex === '2',
-            userStore.userInfo?.avatar
-        ),
-    nickname: userStore.userInfo?.nickname || userStore.userId,
-}))
+const router = useRouter()
 
 const oprateList: OprateItem[] = [
     {
@@ -85,6 +92,14 @@ const oprateList: OprateItem[] = [
         },
     },
 ]
+
+const init = async () => {
+    try {
+        const result = await getUserInfo(userStore.userId)()
+        userStore.setUserInfo(result.data)
+    } catch (error) {}
+}
+init()
 </script>
 
 <style scoped lang="scss">

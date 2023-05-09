@@ -7,7 +7,11 @@
                 @click="router.back()"
             />
             <span>{{ name || '未知' }}</span>
-            <img :src="Tools.getUrl('many.png')" alt="" />
+            <img
+                :src="Tools.getUrl('many.png')"
+                alt=""
+                @click="() => (pageData.editChat = true)"
+            />
         </div>
 
         <main ref="mainRef" :class="{ shinrk: pageData.isSelFuns }">
@@ -41,6 +45,37 @@
                 }
             "
         />
+
+        <VanPopup position="right" :show="pageData.editChat" :overlay="false">
+            <div class="edit-chat c-bg">
+                <div class="head">
+                    <div class="left">
+                        <img
+                            :src="Tools.getUrl('back.png')"
+                            alt=""
+                            @click="() => (pageData.editChat = false)"
+                        />
+                    </div>
+                    <div class="center">会话操作</div>
+                    <div class="right" />
+                </div>
+
+                <div class="edit-main">
+                    <div
+                        class="item"
+                        v-for="item in chatOprateList"
+                        :key="item.text"
+                        @click="item.action"
+                    >
+                        <span>{{ item.text }}</span>
+                        <img v-if="item.icon" :src="item.icon" alt="" />
+                    </div>
+                    <div class="item delete" @click="methods.deleteChat">
+                        删除会话
+                    </div>
+                </div>
+            </div>
+        </VanPopup>
     </div>
 </template>
 
@@ -56,11 +91,18 @@ import MessageItem from './components/message-item.vue'
 import { usePreviewImage } from '@/hooks/preview-image'
 import type { MessageData, SendMsgType } from '@/types/message'
 import { getOnlineStatus } from '@/apis/friend/getOnlineStatus'
+import { showConfirmDialog, showSuccessToast } from 'vant'
 
 enum ScrollType {
     None,
     Keep,
     Bottom,
+}
+
+interface ChatOprateitem {
+    text: string
+    action: () => void
+    icon?: string
 }
 
 const route = useRoute()
@@ -94,12 +136,49 @@ const lastMsgMap: Partial<Record<SendMsgType, (msg: MessageData) => string>> = {
     video: () => '[视频]',
 }
 
+const chatOprateList: ChatOprateitem[] = [
+    {
+        text: '删除本地记录',
+        action() {
+            showConfirmDialog({
+                message:
+                    '是否确认删除本地会话记录(50条/次)？对方仍可查看会话记录，此操作不可逆！',
+            })
+                .then(async () => {
+                    console.log('chatData -->', chatStore.chatData)
+                    try {
+                        await EaseChatClient.removeHistoryMessages({
+                            targetId: chatStore.chatData.targetId,
+                            chatType: chatStore.chatData.chatType as
+                                | 'singleChat'
+                                | 'groupChat',
+                            beforeTimeStamp: 100,
+                        })
+
+                        showSuccessToast({
+                            message: '删除成功',
+                            duration: 100,
+                        })
+
+                        setTimeout(() => {
+                            methods.scrollToBottom(true)
+                            methods.getHistory()
+                            pageData.editChat = false
+                        }, 100)
+                    } catch (error) {}
+                })
+                .catch(() => {})
+        },
+    },
+]
+
 const pageData = reactive({
     id: friendStore.friend?.userid || '',
     refresh: false,
     /** 是否弹起底部功能区域 */
     isSelFuns: false,
     userStatus: false,
+    editChat: false,
 })
 
 const scrollData = reactive({
@@ -203,6 +282,39 @@ const methods = {
     msgClick({ id, type }: { id: string; type: SendMsgType }) {
         msgClickOprate[type]?.(id)
     },
+
+    deleteChat() {
+        console.log('deletechat -->', chatStore.chatData)
+
+        showConfirmDialog({
+            message:
+                '删除会话同时会删除历史消息，且会话和消息不可恢复，确认删除？',
+        })
+            .then(async () => {
+                try {
+                    await EaseChatClient.deleteConversation({
+                        // 会话 ID：单聊为对方的用户 ID，群聊为群组 ID。
+                        channel: chatStore.chatData.targetId,
+                        // 会话类型：（默认） `singleChat`：单聊；`groupChat`：群聊。
+                        chatType: chatStore.chatData.chatType as
+                            | 'singleChat'
+                            | 'groupChat',
+                        // 删除会话时是否同时删除服务端漫游消息。
+                        deleteRoam: true,
+                    })
+
+                    showSuccessToast({
+                        message: '删除成功',
+                        duration: 100,
+                    })
+
+                    setTimeout(() => {
+                        router.replace('/main/pages/chat')
+                    }, 100)
+                } catch (error) {}
+            })
+            .catch(() => {})
+    },
 }
 
 EaseChatClient.addEventHandler(watchFnId, {
@@ -298,5 +410,41 @@ main {
     font-size: 14rem;
     padding: 15rem 0;
     min-height: calc(100vh - 200rem);
+}
+.edit-chat {
+    width: 100vw;
+    height: 100vh;
+    .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15rem;
+        font-size: 14rem;
+        .left {
+            img {
+                display: block;
+                width: 20rem;
+            }
+        }
+        .right {
+            width: 20rem;
+            height: 20rem;
+        }
+    }
+    .edit-main {
+        .item {
+            background-color: #fff;
+            padding: 15rem;
+            margin-bottom: 10rem;
+            font-size: 16rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            &.delete {
+                justify-content: center;
+                color: red;
+            }
+        }
+    }
 }
 </style>

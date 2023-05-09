@@ -229,6 +229,9 @@ const funList: FunItem[] = [
                                 chatType: 'singleChat',
                                 to: props.oppositeId,
                                 file,
+                                ext: {
+                                    url,
+                                },
                             },
                             {
                                 chatType: 'singleChat',

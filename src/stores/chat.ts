@@ -65,6 +65,8 @@ export const useChatStore = defineStore(
                 )
             }
             const userStore = useUserStore()
+
+            console.log('try 登录环信IM -->', chatData.userId, userStore.token)
             // sdk登录环信IM
             EaseChatClient.open({
                 user: chatData.userId.toLowerCase(),
@@ -222,6 +224,7 @@ export const useChatStore = defineStore(
             }
 
             try {
+                messageList.value.splice(0, messageList.value.length)
                 console.log('try getHistoryMsg')
                 // const list = await db.findSourceByTable('message')
 
@@ -314,14 +317,13 @@ export const useChatStore = defineStore(
             searchType: 'up' | 'down' = 'up',
             msgSize = 20
         ) => {
-            if (chatType !== chatData.chatType) {
-                chatData.startId = ''
-            }
+            chatData.startId = ''
 
             chatData.targetId = id
             chatData.chatType = chatType
             chatData.searchDirection = searchType
             chatData.msgSize = msgSize
+
             console.log('setchatData', { ...chatData })
         }
 
