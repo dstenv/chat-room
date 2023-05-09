@@ -86,7 +86,6 @@ export const useChatListStore = defineStore(
                 getStatus.getChat = true
                 const result = await EaseChatClient.getConversationlist()
                 chatList.value = (result.data as any).channel_infos
-                console.log('desc -->', blackList.value)
 
                 chatList.value = chatList.value.map((item) => ({
                     ...item,

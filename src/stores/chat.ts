@@ -242,9 +242,11 @@ export const useChatStore = defineStore(
                     /** 获取消息的起始位置 */
                     cursor: chatData.startId,
                 })
-                chatData.startId = list.cursor?.split('').includes('undefined')
-                    ? messageList.value[0].id
-                    : (list.cursor as string)
+
+                chatData.startId =
+                    !list.cursor || list.cursor === 'undefined'
+                        ? messageList.value[0].id
+                        : (list.cursor as string)
 
                 const messages: MessageData[] = list.messages.map((item) => ({
                     ...item,
@@ -252,7 +254,7 @@ export const useChatStore = defineStore(
                     error: false,
                     longTouch: false,
                 }))
-
+                console.log('list.messages.length -->', list.messages.length)
                 if (list.messages.length > 0) {
                     if (list.messages.length < MSG_SIZE) {
                         chatData.startId = ''
@@ -271,7 +273,9 @@ export const useChatStore = defineStore(
                 }
                 insertBefore(messages.reverse())
                 console.log('messageList', messageList.value)
-            } catch (error) {}
+            } catch (error) {
+                console.log('error -->', error)
+            }
         }
 
         const addMessage = (

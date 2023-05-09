@@ -478,6 +478,7 @@ const init = async () => {
 }
 
 const setManyClick = () => {
+    console.log('setManyClick -->')
     pageData.manyCliCK = chatStore.messageList
         .filter(
             (item) =>
@@ -611,8 +612,41 @@ const sendSay = () => {
     )
 }
 
-watch(chatStore.messageList, () => {
-    setManyClick()
+// watch(chatStore.messageList, (list) => {
+//     console.log('list -->', list)
+//     setManyClick()
+// })
+
+watchEffect(() => {
+    pageData.manyCliCK = chatStore.messageList
+        .filter(
+            (item) =>
+                item.type === 'custom' &&
+                item.customExts &&
+                ['img', 'txt'].includes(item.customExts.type)
+        )
+        .map((item) => {
+            const find = followList.value.find(
+                (follow) =>
+                    (follow as EasemobChat.CustomMsgBody).customExts.data
+                        .msgId === item.id
+            ) as EasemobChat.CustomMsgBody
+            let findFollow: MomentUser | null = null
+            if (find) {
+                find.customExts.data.users = find.customExts.data.users || []
+                findFollow = find.customExts.data.users.find(
+                    (user: any) => user.id === userStore.userId
+                )
+            }
+
+            return {
+                id: item.id,
+                click: item.click || false,
+                follow: find && findFollow ? findFollow.follow || false : false,
+            }
+        })
+
+    console.log('pageData.manyCliCK  -->', pageData.manyCliCK)
 })
 
 init()
