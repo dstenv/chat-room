@@ -50,7 +50,6 @@
                     :key="item.userid"
                     :info="item"
                 />
-                aaa
             </div>
 
             <template v-else>

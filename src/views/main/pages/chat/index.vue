@@ -87,7 +87,9 @@
                                 <div class="right">
                                     <span>{{
                                         Tools.showMsgTime(
-                                            (item.lastMessage as any).time
+                                            (item.lastMessage as any).time ??
+                                                (item.lastMessage as any)
+                                                    .timestamp
                                         )
                                     }}</span>
                                 </div>
@@ -246,8 +248,8 @@ const addList: AddListItem[] = [
 const chatList = computed(() =>
     chatListStore.chatList.filter(
         (item) =>
-            CommonConfig.CHAT_TYPE[(item.lastMessage as any).chatType] !==
-                'groupChat' || item.lastMessage.payload?.nickname !== 'moment'
+            item.lastMessage.payload?.nickname !== 'moment' &&
+            (item.lastMessage as any)?.type !== 'custom'
     )
 )
 
@@ -322,6 +324,9 @@ const createGroup = async () => {
                 members: pageData.friendIds,
                 inviteNeedConfirm,
             },
+            success: (res) => {
+                console.log('res -->', res)
+            },
         })
         console.log('result -->', result)
         if (result.data) {
@@ -330,6 +335,30 @@ const createGroup = async () => {
                 groupname,
                 groupimg: Tools.getUrl('group-default.png'),
             })
+            chatListStore.chatList.unshift({
+                channel_id: result.data.groupid,
+                himId: result.data.groupid,
+                unread_num: 1,
+                lastMessage: {
+                    from: userStore.userId,
+                    id: result.data.groupid,
+                    payload: {
+                        nickname: groupname,
+                        sex: userStore.userInfo?.sex,
+                        avatar: Tools.getDefaultAvatar(
+                            userStore.userInfo?.sex === '2',
+                            userStore.userInfo?.avatar
+                        ),
+                    },
+                    msg: 'welcome',
+                    type: 'txt',
+                    chatType: 'groupchat',
+                    timestamp: Date.now(),
+                    to: result.data.groupid,
+                },
+            })
+
+            console.log('chatListStore.chatList -->', chatListStore.chatList)
             chatStore.setchatData(result.data.groupid, 'groupChat')
             await chatStore.sendMessage(
                 'txt',
@@ -346,9 +375,12 @@ const createGroup = async () => {
                     type: 'txt',
                     to: result.data.groupid,
                 },
-                () => {}
+                () => {
+                    nextTick(() => {
+                        chatListStore.getGroupList()
+                    })
+                }
             )
-            chatListStore.getChatList()
         }
     } catch (error) {
         showToast('创建群组失败，请稍候重试')

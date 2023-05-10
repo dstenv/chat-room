@@ -189,6 +189,7 @@ init()
     .my-edit {
         width: 100vw;
         height: 100vh;
+        overflow: hidden;
         .edit-head {
             display: flex;
             align-items: center;

@@ -20,7 +20,14 @@ export const useChatListStore = defineStore(
     'chatList',
     () => {
         const chatList = ref<
-            (EasemobChat.conversationList & { himId: string })[]
+            (EasemobChat.conversationList & {
+                himId: string
+                lastMessage: {
+                    msg: string
+                    type: string
+                    chatType: 'groupchat' | 'chat'
+                }
+            })[]
         >([])
         const friendList = ref<UserProPertyType[]>([])
         const newFriends = ref<NewFriend[]>([])
