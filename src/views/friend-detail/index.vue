@@ -98,10 +98,14 @@ const oprateLlist: OprateItem[] = [
     {
         text: '发消息',
         icon: Tools.getUrl('send-msg.png'),
-        click() {
-            chatStore.setchatData(friendInfo.friend?.userid || '', 'singleChat')
+        async click() {
+            chatStore.setchatData(
+                friendInfo.friend?.userid || '',
+                'singleChat',
+                'down'
+            )
 
-            router.push({
+            await router.push({
                 path: '/my-chat',
                 query: {
                     name:

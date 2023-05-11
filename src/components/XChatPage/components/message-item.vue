@@ -5,6 +5,7 @@ import { Tools } from '@/utils/tools'
 import type { EasemobChat } from 'easemob-websdk'
 import type { PropType } from 'vue'
 import type { ImgList } from '@/hooks/preview-image'
+import { Loading, showConfirmDialog } from 'vant'
 
 export default defineComponent({
     props: {
@@ -13,7 +14,7 @@ export default defineComponent({
             required: true,
         },
     } as const,
-    emits: ['addImage', 'click'],
+    emits: ['addImage', 'click', 'resend'],
     setup(props, { emit, expose }) {
         const userStore = useUserStore()
 
@@ -31,6 +32,13 @@ export default defineComponent({
             longPress() {
                 console.log('longpress')
             },
+            resend() {
+                showConfirmDialog({
+                    message: '是否确定重新发送？',
+                }).then(() => {
+                    emit('resend')
+                })
+            },
         }
 
         if (props.item.type === 'video') {
@@ -47,81 +55,71 @@ export default defineComponent({
         const content: Partial<Record<EasemobChat.MessageType, JSX.Element>> = {
             txt: (
                 <>
-                    <div class="item-wrap">
-                        {(props.item as EasemobChat.TextMsgBody).chatType ===
-                        'groupChat' ? (
-                            <div class="msg-name text-over">
-                                {
-                                    (props.item as EasemobChat.TextMsgBody).ext
-                                        ?.name
-                                }
-                            </div>
-                        ) : null}
-                        <div
-                            class="item-content"
-                            style={{
-                                backgroundColor:
-                                    props.item.from === userStore.userId
-                                        ? '#a0ea6f'
-                                        : '#f3f3f3',
-                            }}
-                        >
-                            {(props.item as EasemobChat.TextMsgBody).msg}
-
-                            {props.item.from === userStore.userId ? (
-                                <div class="sanjiao"></div>
-                            ) : (
-                                <div class="sanjiao him"></div>
-                            )}
+                    {(props.item as EasemobChat.TextMsgBody).chatType ===
+                    'groupChat' ? (
+                        <div class="msg-name text-over">
+                            {(props.item as EasemobChat.TextMsgBody).ext?.name}
                         </div>
+                    ) : null}
+                    <div
+                        class="item-content"
+                        style={{
+                            backgroundColor:
+                                props.item.from === userStore.userId
+                                    ? '#a0ea6f'
+                                    : '#f3f3f3',
+                        }}
+                    >
+                        {(props.item as EasemobChat.TextMsgBody).msg}
+
+                        {props.item.from === userStore.userId ? (
+                            <div class="sanjiao"></div>
+                        ) : (
+                            <div class="sanjiao him"></div>
+                        )}
                     </div>
                 </>
             ),
             img: (
-                <div class="item-wrap">
-                    <div class="item-content image">
-                        <img
-                            src={(props.item as EasemobChat.ImgMsgBody).url}
-                            crossorigin="anonymous"
-                            onLoad={() => {
-                                emit('addImage', {
-                                    id: props.item.id,
-                                    url: (props.item as EasemobChat.ImgMsgBody)
-                                        .url,
-                                    time: (props.item as EasemobChat.ImgMsgBody)
-                                        .time,
-                                } as ImgList)
-                            }}
-                            onClick={() => {
-                                emit('click', {
-                                    id: props.item.id,
-                                    type: props.item.type,
-                                })
-                            }}
-                        />
-                    </div>
+                <div class="item-content image">
+                    <img
+                        src={(props.item as EasemobChat.ImgMsgBody).url}
+                        crossorigin="anonymous"
+                        onLoad={() => {
+                            emit('addImage', {
+                                id: props.item.id,
+                                url: (props.item as EasemobChat.ImgMsgBody).url,
+                                time: (props.item as EasemobChat.ImgMsgBody)
+                                    .time,
+                            } as ImgList)
+                        }}
+                        onClick={() => {
+                            emit('click', {
+                                id: props.item.id,
+                                type: props.item.type,
+                            })
+                        }}
+                    />
                 </div>
             ),
             video: (
-                <div class="item-wrap">
-                    <div class="item-content video">
-                        <video
-                            /**
-                             * !TODO 视频在手机上播放不了(安卓可以)
-                             */
-                            src={(props.item as EasemobChat.VideoMsgBody).url}
-                            controls
-                            crossorigin="anonymous"
-                            preload="metadata"
-                            onError={(e) => {
-                                {
-                                    /* console.log(props.item) */
-                                }
-                            }}
-                        >
-                            您的手机暂不支持该视频格式播放
-                        </video>
-                    </div>
+                <div class="item-content video">
+                    <video
+                        /**
+                         * !TODO 视频在手机上播放不了(安卓可以)
+                         */
+                        src={(props.item as EasemobChat.VideoMsgBody).url}
+                        controls
+                        crossorigin="anonymous"
+                        preload="metadata"
+                        onError={(e) => {
+                            {
+                                /* console.log(props.item) */
+                            }
+                        }}
+                    >
+                        您的手机暂不支持该视频格式播放
+                    </video>
                 </div>
             ),
         }
@@ -148,7 +146,17 @@ export default defineComponent({
                                 : 'row-reverse',
                     }}
                 >
-                    {content[props.item.type]}
+                    <div class="item-wrap">
+                        {props.item.loading ? <Loading /> : null}
+
+                        {props.item.error ? (
+                            <div class="error" onClick={methods.resend}>
+                                !
+                            </div>
+                        ) : null}
+
+                        {content[props.item.type]}
+                    </div>
 
                     <div class="avatar">
                         <img
@@ -193,7 +201,7 @@ export default defineComponent({
             padding-top: 5rem;
             max-width: 70%;
             display: flex;
-            flex-direction: column;
+            justify-content: flex-end;
             align-items: flex-end;
             .msg-name {
                 color: #5a5a5a;
@@ -248,6 +256,16 @@ export default defineComponent({
                         max-height: 300rem;
                     }
                 }
+            }
+            .error {
+                width: 15rem;
+                height: 15rem;
+                text-align: center;
+                line-height: 15rem;
+                border-radius: 50%;
+                margin-right: 5rem;
+                background-color: red;
+                color: #fff;
             }
         }
 

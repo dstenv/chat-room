@@ -185,14 +185,14 @@ main {
         gap: 10rem;
         flex-wrap: wrap;
         img {
-            width: calc((100vw - 70rem) / 4);
-            height: calc((100vw - 70rem) / 4);
+            width: calc((100vw - 70rem) / 3);
+            height: calc((100vw - 70rem) / 3);
             object-fit: cover;
             border-radius: 8rem;
         }
         .add-img {
-            width: calc((100vw - 70rem) / 4);
-            height: calc((100vw - 70rem) / 4);
+            width: calc((100vw - 70rem) / 3);
+            height: calc((100vw - 70rem) / 3);
             background-color: #f7f7f7;
             position: relative;
             overflow: hidden;

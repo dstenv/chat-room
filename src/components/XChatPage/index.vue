@@ -23,11 +23,12 @@
             >
                 <div class="msg-list" ref="listRef">
                     <MessageItem
-                        v-for="item in chatStore.messageList"
+                        v-for="(item, index) in chatStore.messageList"
                         :key="item.keyId || item.id"
                         :item="item"
                         @addImage="previewImage.addImg"
                         @click="methods.msgClick"
+                        @resend="methods.resend(item, index)"
                     />
                 </div>
             </VanPullRefresh>
@@ -314,6 +315,21 @@ const methods = {
                 } catch (error) {}
             })
             .catch(() => {})
+    },
+
+    resend(data: MessageData, index: number) {
+        chatStore.messageList.splice(index, 1)
+
+        chatStore.sendMessage(
+            data.type,
+            {
+                ...data,
+            },
+            {
+                ...data,
+            },
+            () => {}
+        )
     },
 }
 

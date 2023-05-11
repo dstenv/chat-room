@@ -1,108 +1,110 @@
 <template>
-    <div class="chat">
-        <XHeader title="消息">
-            <template #right>
-                <VanPopover
-                    v-model:show="pageData.showAddList"
-                    placement="bottom-end"
-                    theme="dark"
-                    :offset="[14, 10]"
-                >
-                    <div class="add-list">
+    <div>
+        <div class="chat" v-if="!pageData.isSearch">
+            <XHeader title="消息">
+                <template #right>
+                    <VanPopover
+                        v-model:show="pageData.showAddList"
+                        placement="bottom-end"
+                        theme="dark"
+                        :offset="[14, 10]"
+                    >
+                        <div class="add-list">
+                            <div
+                                class="add-item"
+                                v-for="(item, index) in addList"
+                                :key="index"
+                                @click="
+                                    () => {
+                                        pageData.showAddList = false
+                                        item.action && item.action()
+                                    }
+                                "
+                            >
+                                <img :src="item.icon" alt="" />
+                                <span>{{ item.text }}</span>
+                            </div>
+                        </div>
+
+                        <template #reference>
+                            <img
+                                class="add-friend-img"
+                                :src="Tools.getUrl('add-gray.png')"
+                                alt=""
+                            />
+                        </template>
+                    </VanPopover>
+                </template>
+
+                <template #custom>
+                    <XSearch @click="() => (pageData.isSearch = true)" />
+                </template>
+            </XHeader>
+            <!-- chatListStore.chatList.length > 0 -->
+
+            <main>
+                <div class="section">
+                    <p class="title">会话</p>
+                    <div class="chat-list" v-if="chatList.length > 0">
                         <div
-                            class="add-item"
-                            v-for="(item, index) in addList"
-                            :key="index"
-                            @click="
-                                () => {
-                                    pageData.showAddList = false
-                                    item.action && item.action()
-                                }
-                            "
+                            class="chat-list-item"
+                            v-for="item in chatList"
+                            :key="item.lastMessage.to"
+                            @click="goChat(item)"
                         >
-                            <img :src="item.icon" alt="" />
-                            <span>{{ item.text }}</span>
+                            <template v-if="item.lastMessage.payload">
+                                <div class="left">
+                                    <img
+                                        :src="item.lastMessage.payload?.avatar"
+                                        alt=""
+                                    />
+                                </div>
+                                <div class="info">
+                                    <div class="center">
+                                        <p class="text-over">
+                                            {{
+                                                item.lastMessage.payload
+                                                    .nickname || item.himId
+                                            }}
+                                        </p>
+                                        <span
+                                            class="text-over"
+                                            v-if="(item.lastMessage as any).type === 'txt'"
+                                            >{{
+                                                (item.lastMessage as any).msg
+                                            }}</span
+                                        >
+                                        <span
+                                            class="text-over"
+                                            v-if="(item.lastMessage as any).type === 'img'"
+                                            >[图片]</span
+                                        >
+                                        <span
+                                            class="text-over"
+                                            v-if="(item.lastMessage as any).type === 'video'"
+                                            >[视频]</span
+                                        >
+                                    </div>
+                                    <div class="right">
+                                        <span>{{
+                                            Tools.showMsgTime(
+                                                (item.lastMessage as any)
+                                                    .time ??
+                                                    (item.lastMessage as any)
+                                                        .timestamp
+                                            )
+                                        }}</span>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
-                    <template #reference>
-                        <img
-                            class="add-friend-img"
-                            :src="Tools.getUrl('add-gray.png')"
-                            alt=""
-                        />
+                    <template v-else>
+                        <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
                     </template>
-                </VanPopover>
-            </template>
-
-            <template #custom>
-                <XSearch />
-            </template>
-        </XHeader>
-        <!-- chatListStore.chatList.length > 0 -->
-
-        <main>
-            <div class="section">
-                <p class="title">会话</p>
-                <div class="chat-list" v-if="chatList.length > 0">
-                    <div
-                        class="chat-list-item"
-                        v-for="item in chatList"
-                        :key="item.lastMessage.to"
-                        @click="goChat(item)"
-                    >
-                        <template v-if="item.lastMessage.payload">
-                            <div class="left">
-                                <img
-                                    :src="item.lastMessage.payload?.avatar"
-                                    alt=""
-                                />
-                            </div>
-                            <div class="info">
-                                <div class="center">
-                                    <p class="text-over">
-                                        {{
-                                            item.lastMessage.payload.nickname ||
-                                            item.himId
-                                        }}
-                                    </p>
-                                    <span
-                                        class="text-over"
-                                        v-if="(item.lastMessage as any).type === 'txt'"
-                                        >{{
-                                            (item.lastMessage as any).msg
-                                        }}</span
-                                    >
-                                    <span
-                                        class="text-over"
-                                        v-if="(item.lastMessage as any).type === 'img'"
-                                        >[图片]</span
-                                    >
-                                    <span
-                                        class="text-over"
-                                        v-if="(item.lastMessage as any).type === 'video'"
-                                        >[视频]</span
-                                    >
-                                </div>
-                                <div class="right">
-                                    <span>{{
-                                        Tools.showMsgTime(
-                                            (item.lastMessage as any).time ??
-                                                (item.lastMessage as any)
-                                                    .timestamp
-                                        )
-                                    }}</span>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
                 </div>
-
-                <template v-else>
-                    <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
-                </template>
-            </div>
-            <!--
+                <!--
             <div class="section">
                 <p class="title">群组</p>
                 <div
@@ -129,58 +131,135 @@
                     </div>
                 </div>
             </div> -->
-        </main>
+            </main>
 
-        <!-- 弹出层 -->
-        <VanPopup
-            :show="pageData.showCreateGroup"
-            position="bottom"
-            :overlay="false"
-        >
-            <div class="create-group">
-                <div class="head c-bg">
-                    <img
-                        :src="Tools.getUrl('close-gray.png')"
-                        alt=""
-                        @click="closeCreateGroup"
-                    />
-                    <p>选择联系人</p>
-                    <div class="empty-box" />
-                </div>
+            <!-- 弹出层 -->
+            <VanPopup
+                :show="pageData.showCreateGroup"
+                position="bottom"
+                :overlay="false"
+            >
+                <div class="create-group">
+                    <div class="head c-bg">
+                        <img
+                            :src="Tools.getUrl('close-gray.png')"
+                            alt=""
+                            @click="closeCreateGroup"
+                        />
+                        <p>选择联系人</p>
+                        <div class="empty-box" />
+                    </div>
 
-                <div class="search">
-                    <input
-                        type="text"
-                        enterkeyhint="search"
-                        v-model="pageData.createGroupSearch"
-                        placeholder="输入用户名或id搜索"
-                        maxlength="100"
-                        @input="search"
-                    />
-                    <img :src="Tools.getUrl('search-gray.png')" alt="" />
-                </div>
+                    <div class="search">
+                        <input
+                            type="text"
+                            enterkeyhint="search"
+                            v-model="pageData.createGroupSearch"
+                            placeholder="输入用户名或id搜索"
+                            maxlength="100"
+                            @input="search"
+                        />
+                        <img :src="Tools.getUrl('search-gray.png')" alt="" />
+                    </div>
 
-                <VanCheckboxGroup
-                    v-model="pageData.friendIds"
-                    checked-color="#59ce61"
-                    class="select-box"
-                >
-                    <VanCheckbox
-                        v-for="item in pageData.showList"
-                        :key="item.userid"
-                        :name="item.userid"
+                    <VanCheckboxGroup
+                        v-model="pageData.friendIds"
+                        checked-color="#59ce61"
+                        class="select-box"
                     >
-                        <SelectFriend :info="item" />
-                    </VanCheckbox>
-                </VanCheckboxGroup>
+                        <VanCheckbox
+                            v-for="item in pageData.showList"
+                            :key="item.userid"
+                            :name="item.userid"
+                        >
+                            <SelectFriend :info="item" />
+                        </VanCheckbox>
+                    </VanCheckboxGroup>
 
-                <div class="submit-friend">
-                    <div class="submit-btn" @click="createGroup">
-                        完成({{ pageData.friendIds.length }})
+                    <div class="submit-friend">
+                        <div class="submit-btn" @click="createGroup">
+                            完成({{ pageData.friendIds.length }})
+                        </div>
                     </div>
                 </div>
+            </VanPopup>
+        </div>
+
+        <div class="chat-search c-bg" v-else>
+            <div class="header">
+                <input
+                    type="text"
+                    enterkeyhint="search"
+                    autofocus
+                    ref="textRef"
+                    v-model="pageData.searchValue"
+                />
+                <span
+                    @click="
+                        () => {
+                            pageData.searchValue = ''
+                            pageData.isSearch = false
+                        }
+                    "
+                    >取消</span
+                >
             </div>
-        </VanPopup>
+
+            <div class="search-list" v-show="showSearchList.length > 0">
+                <div
+                    class="chat-list-item"
+                    v-for="item in showSearchList"
+                    :key="item.lastMessage.to"
+                    @click="goChat(item)"
+                >
+                    <template v-if="item.lastMessage.payload">
+                        <div class="left">
+                            <img
+                                :src="item.lastMessage.payload?.avatar"
+                                alt=""
+                            />
+                        </div>
+                        <div class="info">
+                            <div class="center">
+                                <p class="text-over">
+                                    {{
+                                        item.lastMessage.payload.nickname ||
+                                        item.himId
+                                    }}
+                                </p>
+                                <span
+                                    class="text-over"
+                                    v-if="(item.lastMessage as any).type === 'txt'"
+                                    >{{ (item.lastMessage as any).msg }}</span
+                                >
+                                <span
+                                    class="text-over"
+                                    v-if="(item.lastMessage as any).type === 'img'"
+                                    >[图片]</span
+                                >
+                                <span
+                                    class="text-over"
+                                    v-if="(item.lastMessage as any).type === 'video'"
+                                    >[视频]</span
+                                >
+                            </div>
+                            <div class="right">
+                                <span>{{
+                                    Tools.showMsgTime(
+                                        (item.lastMessage as any).time ??
+                                            (item.lastMessage as any).timestamp
+                                    )
+                                }}</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div v-show="showSearchList.length === 0">
+                <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -253,6 +332,24 @@ const chatList = computed(() =>
     )
 )
 
+const showSearchList = computed(() => {
+    if (!pageData.searchValue.trim()) return []
+
+    return chatList.value.filter((item) => {
+        const arr = [item.himId, item.lastMessage.payload.nickname]
+
+        for (let i = 0; i < arr.length; i++) {
+            const reg = new RegExp(pageData.searchValue.trim(), 'i')
+
+            if (reg.test(arr[i] as string)) {
+                return true
+            }
+        }
+
+        return false
+    })
+})
+
 const pageData = reactive({
     showAddList: false,
     /** 展示创建群聊 */
@@ -262,6 +359,9 @@ const pageData = reactive({
     /** 创建群聊时的搜索值 */
     createGroupSearch: '',
     showList: [] as UserProPertyType[],
+
+    isSearch: false,
+    searchValue: '',
 })
 
 EaseChatClient.addEventHandler('chatConnect', {
@@ -403,7 +503,8 @@ const goChat = (data: EasemobChat.conversationList & { himId: string }) => {
     console.log('data -->', data)
     chatStore.setchatData(
         data.himId,
-        CommonConfig.CHAT_TYPE[(data.lastMessage as any).chatType]
+        CommonConfig.CHAT_TYPE[(data.lastMessage as any).chatType],
+        'down'
     )
 
     friendStore.setFriend({
@@ -620,6 +721,89 @@ main {
         border-bottom: 1rem solid #eee;
     }
 }
+.chat-search {
+    width: 100vw;
+    overflow: hidden;
+    height: calc(100vh - 60rem);
+    .header {
+        display: flex;
+        padding: 10rem;
+        position: relative;
+        img {
+            width: 20rem;
+            position: absolute;
+            right: 60rem;
+            top: 50%;
+            transform: translate(0, -55%);
+        }
+        input {
+            border: none;
+            outline: none;
+            height: 30rem;
+            flex: 1;
+            border-radius: 999rem;
+            box-sizing: border-box;
+            padding-left: 10rem;
+            font-size: 14rem;
+        }
+        span {
+            flex: none;
+            font-size: 14rem;
+            padding-left: 10rem;
+            line-height: 32rem;
+        }
+    }
+    .search-list {
+        height: calc(100vh - 60rem);
+        overflow-y: scroll;
+        .chat-list-item {
+            background-color: #fff;
+            display: flex;
+            padding: 10rem 0 0;
+            .left,
+            .right {
+                flex: none;
+            }
+            .left {
+                padding-left: 10rem;
+                img {
+                    width: 40rem;
+                    display: block;
+                }
+            }
+            .info {
+                flex: 1;
+                display: flex;
+                justify-content: space-between;
+                padding: 3rem 10rem 10rem 0;
+                margin-left: 8rem;
+                border-bottom: 1rem solid #ddd;
+            }
+            .center {
+                max-width: 276rem;
+                p {
+                    font-weight: 500;
+                    font-size: 15rem;
+                    margin-bottom: 5rem;
+                }
+                span {
+                    display: block;
+                    color: #7a7a7a;
+                    font-size: 12rem;
+                }
+            }
+            .right {
+                span {
+                    color: #7a7a7a;
+                }
+            }
+            &:active {
+                background-color: #d5d5d5;
+            }
+        }
+    }
+}
+
 :deep(.van-popover[data-popper-placement='bottom'] .van-popover__arrow) {
     right: 10rem;
 }

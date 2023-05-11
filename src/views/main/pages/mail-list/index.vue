@@ -1,61 +1,108 @@
 <template>
-    <div class="mail">
-        <XHeader title="通讯录">
-            <template #right>
-                <img
-                    :src="Tools.getUrl('icon-add.png')"
-                    alt=""
+    <div>
+        <div class="mail" v-if="!pageData.isSearch">
+            <XHeader title="通讯录">
+                <template #right>
+                    <img
+                        :src="Tools.getUrl('icon-add.png')"
+                        alt=""
+                        @click="
+                            () => {
+                                router.push('/add-friend')
+                            }
+                        "
+                    />
+                </template>
+                <template #custom>
+                    <XSearch @click="() => (pageData.isSearch = true)" />
+                </template>
+            </XHeader>
+
+            <main>
+                <div class="top-list">
+                    <div
+                        class="top-item"
+                        v-for="(item, index) in mailTopList"
+                        :key="index"
+                        @click="item.action"
+                    >
+                        <div
+                            class="top-img"
+                            :style="{ backgroundColor: item.bgColor }"
+                        >
+                            <div
+                                class="red-point"
+                                v-if="
+                                    showRed[item.key] && showRed[item.key].show
+                                "
+                                :style="{
+                                    ...(showRed[item.key].style || {}),
+                                }"
+                            >
+                                {{ showRed[item.key].content }}
+                            </div>
+                            <img :src="item.icon" alt="" />
+                        </div>
+                        <div class="top-text">{{ item.text }}</div>
+                    </div>
+                </div>
+
+                <div class="friend-list" v-if="showList.length > 0">
+                    <XFriend
+                        v-for="item in showList"
+                        :key="item.userid"
+                        :info="item"
+                    />
+                </div>
+
+                <template v-else>
+                    <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
+                </template>
+            </main>
+        </div>
+
+        <div class="mail-search c-bg" v-else>
+            <div class="head">
+                <input
+                    type="text"
+                    enterkeyhint="search"
+                    autofocus
+                    ref="textRef"
+                    v-model="pageData.searchValue"
+                />
+                <span
                     @click="
                         () => {
-                            router.push('/add-friend')
+                            pageData.searchValue = ''
+                            pageData.isSearch = false
+                        }
+                    "
+                    >取消</span
+                >
+            </div>
+
+            <div class="search-list" v-show="showSearchList.length > 0">
+                <selectFriend
+                    class="item"
+                    v-for="item in showSearchList"
+                    :key="item.userid"
+                    :info="item"
+                    @handleClick="
+                        () => {
+                            friendStore.setFriend({ ...item })
+
+                            router.push({
+                                path: '/friend-detail',
+                            })
                         }
                     "
                 />
-            </template>
-            <template #custom>
-                <XSearch />
-            </template>
-        </XHeader>
-
-        <main>
-            <div class="top-list">
-                <div
-                    class="top-item"
-                    v-for="(item, index) in mailTopList"
-                    :key="index"
-                    @click="item.action"
-                >
-                    <div
-                        class="top-img"
-                        :style="{ backgroundColor: item.bgColor }"
-                    >
-                        <div
-                            class="red-point"
-                            v-if="showRed[item.key] && showRed[item.key].show"
-                            :style="{
-                                ...(showRed[item.key].style || {}),
-                            }"
-                        >
-                            {{ showRed[item.key].content }}
-                        </div>
-                        <img :src="item.icon" alt="" />
-                    </div>
-                    <div class="top-text">{{ item.text }}</div>
-                </div>
             </div>
 
-            <div class="friend-list" v-if="showList.length > 0">
-                <XFriend
-                    v-for="item in showList"
-                    :key="item.userid"
-                    :info="item"
-                />
-            </div>
-
-            <template v-else>
+            <div v-show="showSearchList.length === 0">
                 <XEmpty :img="Tools.getUrl('chat-empty.png', 'imgs')" />
-            </template>
-        </main>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -66,6 +113,8 @@ import XSearch from '@/components/XSearch/index.vue'
 import { useChatListStore } from '@/stores/chatList'
 import XEmpty from '@/components/XEmpty/index.vue'
 import { EaseChatClient } from '@/utils/config'
+import selectFriend from '../chat/components/select-friend.vue'
+import { useFriendStore } from '@/stores/friend'
 
 interface MailTopItem {
     text: string
@@ -77,6 +126,7 @@ interface MailTopItem {
 
 const chatListStore = useChatListStore()
 const router = useRouter()
+const friendStore = useFriendStore()
 
 const mailTopList: MailTopItem[] = [
     {
@@ -142,7 +192,30 @@ const showList = computed(() => {
     return list
 })
 
-const pageData = reactive({})
+const showSearchList = computed(() => {
+    if (!pageData.searchValue.trim()) return []
+
+    console.log('showList.value -->', showList.value)
+
+    return showList.value.filter((item) => {
+        const arr = [item.userid, item.nickname]
+
+        for (let i = 0; i < arr.length; i++) {
+            const reg = new RegExp(pageData.searchValue.trim(), 'i')
+
+            if (reg.test(arr[i] as string)) {
+                return true
+            }
+        }
+
+        return false
+    })
+})
+
+const pageData = reactive({
+    isSearch: false,
+    searchValue: '',
+})
 
 const init = () => {
     chatListStore.getFriends()
@@ -210,6 +283,46 @@ main {
     }
     .friend-list {
         background-color: #fff;
+    }
+}
+.mail-search {
+    width: 100vw;
+    overflow: hidden;
+    height: calc(100vh - 60rem);
+    .head {
+        display: flex;
+        padding: 10rem;
+        position: relative;
+        img {
+            width: 20rem;
+            position: absolute;
+            right: 60rem;
+            top: 50%;
+            transform: translate(0, -55%);
+        }
+        input {
+            border: none;
+            outline: none;
+            height: 30rem;
+            flex: 1;
+            border-radius: 999rem;
+            box-sizing: border-box;
+            padding-left: 10rem;
+            font-size: 14rem;
+        }
+        span {
+            flex: none;
+            font-size: 14rem;
+            padding-left: 10rem;
+            line-height: 32rem;
+        }
+    }
+    .search-list {
+        height: calc(100vh - 60rem);
+        overflow-y: scroll;
+        .item {
+            background-color: #fff;
+        }
     }
 }
 </style>

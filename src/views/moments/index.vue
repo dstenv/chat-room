@@ -38,139 +38,148 @@
             </div>
 
             <div class="box">
-                <div
-                    class="moment-item"
-                    v-for="item in showList"
-                    :key="item.id"
-                >
-                    <img
-                        :src="item.ext?.avatar"
-                        alt=""
-                        @error="(e) => {
+                <VanList v-model:loading="pageData.loading" @load="load">
+                    <div
+                        class="moment-item"
+                        v-for="item in showList"
+                        :key="item.id"
+                    >
+                        <img
+                            :src="item.ext?.avatar"
+                            alt=""
+                            @error="(e) => {
                             (e.target as HTMLImageElement).src = (Tools.getUrl('avatar-default-uman.png'))
                         }"
-                    />
-                    <div class="info">
-                        <p>{{ item.ext?.name }}</p>
+                        />
+                        <div class="info">
+                            <p>{{ item.ext?.name }}</p>
 
-                        <div class="text-content">
-                            {{
-                                (item as EasemobChat.CustomMsgBody).customExts
-                                    .text
-                            }}
-                        </div>
+                            <div class="text-content">
+                                {{
+                                    (item as EasemobChat.CustomMsgBody)
+                                        .customExts.text
+                                }}
+                            </div>
 
-                        <div
-                            class="img-content"
-                            v-if="(item as EasemobChat.CustomMsgBody).customExts.files?.length > 0"
-                        >
-                            <img
-                                v-for="(url, index) in (item as EasemobChat.CustomMsgBody).customExts.files"
-                                :key="url"
-                                :src="url"
-                                alt=""
-                                @click.stop="
-                                    previewImg(
-                                        index,
-                                        (item as EasemobChat.CustomMsgBody)
-                                            .customExts.files
-                                    )
-                                "
-                            />
-                        </div>
-
-                        <div class="oprate">
                             <div
-                                class="moment-btn"
-                                :style="{
-                                    transform: pageData.manyCliCK.find(
-                                        (many) => many.id === item.id
-                                    )?.click
-                                        ? 'scaleX(1)'
-                                        : 'scaleX(0)',
-                                }"
+                                class="img-content"
+                                v-if="(item as EasemobChat.CustomMsgBody).customExts.files?.length > 0"
                             >
+                                <img
+                                    v-for="(url, index) in (item as EasemobChat.CustomMsgBody).customExts.files"
+                                    :key="url"
+                                    :src="url"
+                                    alt=""
+                                    @click.stop="
+                                        previewImg(
+                                            index,
+                                            (item as EasemobChat.CustomMsgBody)
+                                                .customExts.files
+                                        )
+                                    "
+                                />
+                            </div>
+
+                            <div class="oprate">
                                 <div
-                                    v-for="many in momentManyList"
-                                    :key="many.key"
+                                    class="moment-btn"
+                                    :style="{
+                                        transform: pageData.manyCliCK.find(
+                                            (many) => many.id === item.id
+                                        )?.click
+                                            ? 'scaleX(1)'
+                                            : 'scaleX(0)',
+                                    }"
+                                >
+                                    <div
+                                        v-for="many in momentManyList"
+                                        :key="many.key"
+                                        @click.stop="
+                                            () => {
+                                                pageData.manyCliCK.forEach(
+                                                    (manyItem) => {
+                                                        manyItem.click = false
+                                                    }
+                                                )
+                                                many.action(item)
+                                            }
+                                        "
+                                    >
+                                        <img
+                                            :src="
+                                                isFollow(item.id)
+                                                    ? many.activeIcon
+                                                    : many.icon
+                                            "
+                                            alt=""
+                                        />
+                                        <span>{{ many.text }}</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="moment-many"
                                     @click.stop="
                                         () => {
                                             pageData.manyCliCK.forEach(
                                                 (manyItem) => {
-                                                    manyItem.click = false
+                                                    if (
+                                                        manyItem.id === item.id
+                                                    ) {
+                                                        manyItem.click =
+                                                            !manyItem.click
+                                                    } else {
+                                                        manyItem.click = false
+                                                    }
                                                 }
                                             )
-                                            many.action(item)
                                         }
                                     "
                                 >
                                     <img
-                                        :src="
-                                            isFollow(item.id)
-                                                ? many.activeIcon
-                                                : many.icon
-                                        "
+                                        :src="Tools.getUrl('moment.png')"
                                         alt=""
                                     />
-                                    <span>{{ many.text }}</span>
                                 </div>
                             </div>
-                            <div
-                                class="moment-many"
-                                @click.stop="
-                                    () => {
-                                        pageData.manyCliCK.forEach(
-                                            (manyItem) => {
-                                                if (manyItem.id === item.id) {
-                                                    manyItem.click =
-                                                        !manyItem.click
-                                                } else {
-                                                    manyItem.click = false
-                                                }
-                                            }
-                                        )
-                                    }
-                                "
-                            >
-                                <img :src="Tools.getUrl('moment.png')" alt="" />
-                            </div>
-                        </div>
 
-                        <div class="follow-list">
-                            <div class="follow">
-                                <img
-                                    :src="Tools.getUrl('like-blue.png')"
-                                    alt=""
-                                />
-                                <p
-                                    v-for="followItem in getFollowList(item.id)"
-                                    :key="followItem.id"
-                                >
-                                    {{ followItem.name }}
-                                </p>
-                            </div>
+                            <div class="follow-list">
+                                <div class="follow">
+                                    <img
+                                        :src="Tools.getUrl('like-blue.png')"
+                                        alt=""
+                                    />
+                                    <p
+                                        v-for="followItem in getFollowList(
+                                            item.id
+                                        )"
+                                        :key="followItem.id"
+                                    >
+                                        {{ followItem.name }}
+                                    </p>
+                                </div>
 
-                            <div class="say-list">
-                                <p
-                                    v-for="sayItem in getSayList(item.id)"
-                                    :key="sayItem.id"
-                                >
-                                    <span class="say-name"
-                                        >{{ sayItem.name }}:
-                                    </span>
-                                    <span>{{ sayItem.content }}</span>
-                                </p>
+                                <div class="say-list">
+                                    <p
+                                        v-for="sayItem in getSayList(item.id)"
+                                        :key="sayItem.id"
+                                    >
+                                        <span class="say-name"
+                                            >{{ sayItem.name }}:
+                                        </span>
+                                        <span>{{ sayItem.content }}</span>
+                                    </p>
 
-                                <div
-                                    class="say-empty"
-                                    v-if="getSayList(item.id).length === 0"
-                                >
-                                    暂无任何评论
+                                    <div
+                                        class="say-empty"
+                                        v-if="getSayList(item.id).length === 0"
+                                    >
+                                        暂无任何评论
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </VanList>
             </div>
         </main>
 
@@ -448,6 +457,8 @@ const pageData = reactive({
     sayList: [] as { id: string; name: string; content: string }[],
     followList: [] as { id: string; name: string }[],
     useRecieve: false,
+
+    loading: false,
 })
 
 const longFn = () => {
@@ -469,12 +480,22 @@ const init = async () => {
     chatStore.setchatData(
         chatListStore.momentGroup.groupid,
         'groupChat',
-        'down',
+        'up',
         50
     )
-    await chatStore.getHistoryMsg()
 
+    await chatStore.getHistoryMsg(false)
     setManyClick()
+}
+
+const load = async () => {
+    pageData.loading = false
+    // try {
+    //     await chatStore.getHistoryMsg(false, true)
+    // } catch (error) {
+    // } finally {
+    //     pageData.loading = false
+    // }
 }
 
 const setManyClick = () => {

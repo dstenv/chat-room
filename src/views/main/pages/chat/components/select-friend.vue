@@ -1,5 +1,5 @@
 <template>
-    <div class="friend-item">
+    <div class="friend-item" @click="emits('handleClick')">
         <div class="img">
             <img :src="props.info.avatar" alt="" />
         </div>
@@ -13,6 +13,8 @@ import type { UserProPertyType } from '@/types'
 const props = defineProps<{
     info: UserProPertyType
 }>()
+
+const emits = defineEmits(['handleClick'])
 </script>
 
 <style scoped lang="scss">

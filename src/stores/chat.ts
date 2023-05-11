@@ -35,6 +35,7 @@ export const useChatStore = defineStore(
             connected: null as Defer<void> | null,
             reconnected: null as Defer<void> | null,
             send: null as Defer<void> | null,
+            getHistory: null as Defer<void> | null,
         }
 
         const socketHook = {
@@ -215,7 +216,7 @@ export const useChatStore = defineStore(
             }
         }
 
-        const getHistoryMsg = async () => {
+        const getHistoryMsg = async (splice = true, push = false) => {
             console.log(socketDefer.connected)
             if (socketDefer.connected) {
                 await socketDefer.connected.promise
@@ -223,8 +224,16 @@ export const useChatStore = defineStore(
                 await connect()
             }
 
+            if (socketDefer.getHistory) {
+                await socketDefer.getHistory.promise
+            } else if (!socketDefer.getHistory) {
+                socketDefer.getHistory = new Defer()
+            }
+
             try {
-                messageList.value.splice(0, messageList.value.length)
+                if (splice) {
+                    messageList.value.splice(0, messageList.value.length)
+                }
                 console.log('try getHistoryMsg')
                 // const list = await db.findSourceByTable('message')
 
@@ -237,6 +246,18 @@ export const useChatStore = defineStore(
                     cursor: chatData.startId,
                 })
 
+                // if (
+                //     Number(chatData.startId) <
+                //     Number(messageList.value[0].id || '')
+                // ) {
+                //     console.log(
+                //         'chatData.startId -->',
+                //         chatData.startId,
+                //         messageList.value[0].id
+                //     )
+                //     return
+                // }
+
                 const list = await EaseChatClient.getHistoryMessages({
                     targetId: chatData.targetId,
                     pageSize: chatData.msgSize,
@@ -245,11 +266,13 @@ export const useChatStore = defineStore(
                     /** 获取消息的起始位置 */
                     cursor: chatData.startId,
                 })
+                console.log('list -->', list)
 
-                chatData.startId =
-                    !list.cursor || list.cursor === 'undefined'
-                        ? messageList.value[0].id
-                        : (list.cursor as string)
+                if (!list.cursor || list.cursor === 'undefined') {
+                    chatData.startId = messageList.value[0].id
+                } else {
+                    chatData.startId = list.cursor as string
+                }
 
                 const messages: MessageData[] = list.messages.map((item) => ({
                     ...item,
@@ -257,7 +280,11 @@ export const useChatStore = defineStore(
                     error: false,
                     longTouch: false,
                 }))
-                console.log('list.messages.length -->', list.messages.length)
+                console.log(
+                    'list.messages.length -->',
+                    list.messages.length,
+                    chatData.startId
+                )
                 if (list.messages.length > 0) {
                     if (list.messages.length < MSG_SIZE) {
                         chatData.startId = ''
@@ -274,9 +301,19 @@ export const useChatStore = defineStore(
                         allHistory.value = true
                     }
                 }
-                insertBefore(messages.reverse())
+
+                if (!push) {
+                    insertBefore(messages)
+                } else {
+                    messageList.value = [...messageList.value, ...messages]
+                    deleteManyMsg()
+                }
+                socketDefer.getHistory.resolve()
+                socketDefer.getHistory = null
                 console.log('messageList', messageList.value)
             } catch (error) {
+                socketDefer.getHistory!.reject()
+                socketDefer.getHistory = null
                 console.log('error -->', error)
             }
         }

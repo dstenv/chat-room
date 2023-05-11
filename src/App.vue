@@ -119,7 +119,7 @@ EaseChatClient.addEventHandler('connection', {
 //     },
 // })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to, from, next) => {
     console.log('>>>>>>>>> App beforeEach')
     // methods.setTabbar()
 
@@ -150,6 +150,7 @@ router.beforeEach((to, from) => {
         console.log('进入子页面')
         transitionName.value = 'fade-in'
     }
+    next()
 })
 
 methods.init()

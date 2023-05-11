@@ -13,6 +13,8 @@ import {
     Checkbox,
     CheckboxGroup,
     Switch,
+    List,
+    Loading,
 } from 'vant'
 import type { App } from 'vue'
 
@@ -31,6 +33,8 @@ const vantUIComponents = [
     Checkbox,
     CheckboxGroup,
     Switch,
+    List,
+    Loading,
 ]
 
 export default {
