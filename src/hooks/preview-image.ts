@@ -43,10 +43,15 @@ export const usePreviewImage = () => {
         })
     }
 
+    const clear = () => {
+        imgList.value = []
+    }
+
     return {
         imgList,
         addImg,
         deleteImg,
         preview,
+        clear,
     }
 }

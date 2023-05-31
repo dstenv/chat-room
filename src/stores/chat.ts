@@ -19,6 +19,10 @@ export const messageShowType: Partial<Record<SendMsgType, string>> = {
     img: '[图片]',
 }
 
+export const sendError: Record<string, any> = {
+    blocked: '您已被拉黑',
+}
+
 export const useChatStore = defineStore(
     'chat',
     () => {
@@ -67,21 +71,43 @@ export const useChatStore = defineStore(
             }
             const userStore = useUserStore()
 
-            console.log('try 登录环信IM -->', chatData.userId, userStore.token)
+            console.log(
+                'try 登录环信IM -->',
+                chatData.userId,
+                userStore.token,
+                EaseChatClient,
+                EaseChatClient.isOpened()
+            )
             // sdk登录环信IM
-            EaseChatClient.open({
-                user: chatData.userId.toLowerCase(),
-                accessToken: userStore.token,
-            })
-                .then(() => {
-                    console.log('登录环信IM成功')
+            // EaseChatClient.open({
+            //     user: chatData.userId.toLowerCase(),
+            //     accessToken: userStore.token,
+            // })
+            //     .then(() => {
+            //         console.log('登录环信IM成功')
 
-                    socketDefer.connected!.resolve()
+            //         socketDefer.connected!.resolve()
+            //     })
+            //     .catch((err) => {
+            //         socketDefer.connected!.reject()
+            //         console.log(socketDefer.connected, '登录环信IM失败', err)
+            //     })
+
+            try {
+                await EaseChatClient.open({
+                    user: chatData.userId.toLowerCase(),
+                    accessToken: userStore.token,
+                    success(res) {
+                        console.log('res -->', res)
+                    },
                 })
-                .catch((err) => {
-                    socketDefer.connected!.reject()
-                    console.log(socketDefer.connected, '登录环信IM失败', err)
-                })
+                console.log('登录环信IM成功')
+
+                socketDefer.connected!.resolve()
+            } catch (error) {
+                socketDefer.connected!.reject()
+                console.log(socketDefer.connected, '登录环信IM失败', error)
+            }
             return socketDefer.connected!.promise
         }
 
@@ -130,6 +156,7 @@ export const useChatStore = defineStore(
             opreate: (msg: MessageData) => void,
             push = true
         ): Promise<EasemobChat.SendMsgResult | null> => {
+            console.log('socketDefer.send -->', socketDefer.send)
             if (socketDefer.send) {
                 await socketDefer.send.promise
             } else if (!socketDefer.send) {
@@ -154,6 +181,7 @@ export const useChatStore = defineStore(
             const message: MessageData = {
                 ...tempData,
                 keyId: +new Date(),
+                id: `${+new Date()}`,
                 loading: true,
                 error: false,
                 longTouch: false,
@@ -173,6 +201,8 @@ export const useChatStore = defineStore(
             console.log('本机展示的message -->', message)
 
             addMessage(message, true, false, push)
+
+            console.log('messageList -->', messageList.value)
 
             opreate && opreate(message)
 
@@ -198,8 +228,12 @@ export const useChatStore = defineStore(
 
                 console.log('发送的result', result)
                 socketDefer.send.resolve()
+                socketDefer.send = null
                 return result
-            } catch (error) {
+            } catch (error: any) {
+                console.log('sendMsg error -->', error)
+
+                showToast(`${sendError[error.message as string]}`)
                 for (let i = messageList.value.length - 1; i >= 0; i--) {
                     if (message.keyId === messageList.value[i].keyId) {
                         messageList.value[i] = {
@@ -211,13 +245,14 @@ export const useChatStore = defineStore(
                         break
                     }
                 }
-                socketDefer.send.reject()
+                socketDefer.send!.reject()
+                socketDefer.send = null
                 return null
             }
         }
 
         const getHistoryMsg = async (splice = true, push = false) => {
-            console.log(socketDefer.connected)
+            console.log(socketDefer.connected, 'socketDefer.connected')
             if (socketDefer.connected) {
                 await socketDefer.connected.promise
             } else if (!EaseChatClient.isOpened()) {
@@ -269,7 +304,7 @@ export const useChatStore = defineStore(
                 console.log('list -->', list)
 
                 if (!list.cursor || list.cursor === 'undefined') {
-                    chatData.startId = messageList.value[0].id
+                    chatData.startId = messageList.value[0]?.id ?? ''
                 } else {
                     chatData.startId = list.cursor as string
                 }
@@ -327,6 +362,12 @@ export const useChatStore = defineStore(
             if (messageList.value.map((msg) => msg.id).includes(msg.id)) return
 
             if (push) {
+                console.log('addMessage push -->', {
+                    ...msg,
+                    loading,
+                    error,
+                    longTouch: false,
+                })
                 messageList.value.push({
                     ...msg,
                     loading,
@@ -334,6 +375,12 @@ export const useChatStore = defineStore(
                     longTouch: false,
                 })
             } else {
+                console.log('addMessage push -->', {
+                    ...msg,
+                    loading,
+                    error,
+                    longTouch: false,
+                })
                 messageList.value.unshift({
                     ...msg,
                     loading,
@@ -341,7 +388,7 @@ export const useChatStore = defineStore(
                     longTouch: false,
                 })
             }
-            // console.log(messageList, 'messageList')
+            console.log(messageList, 'messageList')
         }
 
         const setUserId = (id: string) => {
@@ -396,6 +443,18 @@ export const useChatStore = defineStore(
             messageList.value = []
         }
 
+        const clear = () => {
+            socketDefer.connected = null
+            socketDefer.reconnected = null
+            socketDefer.send = null
+            socketDefer.getHistory = null
+
+            chatData.startId = ''
+            chatData.targetId = ''
+
+            messageList.value = []
+        }
+
         return {
             socketDefer,
             messageList,
@@ -408,6 +467,7 @@ export const useChatStore = defineStore(
             setchatData,
             getHistoryMsg,
             clean,
+            clear,
         }
     },
     {

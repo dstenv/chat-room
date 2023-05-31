@@ -271,7 +271,8 @@ export default defineComponent({
 
         &.msg-item-box-him {
             .item-wrap {
-                align-items: flex-start;
+                // align-items: flex-start;
+                flex-direction: row-reverse;
                 .item-content {
                     &.video {
                         text-align: left;

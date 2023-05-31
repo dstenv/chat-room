@@ -22,7 +22,11 @@
                         @click="preview(item.id)"
                     />
 
-                    <div class="add-img" @click="selectImg">
+                    <div
+                        class="add-img"
+                        v-show="imgList.length !== 9"
+                        @click="selectImg"
+                    >
                         <i />
                         <i />
                     </div>
@@ -52,7 +56,7 @@ const pageData = reactive({
     text: '',
 })
 
-const { imgList, addImg, preview } = usePreviewImage()
+const { imgList, addImg, preview, clear } = usePreviewImage()
 
 const publish = () => {
     chatStore.setchatData(
@@ -88,6 +92,7 @@ const publish = () => {
         },
         () => {
             pageData.text = ''
+            clear()
             console.log('chatStore.messageList -->', chatStore.messageList)
             emits('hide')
         },

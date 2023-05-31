@@ -25,16 +25,14 @@ const list: OtherInfoItemType[] = [
         text: '朋友圈',
         async click() {
             await chatListStore.getMoment(false)
-            if (!chatListStore.momentGroup.groupid) {
-                chatStore.setchatData('', 'groupChat', 'down', 50)
-            } else {
-                chatStore.setchatData(
-                    chatListStore.momentGroup.groupid,
-                    'groupChat',
-                    'down',
-                    50
-                )
-            }
+            chatStore.setchatData(
+                chatListStore.momentGroup.groupid,
+                'groupChat',
+                'down',
+                50
+            )
+
+            chatStore.messageList.splice(0, chatStore.messageList.length)
             router.push('/moments')
         },
         border: true,

@@ -50,6 +50,7 @@ export const init = {
             useChatListStore().clear()
             sessionStorage.clear()
             localStorage.clear()
+            chatStore.clear()
             router.replace('/begin')
             return
         }

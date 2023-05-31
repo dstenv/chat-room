@@ -45,6 +45,7 @@
 
 <script setup lang="ts">
 import { getUserInfo } from '@/apis/user/getUserInfo'
+import { useChatStore } from '@/stores/chat'
 import { useUserStore } from '@/stores/user'
 import { Tools } from '@/utils/tools'
 import { showConfirmDialog, showLoadingToast } from 'vant'
@@ -57,6 +58,7 @@ interface OprateItem {
 
 const userStore = useUserStore()
 const router = useRouter()
+const chatStore = useChatStore()
 
 const oprateList: OprateItem[] = [
     {
@@ -79,13 +81,14 @@ const oprateList: OprateItem[] = [
 
                     localStorage.clear()
                     sessionStorage.clear()
-
+                    chatStore.clear()
                     loading.close()
 
                     loading = null
 
-                    nextTick(() => {
-                        router.replace('/begin')
+                    nextTick(async () => {
+                        await router.replace('/begin')
+                        location.reload()
                     })
                 })
                 .catch(() => {})

@@ -9,7 +9,7 @@ import type {
     GroupItem,
 } from '@/types'
 import { getFriendList } from '@/apis/friend/getFriendList'
-import { useUserStore } from './user'
+import { useAdminStore, useUserStore } from './user'
 import { getBlackList } from '@/apis/user/getBlackList'
 import { CommonConfig } from '@/common/common'
 import type { EasemobChat } from 'easemob-websdk'
@@ -78,6 +78,7 @@ export const useChatListStore = defineStore(
                     find.text = content.text || ''
                     find.avatar = content.avatar
                     find.nickname = content.nickname || ''
+                    find.agree = false
                 }
             },
             subscribed() {},
@@ -88,6 +89,7 @@ export const useChatListStore = defineStore(
 
         const getChatList = async () => {
             if (getStatus.getChat) return
+            console.log('status -->', useChatStore().socketDefer.connected)
 
             try {
                 getStatus.getChat = true
@@ -230,7 +232,7 @@ export const useChatListStore = defineStore(
                     const result = await EaseChatClient.createGroup({
                         data: {
                             ...CommonConfig.CREATE_GROUP_CONFIG,
-                            public: false,
+                            public: true,
                             allowinvites: true,
                             desc: '朋友圈',
                             groupname: 'moment',
@@ -238,6 +240,7 @@ export const useChatListStore = defineStore(
                                 (item) => item.userid || ''
                             ),
                             inviteNeedConfirm: false,
+                            approval: false,
                         },
                     })
                     if (result.data) {
@@ -248,7 +251,8 @@ export const useChatListStore = defineStore(
                         }
                         useChatStore().setchatData(
                             result.data.groupid,
-                            'groupChat'
+                            'groupChat',
+                            'down'
                         )
                         await useChatStore().sendMessage(
                             'txt',

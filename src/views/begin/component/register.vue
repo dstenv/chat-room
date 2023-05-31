@@ -150,6 +150,8 @@ const register = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     .form {
         width: 90%;
         display: flex;

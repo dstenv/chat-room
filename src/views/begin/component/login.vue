@@ -33,6 +33,7 @@ import { showToast } from 'vant'
 import { errorData } from '@/apis/base'
 import { useChatStore } from '@/stores/chat'
 import { getUserInfo } from '@/apis/user/getUserInfo'
+import { init } from '@/utils/initApp'
 
 export interface RuleItem {
     message: string
@@ -121,6 +122,8 @@ const login = async () => {
             }
         }
         try {
+            await init.initAdmin()
+
             const result = await loginUser(login)
             const userInfo = await getUserInfo(result.user.username)()
 
@@ -142,7 +145,7 @@ const login = async () => {
 
             localStorage.setItem('newFriend', JSON.stringify([]))
             sessionStorage.clear()
-            chatStore.connect()
+            // chatStore.connect()
 
             router.replace({
                 path: '/main/pages/chat',

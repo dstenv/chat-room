@@ -183,11 +183,8 @@
             </div>
         </main>
 
-        <VanPopup position="bottom" v-model:show="pageData.showPopup">
-            <Publish
-                :type="pageData.publishType"
-                @hide="() => (pageData.showPopup = false)"
-            />
+        <VanPopup position="bottom" :show="pageData.showPopup">
+            <Publish :type="pageData.publishType" @hide="hide" />
         </VanPopup>
 
         <!-- <Transition name="say-input-animate"> -->
@@ -463,6 +460,8 @@ const pageData = reactive({
 
 const longFn = () => {
     console.log('长按')
+    clearTimeout(pageData.timer!)
+    pageData.timer = null
     // 执行操作
     pageData.publishType = 'txt'
     pageData.longTouch = true
@@ -531,6 +530,14 @@ const setManyClick = () => {
     console.log('pageData.manyCliCK  -->', pageData.manyCliCK)
 }
 
+const hide = () => {
+    if (pageData.timer) {
+        clearTimeout(pageData.timer)
+    }
+    pageData.longTouch = false
+    pageData.showPopup = false
+}
+
 const mainTouchStart = () => {
     pageData.showSayInput = false
     pageData.sayInputValue = ''
@@ -544,16 +551,16 @@ const touchStart = () => {
 }
 
 const touchMove = () => {
-    if (pageData.timer) {
-        clearTimeout(pageData.timer)
+    if (!pageData.longTouch) {
+        clearTimeout(pageData.timer!)
         pageData.timer = null
-        pageData.longTouch = false
     }
+    pageData.longTouch = false
 }
 
 const touchEnd = (e: TouchEvent) => {
-    if (pageData.timer) {
-        clearTimeout(pageData.timer)
+    if (!pageData.longTouch) {
+        clearTimeout(pageData.timer!)
         pageData.timer = null
         pageData.longTouch = false
         console.log('+new Date() - start -->', +new Date(), start)

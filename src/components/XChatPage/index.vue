@@ -335,15 +335,44 @@ const methods = {
 
 EaseChatClient.addEventHandler(watchFnId, {
     onTextMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        console.log('收到message -->', {
+            ...message,
+            loading: false,
+            error: false,
+        })
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', message.msg)
     },
     onImageMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        console.log('收到message -->', {
+            ...message,
+            loading: false,
+            error: false,
+        })
+
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', '[图片]')
     },
     onVideoMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        console.log('收到message -->', {
+            ...message,
+            loading: false,
+            error: false,
+        })
+
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', '[视频]')
     },
 })

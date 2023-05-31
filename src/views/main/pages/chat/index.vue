@@ -367,17 +367,56 @@ const pageData = reactive({
 EaseChatClient.addEventHandler('chatConnect', {
     onDisconnected: () => {
         showToast('已断线')
+        localStorage.clear()
+        sessionStorage.clear()
+        chatStore.clear()
+        router.replace('/begin')
     },
     onTextMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        setTimeout(async () => {
+            if (message.chatType === 'groupChat') {
+                chatListStore.getChatList()
+            }
+        }, 300)
+
+        console.log('消息', message)
+        console.log(
+            '@@@@',
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', message.msg, true)
     },
     onImageMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        setTimeout(async () => {
+            if (message.chatType === 'groupChat') {
+                chatListStore.getChatList()
+            }
+        }, 300)
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', '[图片]', true)
     },
     onVideoMessage: (message) => {
-        chatStore.addMessage({ ...message, loading: false, error: false })
+        setTimeout(async () => {
+            if (message.chatType === 'groupChat') {
+                chatListStore.getChatList()
+            }
+        }, 300)
+        chatStore.addMessage(
+            { ...message, loading: false, error: false },
+            false,
+            false
+        )
         chatListStore.setLastMsg(message.from || '', '[视频]', true)
     },
 })
@@ -396,9 +435,22 @@ const search = Tools.doubonce(() => {
         return
     }
 
-    pageData.showList = pageData.showList.filter((item) =>
-        [item.userid, item.nickname].includes(pageData.createGroupSearch)
-    )
+    const list: UserProPertyType[] = []
+
+    for (let i = 0; i < pageData.showList.length; i++) {
+        const arr = [pageData.showList[i].userid, pageData.showList[i].nickname]
+
+        for (let j = 0; j < arr.length; j++) {
+            const reg = new RegExp(pageData.createGroupSearch, 'i')
+
+            if (reg.test(arr[i] as string)) {
+                list.push(pageData.showList[i])
+                break
+            }
+        }
+    }
+
+    pageData.showList = [...list]
 })
 
 const createGroup = async () => {
