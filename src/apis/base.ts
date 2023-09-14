@@ -62,8 +62,8 @@ const customHeaderKeyFn: HeaderKeyFn = {
  */
 export const request = <T, U>(
     options: RequestBaseType
-): ((body?: T) => Promise<U>) =>
-    async function (body?: T): Promise<U> {
+): ((body?: T) => Promise<U | Error>) =>
+    async function (body?: T): Promise<U | Error> {
         const loading = useLoading()
 
         const id = loading.requestId++
@@ -123,7 +123,7 @@ export const request = <T, U>(
                 ...requestOptions,
             })
         } catch (error) {
-            result = new ResponseBaseType<U>()
+            return Promise.resolve(new Error('请求失败'))
         } finally {
             loading.finishOneRequest(id)
 
